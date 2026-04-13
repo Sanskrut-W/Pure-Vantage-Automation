@@ -1,0 +1,12 @@
+{
+    "bannerConfig": {
+        "expectedTitleSnippet": "Banner",
+        "defaultTimeout": 60000
+    },
+    "users": {
+        "standard": {
+            "username": "testuser",
+            "role": "editor"
+        }
+    }
+}
