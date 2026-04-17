@@ -22,7 +22,7 @@ export const test = base.extend<MyFixtures>({
         if (fs.existsSync(sessionPath)) {
             const sessionData = JSON.parse(fs.readFileSync(sessionPath, 'utf-8'));
             await page.addInitScript((data) => {
-                if (window.location.hostname.includes('osiristrading.net')) {
+                if (window.location.hostname.includes('osiristrading.net') || window.location.hostname.includes('osiristrading.com')) {
                     for (const [key, value] of Object.entries(data)) {
                         window.sessionStorage.setItem(key, value as string);
                     }

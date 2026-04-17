@@ -5,10 +5,10 @@ export const envConfig = {
 
     get baseURL() {
         switch (this.current) {
-            case 'prod': return 'https://wms-nxt.osiristrading.net';
-            case 'staging': return 'https://wms-nxt-staging.osiristrading.net';
+            case 'prod': return 'https://purevantage-dev.osiristrading.com/main/home';
+            case 'staging': return 'https://purevantage-dev.osiristrading.com/main/home';
             case 'dev':
-            default: return 'https://wms-nxt-dev.osiristrading.net';
+            default: return 'https://purevantage-dev.osiristrading.com/main/home';
         }
     }
 };

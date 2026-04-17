@@ -24,7 +24,13 @@ export class SidebarPage extends BasePage {
 
         // Utilize the parent BasePage generic click functionality
         await this.clickElement(this.marketingNode);
+        // await this.page.waitForTimeout(5000);
         await this.clickElement(this.bannerManagementNode);
+        // await this.page.waitForTimeout(5000);
+
         await this.clickElement(this.bannerConfigNode);
+        await this.clickElement(this.bannerConfigNode);
+        await this.page.waitForTimeout(10000);
+
     }
 }

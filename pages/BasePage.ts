@@ -11,7 +11,7 @@ export class BasePage {
      * Waits for the page to reach network idle state, ensuring all dynamic content is fully loaded.
      */
     async waitForPageLoad() {
-        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForLoadState('domcontentloaded');
     }
 
     /**
@@ -20,6 +20,7 @@ export class BasePage {
     async clickElement(locator: Locator) {
         await locator.waitFor({ state: 'visible' });
         await locator.click();
+        await this.waitForPageLoad();
     }
 
     /**

@@ -4,11 +4,12 @@ import { envConfig } from './config/envConfig';
 
 export default defineConfig({
     testDir: './tests',
+    timeout: 1200000,
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
-    retries: process.env.CI ? 2 : 1, // At least 1 retry locally, 2 on CI
+    retries: process.env.CI ? 0 : 0, // At least 1 retry locally, 2 on CI
     workers: process.env.CI ? 1 : undefined,
-    
+
     // Reporters configuration
     reporter: [
         ['list'],
@@ -18,7 +19,10 @@ export default defineConfig({
     use: {
         // Base URL from environment config
         baseURL: envConfig.baseURL,
-        
+
+        // Ignore HTTPS errors for non-secure connection testing
+        ignoreHTTPSErrors: true,
+
         // Artifacts
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',

@@ -8,14 +8,14 @@ const sessionFile = path.join(__dirname, '../session.json');
 (async () => {
     // Launch Chrome in non-headless mode so the user can interact
     const browser = await chromium.launch({ headless: false });
-    const context = await browser.newContext();
+    const context = await browser.newContext({ ignoreHTTPSErrors: true });
     const page = await context.newPage();
 
     console.log('Navigating to the application...');
-    
+
     // Using the dev URL directly here for manual setup 
     // You can change this if you want to auth against staging/prod
-    await page.goto('https://wms-nxt-dev.osiristrading.net/main/home');
+    await page.goto('https://purevantage-dev.osiristrading.com/main');
 
     console.log('\n--------------------------------------------------------------------------------');
     console.log('👉 MANUAL ACTION REQUIRED:');
