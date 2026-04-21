@@ -1,51 +1,59 @@
+// npx playwright test tests/bannerOrdering.spec.ts --headed
 import { test, expect } from '../fixtures/baseFixture';
+import { CommonUtils } from '../utils/commonUtils';
+test.describe('Banner Configuration Specific Feature Tests', () => {
 
-test('Navigate to Banner Config and click Create Banner @smoke', async ({ page, sidebarPage, bannerPage }) => {
+    test.beforeEach(async ({ page, sidebarPage, bannerPage }) => {
+        // Shared navigation setup specifically for these 4 tests
+        await page.goto('/main/home');
+        await page.reload();
+        await sidebarPage.waitForPageLoad();
 
-    // Step 1: Login has already been handled implicitly via `authenticatedSession` fixture
-    // Navigate to the dashboard base URL so sessionStorage is honored without root redirects
-    await page.goto('/main/home');
-    await page.reload(); // 👈 Workaround: Forces SPA to remount with auth states injected
-    await sidebarPage.waitForPageLoad();
+        await sidebarPage.navigateToBannerConfig();
+        await expect(page).toHaveURL(/.*banner-config/);
+        await bannerPage.waitForPageLoad();
+    });
 
-    // Step 2: Navigate Sidebar -> Marketing -> Banner Management -> Banner Config
-    await sidebarPage.navigateToBannerConfig();
+    test('TC-1 Navigate to Banner Config and click Create Banner @smoke', async ({ page, bannerPage }, testInfo) => {
+        await bannerPage.createBanner();
 
-    // Validate we've reached the right URL
-    await expect(page).toHaveURL('https://purevantage-dev.osiristrading.com/main/component-display/stencil-marketing/banner-config');
-    await bannerPage.waitForPageLoad();
+        // Take a screenshot and automatically attach it to the HTML report
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1_create_banner_success');
 
-    // Step 3: Select region  
-    await bannerPage.selectRegion('Betway Ghana'); // Provide dummy region text
+        console.log('Test completed successfully: Created banner form opened.');
+    });
 
-    // Search input usage added per requirements
-    await bannerPage.searchRegion('gh');
+    test('TC-1 Verify all the elements on banner configuration landing page', async ({ page, bannerPage }, testInfo) => {
+        // Verify Select Region dropdown
+        await expect(bannerPage.regionDropdown).toBeVisible();
+        // Verify Create Banner button
+        await expect(bannerPage.createBannerBtn).toBeVisible();
+        // Verify Search bar
+        await expect(bannerPage.searchInput).toBeVisible();
+        const tableContainer = bannerPage.page.locator('.p-datatable');
+        if (await tableContainer.count() > 0) {
+            await expect(tableContainer).toBeVisible();
+        }
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1_banner_config_page');
+    });
 
-    // Step 4: Click Create Banner
-    await bannerPage.clickCreateBanner();
-    await bannerPage.fillBannerName('Test Banner');
-    await bannerPage.clickSelectBannerType();
-    await bannerPage.selectBanner('Standard Banner');
-    await bannerPage.clickSelectRegions();
-    await bannerPage.selectRegionFromDropdown('Betway Ghana');
-    await bannerPage.clickSelectVerticals();
-    await bannerPage.selectVerticalFromDropdown('Casino', 'Esports');
-    await bannerPage.clickSelectPlatforms();
-    await bannerPage.selectPlatformFromDropdown('Android', 'IOS');
-    await bannerPage.setDateRange('05/15/2024', '06/20/2024');
-    await bannerPage.selectCampaign('RashmiTest');
-    await bannerPage.clickLoginStatus('Logged In');
-    await bannerPage.clickLoginStatus('Logged Out');
+    test('TC-2 Verify we are able to select required region in select region dropdown', async ({ page, bannerPage }, testInfo) => {
+        await bannerPage.selectRegion('Betway Ghana');
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_banner_config_page');
+    });
 
+    test('TC-3 Verify we are able to select required region (select another region) in select region dropdown', async ({ page, bannerPage }, testInfo) => {
+        await bannerPage.selectRegion('Betway Ghana');
+        await bannerPage.selectRegion('Betway Zambia');
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_select_another_region');
+    });
 
+    test('TC-4 Verify Create Banner button functionality', async ({ page, bannerPage }, testInfo) => {
+        await bannerPage.selectRegion('Betway Ghana');
+        await bannerPage.clickCreateBanner();
+        const dialog = bannerPage.page.locator('.p-dialog, .p-sidebar, [role="dialog"]');
+        await expect(dialog).toBeVisible({ timeout: 10000 });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_create_banner');
+    });
 
-
-    await page.screenshot({ path: 'reports/create_banner_success.png', fullPage: true });
-
-    // Step 5: Validate banner form appears
-    // We assume a generic class/text popup appears after clicking 'Create Banner'
-    // const formContainer = page.locator('.p-dialog, .modal-content, text=New Banner');
-    // await expect(formContainer).toBeVisible({ timeout: 10000 });
-
-    console.log('Test completed successfully: Created banner form opened.');
 });

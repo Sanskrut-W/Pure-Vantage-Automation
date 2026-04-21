@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+import { CommonUtils } from '../utils/commonUtils';
 
 export class BasePage {
     readonly page: Page;
@@ -15,19 +16,27 @@ export class BasePage {
     }
 
     /**
-     * Waits for an element to be visible and actionable, then clicks it.
+     * Waits for an element to be visible and actionable, highlights it smoothly, then clicks it.
      */
-    async clickElement(locator: Locator) {
+    async clickElement(locator: Locator, options?: { force?: boolean }) {
         await locator.waitFor({ state: 'visible' });
-        await locator.click();
+        
+        // Magically highlight EVERY element right before clicking without repeating code
+        await CommonUtils.highlightElement(locator);
+        
+        await locator.click(options);
         await this.waitForPageLoad();
     }
 
     /**
-     * Waits for an input field to be visible, then fills it with a value.
+     * Waits for an input field to be visible, highlights it smoothly, then fills it with a value.
      */
     async fillInput(locator: Locator, value: string) {
         await locator.waitFor({ state: 'visible' });
+        
+        // Magically highlight EVERY input field right before typing
+        await CommonUtils.highlightElement(locator);
+        
         await locator.fill(value);
     }
 

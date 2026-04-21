@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { bannerLocators } from '../locators/bannerLocators';
 
@@ -17,9 +17,17 @@ export class BannerPage extends BasePage {
     readonly endDateInput: Locator;
     readonly closeMultiselectBtn: Locator;
 
+    /////// Banner Ordering Page Locator Properties ///////
+    readonly orderingSearchInput: Locator;
+    readonly orderingRegionDropdown: Locator;
+    readonly bannersTable: Locator;
+    readonly loggedInTable: Locator;
+    readonly loggedOutTable: Locator;
+
     constructor(page: Page) {
         super(page);
 
+        /////// Banner Config Page Locators ///////
         // Initialize Locators using Playwright accessibility best-practices
         this.createBannerBtn = page.getByRole('button', { name: bannerLocators.buttonCreateBanner });
         this.regionDropdown = page.getByLabel(bannerLocators.dropdownRegion);
@@ -34,19 +42,24 @@ export class BannerPage extends BasePage {
         this.campaignDropdown = page.locator('span.p-dropdown-label').getByText(bannerLocators.selectCampaignDropdown, { exact: true });
         this.startDateInput = page.locator(bannerLocators.inputStartDate);
         this.endDateInput = page.locator(bannerLocators.inputEndDate);
-
         // Scope the close button specifically to the multiselect panel to prevent closing wrong dialogs
         this.closeMultiselectBtn = page.locator('.p-multiselect-panel').getByRole('button', { name: bannerLocators.buttonCloseMultiselect });
+
+        /////// Banner Ordering Page Locators ///////
+        this.orderingSearchInput = page.locator(bannerLocators.orderingSearchInput);
+        this.orderingRegionDropdown = page.locator(bannerLocators.orderingRegionDropdown);
+        this.bannersTable = page.locator(bannerLocators.orderingTableBanners);
+        this.loggedInTable = page.locator(bannerLocators.orderingTableLoggedIn);
+        this.loggedOutTable = page.locator(bannerLocators.orderingTableLoggedOut);
     }
 
-
+    /////// Banner Config Page Methods ///////
     async clickCreateBanner() {
         console.log('Clicking Create Banner button...');
         await this.clickElement(this.createBannerBtn);
         await this.page.waitForTimeout(5000);
         await this.page.waitForLoadState('domcontentloaded');
     }
-
 
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
@@ -112,27 +125,16 @@ export class BannerPage extends BasePage {
 
     async setDateRange(startDate?: string, endDate?: string) {
         console.log(`Setting start and end dates via clicking the calendar UI due to blocked input...`);
-        
-        // Start Date popup
+
         await this.clickElement(this.startDateInput);
-        
-        // Wait for the specific start-date panel to exist (derived from aria-controls)
         const startPanel = this.page.locator('#banner-start-date_panel');
         await startPanel.waitFor({ state: 'visible' });
-        
-        // Click the 20th of the month 
         const day20 = startPanel.locator('table').getByText('20', { exact: true }).first();
         await this.clickElement(day20);
         await this.page.waitForTimeout(500);
-
-        // End Date popup
         await this.clickElement(this.endDateInput);
-        
-        // Wait for specific end-date panel
         const endPanel = this.page.locator('#banner-end-date_panel');
         await endPanel.waitFor({ state: 'visible' });
-        
-        // Click the 28th of the month to guarantee it's after the 20th
         const day28 = endPanel.locator('table').getByText('28', { exact: true }).first();
         await this.clickElement(day28);
         await this.page.waitForTimeout(500);
@@ -146,9 +148,13 @@ export class BannerPage extends BasePage {
 
     async clickLoginStatus(status: 'Logged In' | 'Logged Out') {
         console.log(`Clicking login status checkbox: ${status}`);
-        // We target the custom checkbox box element that sits right next to the status label
-        const checkboxBox = this.page.locator(`div.d-flex:has(label:text-is("${status}")) .p-checkbox-box`);
-        await this.clickElement(checkboxBox);
+        const container = this.page.locator('div.d-flex.items-center').filter({ has: this.page.getByText(status, { exact: true }) });
+        const checkboxInput = container.locator('input[type="checkbox"]');
+        
+        // Use our abstract click wrapper so it gets highlighted too, passing the {force} toggle down
+        await this.clickElement(checkboxInput, { force: true });
+        
+        await this.page.waitForLoadState('domcontentloaded');
     }
 
     async closeMultiselectDropdown() {
@@ -173,5 +179,116 @@ export class BannerPage extends BasePage {
         console.log('Clicking Select Platforms dropdown...');
         await this.clickElement(this.selectPlatformsDropdown);
         await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async createBanner() {
+        await this.selectRegion('Betway Ghana');
+        await this.searchRegion('gh');
+        await this.clickCreateBanner();
+        await this.fillBannerName('Test Banner');
+        await this.clickSelectBannerType();
+        await this.selectBanner('Standard Banner');
+        await this.clickSelectRegions();
+        await this.selectRegionFromDropdown('Betway Ghana');
+        await this.clickSelectVerticals();
+        await this.selectVerticalFromDropdown('Casino', 'Esports');
+        await this.clickSelectPlatforms();
+        await this.selectPlatformFromDropdown('Android', 'IOS');
+        await this.setDateRange('05/15/2024', '06/20/2024');
+        await this.selectCampaign('RashmiTest');
+        await this.clickLoginStatus('Logged In');
+        await this.clickLoginStatus('Logged Out');
+        await this.page.waitForTimeout(4000);
+    }
+
+
+    /////// Banner Ordering Page Methods ///////
+    async searchOrdering(term: string) {
+        console.log(`Searching in Banner Ordering: ${term}`);
+        await this.fillInput(this.orderingSearchInput, term);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async selectOrderingRegion(region: string) {
+        console.log(`Selecting region in Banner Ordering: ${region}`);
+        await this.selectDropdown(this.orderingRegionDropdown, region);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async getFirstActiveBanner(listType: 'LoggedIn' | 'LoggedOut'): Promise<string> {
+        const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        // In the specific ordering lists, Name is at column index 2 (1-based nth child 3)
+        return await table.locator('tbody tr').first().locator('td').nth(2).innerText();
+    }
+
+    async getFirstInactiveBanner(listType: 'LoggedIn' | 'LoggedOut'): Promise<string | null> {
+        // Toggle index in the Banners table: 0=Name, 1=LoggedIn toggle, 2=LoggedOut toggle
+        const offColIndex = listType === 'LoggedIn' ? 2 : 3; // 1-based child for CSS nth-child
+        
+        // Find any row where the specific input switch has aria-checked="false"
+        const rowWithOffToggle = this.bannersTable.locator('tbody tr').filter({
+            has: this.page.locator(`td:nth-child(${offColIndex}) .p-inputswitch[aria-checked="false"]`)
+        }).first();
+        
+        if (await rowWithOffToggle.count() === 0) return null; // Edge case: all toggles are literally on
+        return await rowWithOffToggle.locator('td').nth(0).innerText();
+    }
+
+    async isBannerInList(bannerName: string, listType: 'LoggedIn' | 'LoggedOut'): Promise<boolean> {
+        const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        // Wait briefly for SPA rerender if it just triggered an animation
+        await this.page.waitForTimeout(500); 
+        const count = await table.locator('tbody tr', { hasText: bannerName }).count();
+        return count > 0;
+    }
+
+    async setBannerToggleStatus(bannerName: string, type: 'LoggedIn' | 'LoggedOut', targetState: boolean) {
+        // Find the specific row in the main Banners list
+        const targetRow = this.bannersTable.locator('tbody tr', { hasText: bannerName }).first();
+        const toggleColIndex = type === 'LoggedIn' ? 1 : 2;
+        const toggleContainer = targetRow.locator('td').nth(toggleColIndex).locator('.p-inputswitch');
+        
+        const currentStateStr = await toggleContainer.getAttribute('aria-checked');
+        const isCurrentlyON = currentStateStr === 'true';
+        
+        if (isCurrentlyON !== targetState) {
+            console.log(`Toggling ${type} for banner '${bannerName}' to ${targetState}`);
+            // Target the input directly and use force: true to pierce the pointer-events intercept layer
+            await this.clickElement(toggleContainer.locator('input'), { force: true });
+            // Implicit UI validation that it switched to prevent false positives and test flakes
+            await expect(toggleContainer).toHaveAttribute('aria-checked', targetState.toString(), { timeout: 10000 });
+            await this.page.waitForTimeout(1000); // Allow list shift/api to stabilize
+        } else {
+            console.log(`Banner '${bannerName}' ${type} is already ${targetState}`);
+        }
+    }
+
+    async getRowCount(listType: 'LoggedIn' | 'LoggedOut'): Promise<number> {
+        const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        return await table.locator('tbody tr').count();
+    }
+
+    async getBannerNameAtRow(listType: 'LoggedIn' | 'LoggedOut', rowIndex: number): Promise<string> {
+        const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        // The second strictly visible text column holds the Name (index 2 after the Handle and Order ID)
+        return await table.locator('tbody tr').nth(rowIndex).locator('td').nth(2).innerText();
+    }
+
+    async dragRowToRow(listType: 'LoggedIn' | 'LoggedOut', fromIndex: number, toIndex: number) {
+        const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        
+        const sourceRow = table.locator('tbody tr').nth(fromIndex);
+        const targetRow = table.locator('tbody tr').nth(toIndex);
+        
+        console.log(`Dragging item from index ${fromIndex} to ${toIndex} in ${listType} list`);
+        // We isolate the very front of the row (the drag handle cell) to ensure we hit the bounding box natively
+        const sourceHandle = sourceRow.locator('td').first();
+        const targetHandle = targetRow.locator('td').first();
+
+        // Native HTML5 API execution via Playwright Engine override
+        await sourceHandle.dragTo(targetHandle, { force: true });
+        
+        // Wait for PrimeVue to finish the array index swapping layout transitions
+        await this.page.waitForTimeout(1500);
     }
 }
