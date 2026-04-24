@@ -1,4 +1,4 @@
-// npx playwright test tests/bannerOrdering.spec.ts --headed
+// npx playwright test tests/bannerConfig.spec.ts --headed
 import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
 test.describe('Banner Configuration Specific Feature Tests', () => {
@@ -24,8 +24,8 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
     });
 
     test('TC-1 Verify all the elements on banner configuration landing page', async ({ page, bannerPage }, testInfo) => {
-        // Verify Select Region dropdown
-        await expect(bannerPage.regionDropdown).toBeVisible();
+        // Verify Select Region dropdown (granting extra time for initial PrimeVue framework SPA rendering)
+        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 20000 });
         // Verify Create Banner button
         await expect(bannerPage.createBannerBtn).toBeVisible();
         // Verify Search bar

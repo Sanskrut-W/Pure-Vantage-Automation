@@ -124,19 +124,25 @@ export class BannerPage extends BasePage {
     }
 
     async setDateRange(startDate?: string, endDate?: string) {
-        console.log(`Setting start and end dates via clicking the calendar UI due to blocked input...`);
+        console.log(`Setting start and end dates dynamically via strictly enabled UI calendar nodes...`);
 
         await this.clickElement(this.startDateInput);
         const startPanel = this.page.locator('#banner-start-date_panel');
         await startPanel.waitFor({ state: 'visible' });
-        const day20 = startPanel.locator('table').getByText('20', { exact: true }).first();
-        await this.clickElement(day20);
+        
+        // Dynamically find the first currently ENABLED valid day in the active month 
+        // We use span:not(.p-disabled) to dodge historical dates strictly enforced by PrimeVue
+        const activeStartDay = startPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
+        await this.clickElement(activeStartDay, { force: true });
         await this.page.waitForTimeout(500);
+        
         await this.clickElement(this.endDateInput);
         const endPanel = this.page.locator('#banner-end-date_panel');
         await endPanel.waitFor({ state: 'visible' });
-        const day28 = endPanel.locator('table').getByText('28', { exact: true }).first();
-        await this.clickElement(day28);
+        
+        // Finding the LAST valid enable day guarantees it will always geometrically succeed the start date
+        const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
+        await this.clickElement(activeEndDay, { force: true });
         await this.page.waitForTimeout(500);
     }
 
@@ -265,6 +271,15 @@ export class BannerPage extends BasePage {
 
     async getRowCount(listType: 'LoggedIn' | 'LoggedOut'): Promise<number> {
         const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
+        
+        // Wait for SPA reactivity to dynamically render rows after picking the Region dropdown.
+        // It catches errors gracefully if the API responds that the table is completely empty on the server.
+        try {
+            await table.locator('tbody tr').first().waitFor({ state: 'visible', timeout: 5000 });
+        } catch (e) {
+            console.log(`No rows populated in ${listType} list after 5 network seconds.`);
+        }
+        
         return await table.locator('tbody tr').count();
     }
 
@@ -281,14 +296,35 @@ export class BannerPage extends BasePage {
         const targetRow = table.locator('tbody tr').nth(toIndex);
         
         console.log(`Dragging item from index ${fromIndex} to ${toIndex} in ${listType} list`);
-        // We isolate the very front of the row (the drag handle cell) to ensure we hit the bounding box natively
-        const sourceHandle = sourceRow.locator('td').first();
-        const targetHandle = targetRow.locator('td').first();
-
-        // Native HTML5 API execution via Playwright Engine override
-        await sourceHandle.dragTo(targetHandle, { force: true });
+        
+        // PrimeVue Drag events can be notoriously restrictive internally regarding Pointer vs Mouse vs HTML5 events.
+        // We inject the exact HTML5 DataTransfer event timeline straight into the DOM Engine to guarantee a swap.
+        await this.page.evaluate(({ src, tgt, toIdx, fromIdx }) => {
+            if (!src || !tgt) return;
+            
+            const dataTransfer = new DataTransfer();
+            const tgtRect = tgt.getBoundingClientRect();
+            
+            // Aiming threshold based on downward or upward matrix traversal
+            const dropYPos = toIdx > fromIdx ? (tgtRect.top + tgtRect.height * 0.9) : (tgtRect.top + tgtRect.height * 0.1);
+            
+            // Replicate the perfect browser drag cycle exactly how PrimeVue's v-on:drop expects it
+            src.dispatchEvent(new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer }));
+            
+            tgt.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer }));
+            tgt.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, clientY: dropYPos, dataTransfer }));
+            tgt.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, clientY: dropYPos, dataTransfer }));
+            
+            src.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer }));
+            
+        }, { 
+            src: await sourceRow.elementHandle(), 
+            tgt: await targetRow.elementHandle(),
+            toIdx: toIndex,
+            fromIdx: fromIndex
+        });
         
         // Wait for PrimeVue to finish the array index swapping layout transitions
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(2000); 
     }
 }

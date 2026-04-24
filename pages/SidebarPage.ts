@@ -7,6 +7,8 @@ export class SidebarPage extends BasePage {
     readonly bannerManagementNode: Locator;
     readonly bannerConfigNode: Locator;
     readonly bannerOrderingNode: Locator;
+    readonly tutorialNode: Locator;
+    readonly tutorialConfigNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -16,6 +18,8 @@ export class SidebarPage extends BasePage {
         this.bannerManagementNode = this.page.getByText(sidebarLocators.menuBannerManagement, { exact: true });
         this.bannerConfigNode = this.page.getByText(sidebarLocators.menuBannerConfig, { exact: true });
         this.bannerOrderingNode = this.page.getByText(sidebarLocators.menuBannerOrdering, { exact: true });
+        this.tutorialNode = this.page.getByText(sidebarLocators.menuTutorial, { exact: true });
+        this.tutorialConfigNode = this.page.getByText(sidebarLocators.menuTutorialConfig, { exact: true });
     }
 
     /**
@@ -41,14 +45,28 @@ export class SidebarPage extends BasePage {
         // Utilize the parent BasePage generic click functionality
         await this.clickElement(this.marketingNode);
         await this.page.waitForTimeout(2000); // Allow animation to expand
-        
+
         await this.clickElement(this.bannerManagementNode);
         await this.page.waitForTimeout(2000); // Allow animation to expand
 
         await this.clickElement(this.bannerOrderingNode);
         // Double-clicking just in case it was explicitly needed by the app
         await this.clickElement(this.bannerOrderingNode);
-        
+
         await this.waitForPageLoad();
+    }
+
+    async navigateToTutorialConfig() {
+        console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Config');
+
+        // Utilize the parent BasePage generic click functionality
+        await this.clickElement(this.marketingNode);
+        // await this.page.waitForTimeout(5000);
+        await this.clickElement(this.tutorialNode);
+        // await this.page.waitForTimeout(5000);
+
+        await this.clickElement(this.tutorialConfigNode);
+        await this.clickElement(this.tutorialConfigNode);
+        await this.page.waitForLoadState('domcontentloaded');
     }
 }

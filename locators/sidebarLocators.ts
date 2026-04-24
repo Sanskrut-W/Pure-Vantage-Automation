@@ -3,5 +3,7 @@ export const sidebarLocators = {
     menuMarketing: 'Marketing', // For getByText or getByRole
     menuBannerManagement: 'Banner Management',
     menuBannerConfig: 'Banner Config',
-    menuBannerOrdering: 'Banner Ordering'
+    menuBannerOrdering: 'Banner Ordering',
+    menuTutorial: 'Tutorials',
+    menuTutorialConfig: 'Tutorial Configuration'
 };

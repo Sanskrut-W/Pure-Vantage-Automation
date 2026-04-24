@@ -15,7 +15,7 @@ const sessionFile = path.join(__dirname, '../session.json');
 
     // Using the dev URL directly here for manual setup 
     // You can change this if you want to auth against staging/prod
-    await page.goto('https://purevantage-dev.osiristrading.com/main');
+    await page.goto('https://purevantage-dev.osiristrading.com/main', { timeout: 90000, waitUntil: 'domcontentloaded' });
 
     console.log('\n--------------------------------------------------------------------------------');
     console.log('👉 MANUAL ACTION REQUIRED:');
