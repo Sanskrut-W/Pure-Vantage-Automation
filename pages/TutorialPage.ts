@@ -70,7 +70,7 @@ export class TutorialPage {
     async selectLandingRegion(regionName: string) {
         await this.regionDropdown.click();
         await this.page.waitForTimeout(500); // Overlay render wait
-        const option = this.page.locator(`.p-dropdown-item[aria-label="${regionName}"], .p-dropdown-item:has-text("${regionName}")`);
+        const option = this.page.locator(`.p-dropdown-item[aria-label="${regionName}"], .p-dropdown-item:has-text("${regionName}")`).first();
         await option.click();
         await this.page.waitForTimeout(1000); // Table rebuild wait
     }

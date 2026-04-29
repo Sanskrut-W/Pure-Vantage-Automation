@@ -20,6 +20,7 @@ export class BannerPage extends BasePage {
     /////// Banner Ordering Page Locator Properties ///////
     readonly orderingSearchInput: Locator;
     readonly orderingRegionDropdown: Locator;
+    readonly orderingChannelDropdown: Locator;
     readonly bannersTable: Locator;
     readonly loggedInTable: Locator;
     readonly loggedOutTable: Locator;
@@ -48,6 +49,7 @@ export class BannerPage extends BasePage {
         /////// Banner Ordering Page Locators ///////
         this.orderingSearchInput = page.locator(bannerLocators.orderingSearchInput);
         this.orderingRegionDropdown = page.locator(bannerLocators.orderingRegionDropdown);
+        this.orderingChannelDropdown = page.locator(bannerLocators.orderingChannelDropdown);
         this.bannersTable = page.locator(bannerLocators.orderingTableBanners);
         this.loggedInTable = page.locator(bannerLocators.orderingTableLoggedIn);
         this.loggedOutTable = page.locator(bannerLocators.orderingTableLoggedOut);
@@ -58,6 +60,17 @@ export class BannerPage extends BasePage {
         console.log('Clicking Create Banner button...');
         await this.clickElement(this.createBannerBtn);
         await this.page.waitForTimeout(5000);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    /**
+     * Clicks the Edit button on the first banner row in the data table.
+     */
+    async clickEditFirstBanner() {
+        console.log('Clicking Edit on first banner row...');
+        const editButton = this.page.locator('.p-datatable tbody tr').first().getByRole('button', { name: /edit/i });
+        await editButton.waitFor({ state: 'visible', timeout: 20000 });
+        await this.clickElement(editButton);
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -218,6 +231,12 @@ export class BannerPage extends BasePage {
     async selectOrderingRegion(region: string) {
         console.log(`Selecting region in Banner Ordering: ${region}`);
         await this.selectDropdown(this.orderingRegionDropdown, region);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async selectOrderingChannel(channel: string) {
+        console.log(`Selecting channel in Banner Ordering: ${channel}`);
+        await this.selectDropdown(this.orderingChannelDropdown, channel);
         await this.page.waitForLoadState('domcontentloaded');
     }
 

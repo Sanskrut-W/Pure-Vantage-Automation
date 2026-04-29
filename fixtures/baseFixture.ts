@@ -2,6 +2,8 @@ import { test as base } from '@playwright/test';
 import { SidebarPage } from '../pages/SidebarPage';
 import { BannerPage } from '../pages/BannerPage';
 import { TutorialPage } from '../pages/TutorialPage';
+import { CampaignPage } from '../pages/CampaignPage';
+import { CashbackPage } from '../pages/CashbackPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,6 +15,8 @@ type MyFixtures = {
     sidebarPage: SidebarPage;
     bannerPage: BannerPage;
     tutorialPage: TutorialPage;
+    campaignPage: CampaignPage;
+    cashbackPage: CashbackPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -26,6 +30,9 @@ export const test = base.extend<MyFixtures>({
             await page.addInitScript((data) => {
                 if (window.location.hostname.includes('osiristrading.net') || window.location.hostname.includes('osiristrading.com')) {
                     for (const [key, value] of Object.entries(data)) {
+                        // Skip 'initialRoute' so the SPA router uses the current URL
+                        // path on reload instead of always redirecting to /main/home
+                        if (key === 'initialRoute') continue;
                         window.sessionStorage.setItem(key, value as string);
                     }
                 }
@@ -54,6 +61,18 @@ export const test = base.extend<MyFixtures>({
     tutorialPage: async ({ page, authenticatedSession }, use) => {
         const tutorialPage = new TutorialPage(page);
         await use(tutorialPage);
+    },
+
+    // Instantiate and provide CampaignPage
+    campaignPage: async ({ page, authenticatedSession }, use) => {
+        const campaignPage = new CampaignPage(page);
+        await use(campaignPage);
+    },
+
+    // Instantiate and provide CashbackPage
+    cashbackPage: async ({ page, authenticatedSession }, use) => {
+        const cashbackPage = new CashbackPage(page);
+        await use(cashbackPage);
     }
 });
 

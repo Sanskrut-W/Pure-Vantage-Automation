@@ -23,6 +23,7 @@ export const bannerLocators = {
     /////// Banner Ordering Page Locators ///////
     orderingSearchInput: 'input.pure-input[placeholder="Search"]',
     orderingRegionDropdown: 'div.p-dropdown:has(.p-dropdown-trigger[aria-label="Select a region"])',
+    orderingChannelDropdown: 'div.p-dropdown:has(.p-dropdown-trigger[aria-label="Select a channel"])',
     
     // Ordering Grid Tables
     orderingTableBanners: 'div.p-datatable:has(.p-datatable-header:has-text("Banners"))',
