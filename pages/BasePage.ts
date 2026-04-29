@@ -50,4 +50,47 @@ export class BasePage {
         const optionLocator = this.page.getByText(optionText, { exact: true });
         await this.clickElement(optionLocator);
     }
+
+    /**
+     * Navigates the browser Back (equivalent to clicking the browser Back button).
+     * Includes a visual pause so the destination page is fully rendered and
+     * observable in headed mode before proceeding.
+     */
+    async browserBack() {
+        console.log('🔙 Browser Back: navigating to previous history entry');
+        const urlBefore = this.page.url();
+        await this.page.goBack({ waitUntil: 'domcontentloaded' });
+        // Wait for SPA to fully render the previous page so it's visually observable
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(5000);
+        console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
+    }
+
+    /**
+     * Navigates the browser Forward (equivalent to clicking the browser Forward button).
+     * Includes a visual pause so the destination page is fully rendered and
+     * observable in headed mode before proceeding.
+     */
+    async browserForward() {
+        console.log('🔜 Browser Forward: navigating to next history entry');
+        const urlBefore = this.page.url();
+        await this.page.goForward({ waitUntil: 'domcontentloaded' });
+        // Wait for SPA to fully render the forward page so it's visually observable
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(5000);
+        console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
+    }
+
+    /**
+     * Refreshes the page. Uses Playwright's native reload so it correctly logs in traces.
+     * Includes a visual pause so the reloaded page is fully rendered and
+     * observable in headed mode before proceeding.
+     */
+    async browserRefresh() {
+        console.log('🔄 Browser Refresh: reloading page');
+        await this.page.reload({ waitUntil: 'domcontentloaded' });
+        // Wait for SPA to fully render the reloaded page so it's visually observable
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(5000);
+    }
 }

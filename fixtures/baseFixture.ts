@@ -3,6 +3,8 @@ import { SidebarPage } from '../pages/SidebarPage';
 import { BannerPage } from '../pages/BannerPage';
 import { TutorialPage } from '../pages/TutorialPage';
 import { CouponPage } from '../pages/CouponPage';
+import { CampaignPage } from '../pages/CampaignPage';
+import { CashbackPage } from '../pages/CashbackPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -15,11 +17,13 @@ type MyFixtures = {
     bannerPage: BannerPage;
     tutorialPage: TutorialPage;
     couponPage: CouponPage;
+    campaignPage: CampaignPage;
+    cashbackPage: CashbackPage;
 };
 
 // Extend basic test setup with page object initialization
 export const test = base.extend<MyFixtures>({
-    
+
     // Inject session storage before tests run
     authenticatedSession: [async ({ page }, use) => {
         const sessionPath = path.join(__dirname, '../session.json');
@@ -28,6 +32,9 @@ export const test = base.extend<MyFixtures>({
             await page.addInitScript((data) => {
                 if (window.location.hostname.includes('osiristrading.net') || window.location.hostname.includes('osiristrading.com')) {
                     for (const [key, value] of Object.entries(data)) {
+                        // Skip 'initialRoute' so the SPA router uses the current URL
+                        // path on reload instead of always redirecting to /main/home
+                        if (key === 'initialRoute') continue;
                         window.sessionStorage.setItem(key, value as string);
                     }
                 }
@@ -62,6 +69,18 @@ export const test = base.extend<MyFixtures>({
     couponPage: async ({ page, authenticatedSession }, use) => {
         const couponPage = new CouponPage(page);
         await use(couponPage);
+    },
+
+    // Instantiate and provide CampaignPage
+    campaignPage: async ({ page, authenticatedSession }, use) => {
+        const campaignPage = new CampaignPage(page);
+        await use(campaignPage);
+    },
+
+    // Instantiate and provide CashbackPage
+    cashbackPage: async ({ page, authenticatedSession }, use) => {
+        const cashbackPage = new CashbackPage(page);
+        await use(cashbackPage);
     }
 });
 

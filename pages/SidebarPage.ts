@@ -11,6 +11,8 @@ export class SidebarPage extends BasePage {
     readonly tutorialConfigNode: Locator;
     readonly compensationNode: Locator;
     readonly couponManagementNode: Locator;
+    readonly campaignNode: Locator;
+    readonly cashbackPromotionsNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -24,6 +26,8 @@ export class SidebarPage extends BasePage {
         this.tutorialConfigNode = this.page.getByText(sidebarLocators.menuTutorialConfig, { exact: true });
         this.compensationNode = this.page.getByText(sidebarLocators.menuCompensation, { exact: true });
         this.couponManagementNode = this.page.getByText(sidebarLocators.menuCouponManagement, { exact: true });
+        this.campaignNode = this.page.getByText(sidebarLocators.menuCampaign, { exact: true });
+        this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true });
     }
 
     /**
@@ -40,6 +44,23 @@ export class SidebarPage extends BasePage {
 
         await this.clickElement(this.bannerConfigNode);
         await this.clickElement(this.bannerConfigNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToCampaign() {
+        console.log('Navigating via Sidebar: Marketing -> Campaign Management');
+        // Utilize the parent BasePage generic click functionality
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.campaignNode);
+        await this.clickElement(this.campaignNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToCashbackPromotions() {
+        console.log('Navigating via Sidebar: Marketing -> Cashback Promotions');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.cashbackPromotionsNode);
+        await this.clickElement(this.cashbackPromotionsNode);
         await this.page.waitForLoadState('domcontentloaded');
     }
 
