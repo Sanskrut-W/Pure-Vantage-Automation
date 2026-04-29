@@ -2,6 +2,7 @@ import { test as base } from '@playwright/test';
 import { SidebarPage } from '../pages/SidebarPage';
 import { BannerPage } from '../pages/BannerPage';
 import { TutorialPage } from '../pages/TutorialPage';
+import { CouponPage } from '../pages/CouponPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,6 +14,7 @@ type MyFixtures = {
     sidebarPage: SidebarPage;
     bannerPage: BannerPage;
     tutorialPage: TutorialPage;
+    couponPage: CouponPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -54,6 +56,12 @@ export const test = base.extend<MyFixtures>({
     tutorialPage: async ({ page, authenticatedSession }, use) => {
         const tutorialPage = new TutorialPage(page);
         await use(tutorialPage);
+    },
+
+    // Instantiate and provide CouponPage
+    couponPage: async ({ page, authenticatedSession }, use) => {
+        const couponPage = new CouponPage(page);
+        await use(couponPage);
     }
 });
 

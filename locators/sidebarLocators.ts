@@ -5,5 +5,7 @@ export const sidebarLocators = {
     menuBannerConfig: 'Banner Config',
     menuBannerOrdering: 'Banner Ordering',
     menuTutorial: 'Tutorials',
-    menuTutorialConfig: 'Tutorial Configuration'
+    menuTutorialConfig: 'Tutorial Configuration',
+    menuCompensation: 'Compensation',
+    menuCouponManagement: 'Coupon Management'
 };
