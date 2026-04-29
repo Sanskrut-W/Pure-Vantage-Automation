@@ -2,6 +2,7 @@ import { test as base } from '@playwright/test';
 import { SidebarPage } from '../pages/SidebarPage';
 import { BannerPage } from '../pages/BannerPage';
 import { TutorialPage } from '../pages/TutorialPage';
+import { CouponPage } from '../pages/CouponPage';
 import { CampaignPage } from '../pages/CampaignPage';
 import { CashbackPage } from '../pages/CashbackPage';
 import fs from 'fs';
@@ -15,13 +16,14 @@ type MyFixtures = {
     sidebarPage: SidebarPage;
     bannerPage: BannerPage;
     tutorialPage: TutorialPage;
+    couponPage: CouponPage;
     campaignPage: CampaignPage;
     cashbackPage: CashbackPage;
 };
 
 // Extend basic test setup with page object initialization
 export const test = base.extend<MyFixtures>({
-    
+
     // Inject session storage before tests run
     authenticatedSession: [async ({ page }, use) => {
         const sessionPath = path.join(__dirname, '../session.json');
@@ -61,6 +63,12 @@ export const test = base.extend<MyFixtures>({
     tutorialPage: async ({ page, authenticatedSession }, use) => {
         const tutorialPage = new TutorialPage(page);
         await use(tutorialPage);
+    },
+
+    // Instantiate and provide CouponPage
+    couponPage: async ({ page, authenticatedSession }, use) => {
+        const couponPage = new CouponPage(page);
+        await use(couponPage);
     },
 
     // Instantiate and provide CampaignPage

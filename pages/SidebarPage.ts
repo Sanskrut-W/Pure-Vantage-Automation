@@ -9,6 +9,8 @@ export class SidebarPage extends BasePage {
     readonly bannerOrderingNode: Locator;
     readonly tutorialNode: Locator;
     readonly tutorialConfigNode: Locator;
+    readonly compensationNode: Locator;
+    readonly couponManagementNode: Locator;
     readonly campaignNode: Locator;
     readonly cashbackPromotionsNode: Locator;
 
@@ -22,6 +24,8 @@ export class SidebarPage extends BasePage {
         this.bannerOrderingNode = this.page.getByText(sidebarLocators.menuBannerOrdering, { exact: true });
         this.tutorialNode = this.page.getByText(sidebarLocators.menuTutorial, { exact: true });
         this.tutorialConfigNode = this.page.getByText(sidebarLocators.menuTutorialConfig, { exact: true });
+        this.compensationNode = this.page.getByText(sidebarLocators.menuCompensation, { exact: true });
+        this.couponManagementNode = this.page.getByText(sidebarLocators.menuCouponManagement, { exact: true });
         this.campaignNode = this.page.getByText(sidebarLocators.menuCampaign, { exact: true });
         this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true });
     }
@@ -88,6 +92,18 @@ export class SidebarPage extends BasePage {
 
         await this.clickElement(this.tutorialConfigNode);
         await this.clickElement(this.tutorialConfigNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToCouponManagement() {
+        console.log('Navigating via Sidebar: Compensation -> Coupon Management');
+
+        // Utilize the parent BasePage generic click functionality
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(2000); // Allow animation to expand
+
+        await this.clickElement(this.couponManagementNode);
+        await this.clickElement(this.couponManagementNode);
         await this.page.waitForLoadState('domcontentloaded');
     }
 }
