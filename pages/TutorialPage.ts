@@ -64,7 +64,7 @@ export class TutorialPage {
 
     async waitForPageLoad() {
         await this.page.waitForLoadState('networkidle');
-        await this.regionDropdown.waitFor({ state: 'visible', timeout: 15000 });
+        await this.regionDropdown.waitFor({ state: 'visible' });
     }
 
     async selectLandingRegion(regionName: string) {
@@ -77,7 +77,7 @@ export class TutorialPage {
 
     async clickCreateTutorial() {
         await this.createTutorialBtn.click({ force: true });
-        await this.popupDialog.waitFor({ state: 'visible', timeout: 5000 });
+        await this.popupDialog.waitFor({ state: 'visible' });
     }
 
     async searchForTutorial(text: string) {

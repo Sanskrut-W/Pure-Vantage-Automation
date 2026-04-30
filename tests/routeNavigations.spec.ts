@@ -282,12 +282,12 @@ test.describe('Marketing > Banner Management - Route Persistence Tests', () => {
         test('TC-9 Click Link Workflow, then verify URL persists after reload', async ({ page, sidebarPage, campaignPage }, testInfo) => {
             await expect(campaignPage.linkWorkflowBtn.first()).toBeVisible({ timeout: 15000 });
             await campaignPage.clickLinkWorkflowFirstCampaign();
-            
+
             const urlBeforeRefresh = page.url();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-9_step1_before_refresh');
-            
+
             await sidebarPage.browserRefresh();
-            
+
             expect(page.url()).toBe(urlBeforeRefresh);
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-9_step2_after_refresh');
         });
@@ -306,12 +306,12 @@ test.describe('Marketing > Banner Management - Route Persistence Tests', () => {
         test('TC-10 Click Details, then verify URL persists after reload', async ({ page, sidebarPage, campaignPage }, testInfo) => {
             await expect(campaignPage.detailsBtn.first()).toBeVisible({ timeout: 15000 });
             await campaignPage.clickDetailsFirstCampaign();
-            
+
             const urlBeforeRefresh = page.url();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-10_step1_before_refresh');
-            
+
             await sidebarPage.browserRefresh();
-            
+
             expect(page.url()).toBe(urlBeforeRefresh);
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-10_step2_after_refresh');
         });
@@ -330,12 +330,12 @@ test.describe('Marketing > Banner Management - Route Persistence Tests', () => {
         test('TC-11 Click Delete, then verify URL persists after reload', async ({ page, sidebarPage, campaignPage }, testInfo) => {
             await expect(campaignPage.deleteBtn.first()).toBeVisible({ timeout: 15000 });
             await campaignPage.clickDeleteFirstCampaign();
-            
+
             const urlBeforeRefresh = page.url();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-11_step1_before_refresh');
-            
+
             await sidebarPage.browserRefresh();
-            
+
             expect(page.url()).toBe(urlBeforeRefresh);
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-11_step2_after_refresh');
         });
@@ -415,6 +415,131 @@ test.describe('Marketing > Banner Management - Route Persistence Tests', () => {
             await sidebarPage.browserForward();
             expect(page.url()).toBe(urlAfterActions);
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-13b_step3_after_forward');
+        });
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  Coupon Management — Route Persistence on Refresh / Back / Forward
+    // ═══════════════════════════════════════════════════════════
+
+    test.describe('Coupon Management - Route Persistence', () => {
+
+        test.beforeEach(async ({ page, sidebarPage }) => {
+            await page.goto('/main/home');
+            await sidebarPage.waitForPageLoad();
+            await sidebarPage.navigateToCouponManagement();
+            await expect(page).toHaveURL(/.*coupon-management/);
+            await sidebarPage.waitForPageLoad();
+        });
+
+        test('TC-14 Navigate to Coupon Management and verify URL persists after reload', async ({ page, sidebarPage }, testInfo) => {
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14_step1_on_coupon');
+
+            const urlBeforeRefresh = page.url();
+            await sidebarPage.browserRefresh();
+
+            expect(page.url()).toBe(urlBeforeRefresh);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14_step2_after_refresh');
+        });
+
+        test('TC-14b Navigate to Coupon Management and verify URL persists after Back and Forward', async ({ page, sidebarPage }, testInfo) => {
+            const targetUrl = page.url();
+            const homeUrl = new URL('/main/home', page.url()).href;
+
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14b_step1_on_coupon');
+
+            await sidebarPage.browserBack();
+            expect(page.url()).toBe(homeUrl);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14b_step2_after_back');
+
+            await sidebarPage.browserForward();
+            expect(page.url()).toBe(targetUrl);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14b_step3_after_forward');
+        });
+
+        test('TC-15 Click Create Coupon, then verify URL persists after reload', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            await couponPage.clickCreate();
+
+            const urlBeforeRefresh = page.url();
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_step1_before_refresh');
+
+            await sidebarPage.browserRefresh();
+
+            expect(page.url()).toBe(urlBeforeRefresh);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_step2_after_refresh');
+        });
+
+        test('TC-15b Click Create Coupon, then verify URL persists after Back and Forward', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            await couponPage.clickCreate();
+            const urlAfterActions = page.url();
+
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15b_step1_after_actions');
+
+            await sidebarPage.browserBack();
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15b_step2_after_back');
+
+            await sidebarPage.browserForward();
+            expect(page.url()).toBe(urlAfterActions);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15b_step3_after_forward');
+        });
+
+        test('TC-16 Click Edit Coupon, then verify URL persists after reload', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickEditForRow(0);
+                const urlBeforeRefresh = page.url();
+                await sidebarPage.browserRefresh();
+                expect(page.url()).toBe(urlBeforeRefresh);
+            } else {
+                console.log('Skipping TC-16: No rows available to edit.');
+            }
+        });
+
+        test('TC-16b Click Edit Coupon, then verify URL persists after Back and Forward', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickEditForRow(0);
+                const urlAfterActions = page.url();
+                await sidebarPage.browserBack();
+                await sidebarPage.browserForward();
+                expect(page.url()).toBe(urlAfterActions);
+            }
+        });
+
+        test('TC-17 Click Delete Coupon, then verify URL persists after reload', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickDeleteForRow(0);
+                const urlBeforeRefresh = page.url();
+                await sidebarPage.browserRefresh();
+                expect(page.url()).toBe(urlBeforeRefresh);
+            }
+        });
+
+        test('TC-17b Click Delete Coupon, then verify URL persists after Back and Forward', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickDeleteForRow(0);
+                const urlAfterActions = page.url();
+                await sidebarPage.browserBack();
+                await sidebarPage.browserForward();
+                expect(page.url()).toBe(urlAfterActions);
+            }
+        });
+
+        test('TC-18 Click Ellipsis Menu, then verify URL persists after reload', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickEllipsisMenuForRow(0);
+                const urlBeforeRefresh = page.url();
+                await sidebarPage.browserRefresh();
+                expect(page.url()).toBe(urlBeforeRefresh);
+            }
+        });
+
+        test('TC-18b Click Ellipsis Menu, then verify URL persists after Back and Forward', async ({ page, sidebarPage, couponPage }, testInfo) => {
+            if (await couponPage.getTableRowCount() > 0) {
+                await couponPage.clickEllipsisMenuForRow(0);
+                const urlAfterActions = page.url();
+                await sidebarPage.browserBack();
+                await sidebarPage.browserForward();
+                expect(page.url()).toBe(urlAfterActions);
+            }
         });
     });
 

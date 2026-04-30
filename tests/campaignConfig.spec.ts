@@ -19,7 +19,7 @@ test.describe('Campaign Management Action Buttons Tests', () => {
 
     test('TC-1 Verify Edit Campaign Button Functionality', async ({ page, campaignPage }, testInfo) => {
         // Ensure there is at least one edit button available to click
-        await expect(campaignPage.editBtn.first()).toBeVisible({ timeout: 15000 });
+        await expect(campaignPage.editBtn.first()).toBeVisible();
         
         await campaignPage.clickEditFirstCampaign();
 
@@ -32,7 +32,7 @@ test.describe('Campaign Management Action Buttons Tests', () => {
     });
 
     test('TC-2 Verify Link Workflow Button Functionality', async ({ page, campaignPage }, testInfo) => {
-        await expect(campaignPage.linkWorkflowBtn.first()).toBeVisible({ timeout: 15000 });
+        await expect(campaignPage.linkWorkflowBtn.first()).toBeVisible();
         
         await campaignPage.clickLinkWorkflowFirstCampaign();
 
@@ -41,7 +41,7 @@ test.describe('Campaign Management Action Buttons Tests', () => {
     });
 
     test('TC-3 Verify Details Button Functionality', async ({ page, campaignPage }, testInfo) => {
-        await expect(campaignPage.detailsBtn.first()).toBeVisible({ timeout: 15000 });
+        await expect(campaignPage.detailsBtn.first()).toBeVisible();
         
         await campaignPage.clickDetailsFirstCampaign();
 
@@ -50,7 +50,7 @@ test.describe('Campaign Management Action Buttons Tests', () => {
     });
 
     test('TC-4 Verify Delete Campaign Button Functionality', async ({ page, campaignPage }, testInfo) => {
-        await expect(campaignPage.deleteBtn.first()).toBeVisible({ timeout: 15000 });
+        await expect(campaignPage.deleteBtn.first()).toBeVisible();
         
         await campaignPage.clickDeleteFirstCampaign();
 

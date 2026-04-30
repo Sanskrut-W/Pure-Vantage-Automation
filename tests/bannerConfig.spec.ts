@@ -14,7 +14,7 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
         await bannerPage.waitForPageLoad();
     });
 
-    test('TC-1 Navigate to Banner Config and click Create Banner @smoke', async ({ page, bannerPage }, testInfo) => {
+    test('TC-1 Navigate to Banner Config and Create Banner @smoke', async ({ page, bannerPage }, testInfo) => {
         await bannerPage.createBanner();
 
         // Take a screenshot and automatically attach it to the HTML report
@@ -52,7 +52,7 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
         await bannerPage.selectRegion('Betway Ghana');
         await bannerPage.clickCreateBanner();
         const dialog = bannerPage.page.locator('.p-dialog, .p-sidebar, [role="dialog"]');
-        await expect(dialog).toBeVisible({ timeout: 10000 });
+        await expect(dialog).toBeVisible();
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_create_banner');
     });
 

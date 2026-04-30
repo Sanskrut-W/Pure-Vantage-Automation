@@ -58,9 +58,9 @@ export class CouponPage extends BasePage {
         this.selectRequirementTypeDropdown = page.locator(couponLocators.selectRequirementTypeDropdown);
         this.createBtn = page.getByRole('button', { name: couponLocators.createBtn });
         this.couponTable = page.locator(couponLocators.couponTable);
-        this.deleteBtn = page.locator(couponLocators.deleteBtn);
-        this.editBtn = page.locator(couponLocators.editBtn);
-        this.ellipsisMenuBtn = page.locator(couponLocators.ellipsisMenuBtn);
+        this.deleteBtn = page.getByRole('button', { name: couponLocators.buttonDelete, exact: true });
+        this.editBtn = page.getByRole('button', { name: couponLocators.buttonEdit, exact: true });
+        this.ellipsisMenuBtn = page.getByRole('button', { name: couponLocators.buttonOptions, exact: true });
         this.paginatorNext = page.locator(couponLocators.paginatorNext);
         this.paginatorPrev = page.locator(couponLocators.paginatorPrev);
         this.paginatorPages = page.locator(couponLocators.paginatorPages);
@@ -144,21 +144,18 @@ export class CouponPage extends BasePage {
 
     async clickDeleteForRow(rowIndex: number) {
         console.log(`Clicking Delete button for row ${rowIndex}...`);
-        const deleteButton = this.couponTable.locator('tbody tr').nth(rowIndex).locator(couponLocators.deleteBtn);
-        await this.clickElement(deleteButton);
+        await this.clickElement(this.deleteBtn.nth(rowIndex));
     }
 
     async clickEditForRow(rowIndex: number) {
         console.log(`Clicking Edit button for row ${rowIndex}...`);
-        const editButton = this.couponTable.locator('tbody tr').nth(rowIndex).locator(couponLocators.editBtn);
-        await this.clickElement(editButton);
+        await this.clickElement(this.editBtn.nth(rowIndex));
         await this.popupDialog.waitFor({ state: 'visible', timeout: 10000 });
     }
 
     async clickEllipsisMenuForRow(rowIndex: number) {
         console.log(`Clicking Ellipsis Menu for row ${rowIndex}...`);
-        const ellipsisButton = this.couponTable.locator('tbody tr').nth(rowIndex).locator(couponLocators.ellipsisMenuBtn);
-        await this.clickElement(ellipsisButton);
+        await this.clickElement(this.ellipsisMenuBtn.nth(rowIndex));
         await this.page.waitForTimeout(500);
     }
 

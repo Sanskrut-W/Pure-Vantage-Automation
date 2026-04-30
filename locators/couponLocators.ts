@@ -22,9 +22,9 @@ export const couponLocators = {
     columnEditedBy: 'Edited by',
 
     // Row Action Buttons
-    deleteBtn: 'button.p-button-rounded.p-button-danger:has(.pi-trash), button[aria-label="Delete"]',
-    editBtn: 'button.p-button-rounded.p-button-success:has(.pi-pencil), button[aria-label="Edit"]',
-    ellipsisMenuBtn: 'button.p-button-rounded:has(.pi-ellipsis-v), button[aria-label="Options"]',
+    buttonDelete: 'Delete',
+    buttonEdit: 'Edit',
+    buttonOptions: 'Options',
 
     // Ellipsis Menu Options
     menuOptionEdit: 'Edit',

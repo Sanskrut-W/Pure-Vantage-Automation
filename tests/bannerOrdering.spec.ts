@@ -25,7 +25,7 @@ test.describe('Banner Ordering Tests', () => {
 
     test('TC-2 Verify Search bar and Region Filter are available', async ({ bannerPage, page }, testInfo) => {
         try {
-            await expect(bannerPage.orderingSearchInput).toBeVisible({ timeout: 20000 });
+            await expect(bannerPage.orderingSearchInput).toBeVisible();
             await expect(bannerPage.orderingRegionDropdown).toBeVisible();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_banner_ordering_page');
         } catch (e) {

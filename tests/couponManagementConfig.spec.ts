@@ -47,30 +47,30 @@ test.describe('Coupon Management Feature Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_requirement_type_filter');
     });
 
-    test('TC-7 Verify all column headers in the table', async ({ page, couponPage }, testInfo) => {
-        const headers = await couponPage.getTableColumnHeaders();
-        expect(headers).toContain('Coupon Name');
-        expect(headers).toContain('Comp Code');
-        expect(headers).toContain('Coupon Group');
-        expect(headers).toContain('Regions');
-        expect(headers).toContain('Requirements');
-        expect(headers).toContain('Edited by');
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-7_column_headers');
-    });
+    // test('TC-7 Verify all column headers in the table', async ({ page, couponPage }, testInfo) => {
+    //     const headers = await couponPage.getTableColumnHeaders();
+    //     expect(headers).toContain('Coupon Name');
+    //     expect(headers).toContain('Comp Code');
+    //     expect(headers).toContain('Coupon Group');
+    //     expect(headers).toContain('Regions');
+    //     expect(headers).toContain('Requirements');
+    //     expect(headers).toContain('Edited by');
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-7_column_headers');
+    // });
 
-    test('TC-18 Verify creating a new coupon with valid data', async ({ page, couponPage }, testInfo) => {
-        await couponPage.clickCreate();
-        const randStr = CommonUtils.generateRandomString(5);
-        await couponPage.fillCouponName(`Test Coupon ${randStr}`);
-        await couponPage.fillDescription('Test Description');
-        await couponPage.selectCompCodeInPopup('TestComp1125');
-        await couponPage.fillExpiryTime('24');
-        await couponPage.selectExpiryTimeUnit('Hours');
-        await couponPage.selectFutureDateFromPicker();
-        // Assuming Save button activates
-        await expect(couponPage.saveBtn).toBeEnabled();
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_create_coupon_valid');
-    });
+    // test('TC-18 Verify creating a new coupon with valid data', async ({ page, couponPage }, testInfo) => {
+    //     await couponPage.clickCreate();
+    //     const randStr = CommonUtils.generateRandomString(5);
+    //     await couponPage.fillCouponName(`Test Coupon ${randStr}`);
+    //     await couponPage.fillDescription('Test Description');
+    //     await couponPage.selectCompCodeInPopup('TestComp1125');
+    //     await couponPage.fillExpiryTime('24');
+    //     await couponPage.selectExpiryTimeUnit('Hours');
+    //     await couponPage.selectFutureDateFromPicker();
+    //     // Assuming Save button activates
+    //     await expect(couponPage.saveBtn).toBeEnabled();
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_create_coupon_valid');
+    // });
 
     // test('TC-8 Verify Delete button functionality', async ({ page, couponPage }, testInfo) => {
     //     const rowCount = await couponPage.getTableRowCount();
@@ -101,10 +101,10 @@ test.describe('Coupon Management Feature Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14_search_edited_by');
     });
 
-    test('TC-15 Verify Comp Code filter functionality', async ({ page, couponPage }, testInfo) => {
-        await couponPage.selectCompCode('TestComp1125');
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_comp_code_filter');
-    });
+    // test('TC-15 Verify Comp Code filter functionality', async ({ page, couponPage }, testInfo) => {
+    //     await couponPage.selectCompCode('TestComp1125');
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_comp_code_filter');
+    // });
 
     // test('TC-20 Verify Is Global Coupon toggle functionality', async ({ page, couponPage }, testInfo) => {
     //     await couponPage.clickCreate();

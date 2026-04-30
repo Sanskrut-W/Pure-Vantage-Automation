@@ -69,7 +69,7 @@ export class BannerPage extends BasePage {
     async clickEditFirstBanner() {
         console.log('Clicking Edit on first banner row...');
         const editButton = this.page.locator('.p-datatable tbody tr').first().getByRole('button', { name: /edit/i });
-        await editButton.waitFor({ state: 'visible', timeout: 20000 });
+        await editButton.waitFor({ state: 'visible' });
         await this.clickElement(editButton);
         await this.page.waitForLoadState('domcontentloaded');
     }
@@ -281,7 +281,7 @@ export class BannerPage extends BasePage {
             // Target the input directly and use force: true to pierce the pointer-events intercept layer
             await this.clickElement(toggleContainer.locator('input'), { force: true });
             // Implicit UI validation that it switched to prevent false positives and test flakes
-            await expect(toggleContainer).toHaveAttribute('aria-checked', targetState.toString(), { timeout: 10000 });
+            await expect(toggleContainer).toHaveAttribute('aria-checked', targetState.toString());
             await this.page.waitForTimeout(1000); // Allow list shift/api to stabilize
         } else {
             console.log(`Banner '${bannerName}' ${type} is already ${targetState}`);
@@ -294,7 +294,7 @@ export class BannerPage extends BasePage {
         // Wait for SPA reactivity to dynamically render rows after picking the Region dropdown.
         // It catches errors gracefully if the API responds that the table is completely empty on the server.
         try {
-            await table.locator('tbody tr').first().waitFor({ state: 'visible', timeout: 5000 });
+            await table.locator('tbody tr').first().waitFor({ state: 'visible' });
         } catch (e) {
             console.log(`No rows populated in ${listType} list after 5 network seconds.`);
         }

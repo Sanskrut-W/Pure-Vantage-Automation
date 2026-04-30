@@ -38,9 +38,9 @@ export class SidebarPage extends BasePage {
 
         // Utilize the parent BasePage generic click functionality
         await this.clickElement(this.marketingNode);
-        // await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(5000);
         await this.clickElement(this.bannerManagementNode);
-        // await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(5000);
 
         await this.clickElement(this.bannerConfigNode);
         await this.clickElement(this.bannerConfigNode);
@@ -97,10 +97,10 @@ export class SidebarPage extends BasePage {
 
     async navigateToCouponManagement() {
         console.log('Navigating via Sidebar: Compensation -> Coupon Management');
-
-        // Utilize the parent BasePage generic click functionality
         await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(2000); // Allow animation to expand
+        // Utilize the parent BasePage generic click functionality
+        // await this.clickElement(this.compensationNode);
+        // await this.page.waitForTimeout(2000); // Allow animation to expand
 
         await this.clickElement(this.couponManagementNode);
         await this.clickElement(this.couponManagementNode);
