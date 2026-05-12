@@ -5,6 +5,15 @@ import { TutorialPage } from '../pages/TutorialPage';
 import { CouponPage } from '../pages/CouponPage';
 import { CampaignPage } from '../pages/CampaignPage';
 import { CashbackPage } from '../pages/CashbackPage';
+import { EventCalendarPage } from '../pages/EventCalendarPage';
+import { FanExclusivePage } from '../pages/FanExclusivePage';
+import { LeaderboardPage } from '../pages/LeaderboardPage';
+import { LoyaltyPromotionsPage } from '../pages/LoyaltyPromotionsPage';
+import { SegmentSchedulePage } from '../pages/SegmentSchedulePage';
+import { SegmentationPage } from '../pages/SegmentationPage';
+import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
+import { ToastConfigPage } from '../pages/ToastConfigPage';
+import { GenericWheelPage } from '../pages/GenericWheelPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,6 +28,15 @@ type MyFixtures = {
     couponPage: CouponPage;
     campaignPage: CampaignPage;
     cashbackPage: CashbackPage;
+    eventCalendarPage: EventCalendarPage;
+    fanExclusivePage: FanExclusivePage;
+    leaderboardPage: LeaderboardPage;
+    loyaltyPromotionsPage: LoyaltyPromotionsPage;
+    segmentSchedulePage: SegmentSchedulePage;
+    segmentationPage: SegmentationPage;
+    telegramLeaderboardPage: TelegramLeaderboardPage;
+    toastConfigPage: ToastConfigPage;
+    genericWheelPage: GenericWheelPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -81,6 +99,60 @@ export const test = base.extend<MyFixtures>({
     cashbackPage: async ({ page, authenticatedSession }, use) => {
         const cashbackPage = new CashbackPage(page);
         await use(cashbackPage);
+    },
+
+    // Instantiate and provide EventCalendarPage
+    eventCalendarPage: async ({ page, authenticatedSession }, use) => {
+        const eventCalendarPage = new EventCalendarPage(page);
+        await use(eventCalendarPage);
+    },
+
+    // Instantiate and provide FanExclusivePage
+    fanExclusivePage: async ({ page, authenticatedSession }, use) => {
+        const fanExclusivePage = new FanExclusivePage(page);
+        await use(fanExclusivePage);
+    },
+
+    // Instantiate and provide LeaderboardPage
+    leaderboardPage: async ({ page, authenticatedSession }, use) => {
+        const leaderboardPage = new LeaderboardPage(page);
+        await use(leaderboardPage);
+    },
+
+    // Instantiate and provide LoyaltyPromotionsPage
+    loyaltyPromotionsPage: async ({ page, authenticatedSession }, use) => {
+        const loyaltyPromotionsPage = new LoyaltyPromotionsPage(page);
+        await use(loyaltyPromotionsPage);
+    },
+
+    // Instantiate and provide SegmentSchedulePage
+    segmentSchedulePage: async ({ page, authenticatedSession }, use) => {
+        const segmentSchedulePage = new SegmentSchedulePage(page);
+        await use(segmentSchedulePage);
+    },
+
+    // Instantiate and provide SegmentationPage
+    segmentationPage: async ({ page, authenticatedSession }, use) => {
+        const segmentationPage = new SegmentationPage(page);
+        await use(segmentationPage);
+    },
+
+    // Instantiate and provide TelegramLeaderboardPage
+    telegramLeaderboardPage: async ({ page, authenticatedSession }, use) => {
+        const telegramLeaderboardPage = new TelegramLeaderboardPage(page);
+        await use(telegramLeaderboardPage);
+    },
+
+    // Instantiate and provide ToastConfigPage
+    toastConfigPage: async ({ page, authenticatedSession }, use) => {
+        const toastConfigPage = new ToastConfigPage(page);
+        await use(toastConfigPage);
+    },
+
+    // Instantiate and provide GenericWheelPage
+    genericWheelPage: async ({ page, authenticatedSession }, use) => {
+        const genericWheelPage = new GenericWheelPage(page);
+        await use(genericWheelPage);
     }
 });
 

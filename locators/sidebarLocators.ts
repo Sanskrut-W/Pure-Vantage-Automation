@@ -9,5 +9,15 @@ export const sidebarLocators = {
     menuCompensation: 'Compensation',
     menuCouponManagement: 'Coupon Management',
     menuCampaign: 'Campaign',
-    menuCashbackPromotions: 'Cashback Promotions'
+    menuCashbackPromotions: 'Cashback Promotions',
+    menuEventCalendar: 'Event Calender',
+    menuFanExclusive: 'Fan Exclusive',
+    menuLeaderboard: 'Leaderboard',
+    menuLoyaltyPromotions: 'Loyalty Promotions',
+    menuSegmentSchedule: 'Segment Schedule',
+    menuSegmentation: 'Segmentation',
+    menuTelegramLeaderboard: 'Telegram Leaderboard',
+    menuToastConfig: 'Toast Configuration',
+    menuPromotions: 'Promotions',
+    menuGenericWheel: 'Generic Wheel'
 };

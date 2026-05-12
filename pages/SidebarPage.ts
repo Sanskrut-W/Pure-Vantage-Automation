@@ -13,6 +13,16 @@ export class SidebarPage extends BasePage {
     readonly couponManagementNode: Locator;
     readonly campaignNode: Locator;
     readonly cashbackPromotionsNode: Locator;
+    readonly eventCalendarNode: Locator;
+    readonly fanExclusiveNode: Locator;
+    readonly leaderboardNode: Locator;
+    readonly loyaltyPromotionsNode: Locator;
+    readonly segmentScheduleNode: Locator;
+    readonly segmentationNode: Locator;
+    readonly telegramLeaderboardNode: Locator;
+    readonly toastConfigNode: Locator;
+    readonly promotionsNode: Locator;
+    readonly genericWheelNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -28,6 +38,16 @@ export class SidebarPage extends BasePage {
         this.couponManagementNode = this.page.getByText(sidebarLocators.menuCouponManagement, { exact: true });
         this.campaignNode = this.page.getByText(sidebarLocators.menuCampaign, { exact: true });
         this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true });
+        this.eventCalendarNode = this.page.getByText(sidebarLocators.menuEventCalendar, { exact: true });
+        this.fanExclusiveNode = this.page.getByText(sidebarLocators.menuFanExclusive, { exact: true });
+        this.leaderboardNode = this.page.getByText(sidebarLocators.menuLeaderboard, { exact: true });
+        this.loyaltyPromotionsNode = this.page.getByText(sidebarLocators.menuLoyaltyPromotions, { exact: true });
+        this.segmentScheduleNode = this.page.getByText(sidebarLocators.menuSegmentSchedule, { exact: true });
+        this.segmentationNode = this.page.getByText(sidebarLocators.menuSegmentation, { exact: true });
+        this.telegramLeaderboardNode = this.page.getByText(sidebarLocators.menuTelegramLeaderboard, { exact: true });
+        this.toastConfigNode = this.page.getByText(sidebarLocators.menuToastConfig, { exact: true });
+        this.promotionsNode = this.page.getByText(sidebarLocators.menuPromotions, { exact: true });
+        this.genericWheelNode = this.page.getByText(sidebarLocators.menuGenericWheel, { exact: true });
     }
 
     /**
@@ -104,6 +124,87 @@ export class SidebarPage extends BasePage {
 
         await this.clickElement(this.couponManagementNode);
         await this.clickElement(this.couponManagementNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToEventCalendar() {
+        console.log('Navigating via Sidebar: Marketing -> Event Calendar');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.eventCalendarNode);
+        await this.clickElement(this.eventCalendarNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToFanExclusive() {
+        console.log('Navigating via Sidebar: Marketing -> Fan Exclusive');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.fanExclusiveNode);
+        await this.clickElement(this.fanExclusiveNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToLeaderboard() {
+        console.log('Navigating via Sidebar: Marketing -> Leaderboard');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.leaderboardNode);
+        await this.clickElement(this.leaderboardNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToLoyaltyPromotions() {
+        console.log('Navigating via Sidebar: Marketing -> Loyalty Promotions');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.loyaltyPromotionsNode);
+        await this.clickElement(this.loyaltyPromotionsNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToSegmentSchedule() {
+        console.log('Navigating via Sidebar: Marketing -> Segment Schedule');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.segmentScheduleNode);
+        await this.clickElement(this.segmentScheduleNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToSegmentation() {
+        console.log('Navigating via Sidebar: Marketing -> Segmentation');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.segmentationNode);
+        await this.clickElement(this.segmentationNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToTelegramLeaderboard() {
+        console.log('Navigating via Sidebar: Marketing -> Telegram Leaderboard');
+        await this.clickElement(this.marketingNode);
+        await this.clickElement(this.telegramLeaderboardNode);
+        await this.clickElement(this.telegramLeaderboardNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToToastConfig() {
+        console.log('Navigating via Sidebar: Marketing -> Toast Configuration');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for the menu to fully expand
+        await this.toastConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.toastConfigNode, { force: true });
+        await this.page.waitForTimeout(500);
+        await this.clickElement(this.toastConfigNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToGenericWheel() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Generic Wheel');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(1000); // Wait for Promotions menu to fully expand
+        await this.genericWheelNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.genericWheelNode, { force: true });
+        await this.page.waitForTimeout(500);
+        await this.clickElement(this.genericWheelNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 }

@@ -20,10 +20,10 @@ export class BasePage {
      */
     async clickElement(locator: Locator, options?: { force?: boolean }) {
         await locator.waitFor({ state: 'visible' });
-        
+
         // Magically highlight EVERY element right before clicking without repeating code
         await CommonUtils.highlightElement(locator);
-        
+
         await locator.click(options);
         await this.waitForPageLoad();
     }
@@ -33,10 +33,10 @@ export class BasePage {
      */
     async fillInput(locator: Locator, value: string) {
         await locator.waitFor({ state: 'visible' });
-        
+
         // Magically highlight EVERY input field right before typing
         await CommonUtils.highlightElement(locator);
-        
+
         await locator.fill(value);
     }
 
@@ -62,7 +62,7 @@ export class BasePage {
         await this.page.goBack({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the previous page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(8000);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -77,7 +77,7 @@ export class BasePage {
         await this.page.goForward({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the forward page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(8000);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -91,6 +91,6 @@ export class BasePage {
         await this.page.reload({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the reloaded page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(8000);
     }
 }

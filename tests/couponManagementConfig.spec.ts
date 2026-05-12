@@ -1,4 +1,4 @@
-// npx playwright test tests/CompConfig.spec.ts --headed
+// npx playwright test tests/couponManagementConfig.spec.ts --headed
 import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
 
