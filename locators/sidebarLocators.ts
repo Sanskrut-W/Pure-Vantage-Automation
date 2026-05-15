@@ -19,5 +19,14 @@ export const sidebarLocators = {
     menuTelegramLeaderboard: 'Telegram Leaderboard',
     menuToastConfig: 'Toast Configuration',
     menuPromotions: 'Promotions',
-    menuGenericWheel: 'Generic Wheel'
+    menuGenericWheel: 'Generic Wheel',
+    menuPromotionConfig: 'Promotion Config',
+    menuPromotionOrdering: 'Promotions Ordering',
+    menuScratchAndWin: 'Scratch and Win',
+    menuTimedPromotions: 'Timed Promotions',
+    menuTagManagement: 'Tag Management',
+    menuPlayerTagging: 'Player Tagging',
+    menuPlayerTaggingLogs: 'Player Tagging Logs',
+    menuSegmentTagging: 'Segment Tagging',
+    menuTagConfig: 'Tag Configuration'
 };

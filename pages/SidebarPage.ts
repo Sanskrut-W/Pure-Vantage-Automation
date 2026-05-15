@@ -23,6 +23,15 @@ export class SidebarPage extends BasePage {
     readonly toastConfigNode: Locator;
     readonly promotionsNode: Locator;
     readonly genericWheelNode: Locator;
+    readonly promotionConfigNode: Locator;
+    readonly promotionOrderingNode: Locator;
+    readonly scratchAndWinNode: Locator;
+    readonly timedPromotionsNode: Locator;
+    readonly tagManagementNode: Locator;
+    readonly playerTaggingNode: Locator;
+    readonly playerTaggingLogsNode: Locator;
+    readonly segmentTaggingNode: Locator;
+    readonly tagConfigNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -48,6 +57,15 @@ export class SidebarPage extends BasePage {
         this.toastConfigNode = this.page.getByText(sidebarLocators.menuToastConfig, { exact: true });
         this.promotionsNode = this.page.getByText(sidebarLocators.menuPromotions, { exact: true });
         this.genericWheelNode = this.page.getByText(sidebarLocators.menuGenericWheel, { exact: true });
+        this.promotionConfigNode = this.page.getByText(sidebarLocators.menuPromotionConfig, { exact: true });
+        this.promotionOrderingNode = this.page.getByText(sidebarLocators.menuPromotionOrdering, { exact: false });
+        this.scratchAndWinNode = this.page.getByText(sidebarLocators.menuScratchAndWin, { exact: true });
+        this.timedPromotionsNode = this.page.getByText(sidebarLocators.menuTimedPromotions, { exact: true });
+        this.tagManagementNode = this.page.getByText(sidebarLocators.menuTagManagement, { exact: true });
+        this.playerTaggingNode = this.page.getByText(sidebarLocators.menuPlayerTagging, { exact: true });
+        this.playerTaggingLogsNode = this.page.getByText(sidebarLocators.menuPlayerTaggingLogs, { exact: true });
+        this.segmentTaggingNode = this.page.getByText(sidebarLocators.menuSegmentTagging, { exact: true });
+        this.tagConfigNode = this.page.getByText(sidebarLocators.menuTagConfig, { exact: true });
     }
 
     /**
@@ -58,9 +76,9 @@ export class SidebarPage extends BasePage {
 
         // Utilize the parent BasePage generic click functionality
         await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(3000);
         await this.clickElement(this.bannerManagementNode);
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(3000);
 
         await this.clickElement(this.bannerConfigNode);
         await this.clickElement(this.bannerConfigNode);
@@ -205,6 +223,104 @@ export class SidebarPage extends BasePage {
         await this.clickElement(this.genericWheelNode, { force: true });
         await this.page.waitForTimeout(500);
         await this.clickElement(this.genericWheelNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToPromotionConfig() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Promotion Config');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(1000); // Wait for Promotions menu to fully expand
+        await this.promotionConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionConfigNode, { force: true });
+        await this.page.waitForTimeout(500);
+        await this.clickElement(this.promotionConfigNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToPromotionOrdering() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Promotion Ordering');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(1000); // Wait for Promotions menu to fully expand
+        await this.promotionOrderingNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionOrderingNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToScratchAndWin() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Scratch And Win Management');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(1000); // Wait for Promotions menu to fully expand
+        await this.scratchAndWinNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.scratchAndWinNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToTimedPromotions() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Timed Promotions');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(1000); // Wait for Promotions menu to fully expand
+        await this.timedPromotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.timedPromotionsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToPlayerTagging() {
+        console.log('Navigating via Sidebar: Marketing -> Tag Management -> Player Tagging');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.tagManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tagManagementNode);
+        await this.page.waitForTimeout(1000); // Wait for Tag Management menu to fully expand
+        await this.playerTaggingNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.playerTaggingNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToPlayerTaggingLogs() {
+        console.log('Navigating via Sidebar: Marketing -> Tag Management -> Player Tagging Logs');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.tagManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tagManagementNode);
+        await this.page.waitForTimeout(1000); // Wait for Tag Management menu to fully expand
+        await this.playerTaggingLogsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.playerTaggingLogsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToSegmentTagging() {
+        console.log('Navigating via Sidebar: Marketing -> Tag Management -> Segment Tagging');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.tagManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tagManagementNode);
+        await this.page.waitForTimeout(1000); // Wait for Tag Management menu to fully expand
+        await this.segmentTaggingNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.segmentTaggingNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToTagConfig() {
+        console.log('Navigating via Sidebar: Marketing -> Tag Management -> Tag Configuration');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(1000); // Wait for Marketing menu to fully expand
+        await this.tagManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tagManagementNode);
+        await this.page.waitForTimeout(1000); // Wait for Tag Management menu to fully expand
+        await this.tagConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tagConfigNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 }

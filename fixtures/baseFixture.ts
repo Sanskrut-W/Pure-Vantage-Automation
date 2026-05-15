@@ -14,6 +14,14 @@ import { SegmentationPage } from '../pages/SegmentationPage';
 import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
 import { ToastConfigPage } from '../pages/ToastConfigPage';
 import { GenericWheelPage } from '../pages/GenericWheelPage';
+import { PromotionConfigPage } from '../pages/PromotionConfigPage';
+import { PromotionOrderingPage } from '../pages/PromotionOrderingPage';
+import { ScratchAndWinPage } from '../pages/ScratchAndWinPage';
+import { TimedPromotionsPage } from '../pages/TimedPromotionsPage';
+import { PlayerTaggingPage } from '../pages/PlayerTaggingPage';
+import { PlayerTaggingLogsPage } from '../pages/PlayerTaggingLogsPage';
+import { SegmentTaggingPage } from '../pages/SegmentTaggingPage';
+import { TagConfigPage } from '../pages/TagConfigPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -37,6 +45,14 @@ type MyFixtures = {
     telegramLeaderboardPage: TelegramLeaderboardPage;
     toastConfigPage: ToastConfigPage;
     genericWheelPage: GenericWheelPage;
+    promotionConfigPage: PromotionConfigPage;
+    promotionOrderingPage: PromotionOrderingPage;
+    scratchAndWinPage: ScratchAndWinPage;
+    timedPromotionsPage: TimedPromotionsPage;
+    playerTaggingPage: PlayerTaggingPage;
+    playerTaggingLogsPage: PlayerTaggingLogsPage;
+    segmentTaggingPage: SegmentTaggingPage;
+    tagConfigPage: TagConfigPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -153,6 +169,54 @@ export const test = base.extend<MyFixtures>({
     genericWheelPage: async ({ page, authenticatedSession }, use) => {
         const genericWheelPage = new GenericWheelPage(page);
         await use(genericWheelPage);
+    },
+
+    // Instantiate and provide PromotionConfigPage
+    promotionConfigPage: async ({ page, authenticatedSession }, use) => {
+        const promotionConfigPage = new PromotionConfigPage(page);
+        await use(promotionConfigPage);
+    },
+
+    // Instantiate and provide PromotionOrderingPage
+    promotionOrderingPage: async ({ page, authenticatedSession }, use) => {
+        const promotionOrderingPage = new PromotionOrderingPage(page);
+        await use(promotionOrderingPage);
+    },
+
+    // Instantiate and provide ScratchAndWinPage
+    scratchAndWinPage: async ({ page, authenticatedSession }, use) => {
+        const scratchAndWinPage = new ScratchAndWinPage(page);
+        await use(scratchAndWinPage);
+    },
+
+    // Instantiate and provide TimedPromotionsPage
+    timedPromotionsPage: async ({ page, authenticatedSession }, use) => {
+        const timedPromotionsPage = new TimedPromotionsPage(page);
+        await use(timedPromotionsPage);
+    },
+
+    // Instantiate and provide PlayerTaggingPage
+    playerTaggingPage: async ({ page, authenticatedSession }, use) => {
+        const playerTaggingPage = new PlayerTaggingPage(page);
+        await use(playerTaggingPage);
+    },
+
+    // Instantiate and provide PlayerTaggingLogsPage
+    playerTaggingLogsPage: async ({ page, authenticatedSession }, use) => {
+        const playerTaggingLogsPage = new PlayerTaggingLogsPage(page);
+        await use(playerTaggingLogsPage);
+    },
+
+    // Instantiate and provide SegmentTaggingPage
+    segmentTaggingPage: async ({ page, authenticatedSession }, use) => {
+        const segmentTaggingPage = new SegmentTaggingPage(page);
+        await use(segmentTaggingPage);
+    },
+
+    // Instantiate and provide TagConfigPage
+    tagConfigPage: async ({ page, authenticatedSession }, use) => {
+        const tagConfigPage = new TagConfigPage(page);
+        await use(tagConfigPage);
     }
 });
 
