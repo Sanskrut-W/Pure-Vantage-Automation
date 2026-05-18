@@ -62,7 +62,7 @@ export class BasePage {
         await this.page.goBack({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the previous page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(1500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -77,7 +77,7 @@ export class BasePage {
         await this.page.goForward({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the forward page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(1500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -91,6 +91,6 @@ export class BasePage {
         await this.page.reload({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the reloaded page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(8000);
+        await this.page.waitForTimeout(1500);
     }
 }

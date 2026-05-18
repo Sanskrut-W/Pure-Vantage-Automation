@@ -28,5 +28,16 @@ export const sidebarLocators = {
     menuPlayerTagging: 'Player Tagging',
     menuPlayerTaggingLogs: 'Player Tagging Logs',
     menuSegmentTagging: 'Segment Tagging',
-    menuTagConfig: 'Tag Configuration'
+    menuTagConfig: 'Tag Configuration',
+    menuTutorialOrdering: 'Tutorial Ordering',
+    menuMarketingComps: 'Marketing Comps',
+    menuCompAlerts: 'Comp Alerts',
+    menuCompsBulk: 'Comp Bulk',
+    menuCompConfig: 'Comp Config',
+    menuManualComps: 'Manual Comps',
+    menuTransactionTypes: 'Transaction Types',
+    menuNotificationManagement: 'Notification Management',
+    menuAdminAccounts: 'Admin Accounts',
+    menuMessageCategories: 'Message Categories',
+    menuMessageCTA: 'Message CTA'
 };

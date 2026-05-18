@@ -59,7 +59,7 @@ export class CommonUtils {
         const screenshotPath = `${screenshotDir}/${testId}.png`;
         
         // Wait briefly for UI to stabilize
-        await page.waitForTimeout(2000); 
+        await page.waitForTimeout(500); 
         await page.screenshot({ path: screenshotPath, fullPage: false });
         
         await testInfo.attach(testId, { 

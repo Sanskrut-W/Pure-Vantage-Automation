@@ -22,6 +22,16 @@ import { PlayerTaggingPage } from '../pages/PlayerTaggingPage';
 import { PlayerTaggingLogsPage } from '../pages/PlayerTaggingLogsPage';
 import { SegmentTaggingPage } from '../pages/SegmentTaggingPage';
 import { TagConfigPage } from '../pages/TagConfigPage';
+import { TutorialConfigPage } from '../pages/TutorialConfigPage';
+import { TutorialOrderingPage } from '../pages/TutorialOrderingPage';
+import { CompAlertsPage } from '../pages/CompAlertsPage';
+import { CompsBulkPage } from '../pages/CompsBulkPage';
+import { CompConfigPage } from '../pages/CompConfigPage';
+import { ManualCompsPage } from '../pages/ManualCompsPage';
+import { TransactionTypesPage } from '../pages/TransactionTypesPage';
+import { AdminAccountsPage } from '../pages/AdminAccountsPage';
+import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
+import { MessageCTAPage } from '../pages/MessageCTAPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -53,6 +63,16 @@ type MyFixtures = {
     playerTaggingLogsPage: PlayerTaggingLogsPage;
     segmentTaggingPage: SegmentTaggingPage;
     tagConfigPage: TagConfigPage;
+    tutorialConfigPage: TutorialConfigPage;
+    tutorialOrderingPage: TutorialOrderingPage;
+    compAlertsPage: CompAlertsPage;
+    compsBulkPage: CompsBulkPage;
+    compConfigPage: CompConfigPage;
+    manualCompsPage: ManualCompsPage;
+    transactionTypesPage: TransactionTypesPage;
+    adminAccountsPage: AdminAccountsPage;
+    messageCategoriesPage: MessageCategoriesPage;
+    messageCTAPage: MessageCTAPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -217,6 +237,66 @@ export const test = base.extend<MyFixtures>({
     tagConfigPage: async ({ page, authenticatedSession }, use) => {
         const tagConfigPage = new TagConfigPage(page);
         await use(tagConfigPage);
+    },
+
+    // Instantiate and provide TutorialConfigPage
+    tutorialConfigPage: async ({ page, authenticatedSession }, use) => {
+        const tutorialConfigPage = new TutorialConfigPage(page);
+        await use(tutorialConfigPage);
+    },
+
+    // Instantiate and provide TutorialOrderingPage
+    tutorialOrderingPage: async ({ page, authenticatedSession }, use) => {
+        const tutorialOrderingPage = new TutorialOrderingPage(page);
+        await use(tutorialOrderingPage);
+    },
+
+    // Instantiate and provide CompAlertsPage
+    compAlertsPage: async ({ page, authenticatedSession }, use) => {
+        const compAlertsPage = new CompAlertsPage(page);
+        await use(compAlertsPage);
+    },
+
+    // Instantiate and provide CompsBulkPage
+    compsBulkPage: async ({ page, authenticatedSession }, use) => {
+        const compsBulkPage = new CompsBulkPage(page);
+        await use(compsBulkPage);
+    },
+
+    // Instantiate and provide CompConfigPage
+    compConfigPage: async ({ page, authenticatedSession }, use) => {
+        const compConfigPage = new CompConfigPage(page);
+        await use(compConfigPage);
+    },
+
+    // Instantiate and provide ManualCompsPage
+    manualCompsPage: async ({ page, authenticatedSession }, use) => {
+        const manualCompsPage = new ManualCompsPage(page);
+        await use(manualCompsPage);
+    },
+
+    // Instantiate and provide TransactionTypesPage
+    transactionTypesPage: async ({ page, authenticatedSession }, use) => {
+        const transactionTypesPage = new TransactionTypesPage(page);
+        await use(transactionTypesPage);
+    },
+
+    // Instantiate and provide AdminAccountsPage
+    adminAccountsPage: async ({ page, authenticatedSession }, use) => {
+        const adminAccountsPage = new AdminAccountsPage(page);
+        await use(adminAccountsPage);
+    },
+
+    // Instantiate and provide MessageCategoriesPage
+    messageCategoriesPage: async ({ page, authenticatedSession }, use) => {
+        const messageCategoriesPage = new MessageCategoriesPage(page);
+        await use(messageCategoriesPage);
+    },
+
+    // Instantiate and provide MessageCTAPage
+    messageCTAPage: async ({ page, authenticatedSession }, use) => {
+        const messageCTAPage = new MessageCTAPage(page);
+        await use(messageCTAPage);
     }
 });
 
