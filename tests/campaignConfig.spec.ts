@@ -13,7 +13,7 @@ test.describe('Campaign Management Action Buttons Tests', () => {
         await expect(page).toHaveURL(/.*campaign-management/);
         
         // Wait for page to load completely (Assuming there's a table to load campaigns)
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('networkidle'); 
         await campaignPage.clickSelectRegion(); // Make sure campaigns populate by triggering region selection if needed
     });
 
