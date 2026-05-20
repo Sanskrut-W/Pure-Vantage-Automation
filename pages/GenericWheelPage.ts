@@ -7,6 +7,23 @@ export class GenericWheelPage extends BasePage {
     readonly createPromotionBtn: Locator;
     readonly editBtn: Locator;
     readonly deleteBtn: Locator;
+    readonly promotionNameInput: Locator;
+    readonly allocationStrategyDropdown: Locator;
+    readonly startDateCalendar: Locator;
+    readonly endDateCalendar: Locator;
+    readonly spinsPerUserInput: Locator;
+    readonly dailySpinLimitInput: Locator;
+    readonly spinValidityDaysInput: Locator;
+    readonly numberOfSlicesInput: Locator;
+    readonly redirectUrlInput: Locator;
+    readonly ticketPrefixInput: Locator;
+    readonly minimumWagerInput: Locator;
+    readonly notificationDropdown: Locator;
+    readonly hasSpinAgain: Locator;
+    readonly requiresOptIn: Locator;
+    readonly allocateTicketOnAllPrizes: Locator;
+    readonly saveButton: Locator;
+    readonly cancelButton: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -14,24 +31,51 @@ export class GenericWheelPage extends BasePage {
         this.createPromotionBtn = this.page.locator(genericWheelLocators.createPromotionBtn);
         this.editBtn = this.page.locator(genericWheelLocators.editBtn);
         this.deleteBtn = this.page.locator(genericWheelLocators.deleteBtn);
+        this.promotionNameInput = this.page.locator(genericWheelLocators.promotionNameInput);
+        this.allocationStrategyDropdown = this.page.locator(genericWheelLocators.allocationStrategyDropdown);
+        this.startDateCalendar = this.page.locator(genericWheelLocators.startDateCalendar);
+        this.endDateCalendar = this.page.locator(genericWheelLocators.endDateCalendar);
+        this.spinsPerUserInput = this.page.locator(genericWheelLocators.spinsPerUserInput);
+        this.dailySpinLimitInput = this.page.locator(genericWheelLocators.dailySpinLimitInput);
+        this.spinValidityDaysInput = this.page.locator(genericWheelLocators.spinValidityDaysInput);
+        this.numberOfSlicesInput = this.page.locator(genericWheelLocators.numberOfSlicesInput);
+        this.redirectUrlInput = this.page.locator(genericWheelLocators.redirectUrlInput);
+        this.ticketPrefixInput = this.page.locator(genericWheelLocators.ticketPrefixInput);
+        this.minimumWagerInput = this.page.locator(genericWheelLocators.minimumWagerInput);
+        this.notificationDropdown = this.page.locator(genericWheelLocators.notificationDropdown);
+        this.hasSpinAgain = this.page.locator(genericWheelLocators.hasSpinAgain);
+        this.requiresOptIn = this.page.locator(genericWheelLocators.requiresOptIn);
+        this.allocateTicketOnAllPrizes = this.page.locator(genericWheelLocators.allocateTicketOnAllPrizes);
+        this.saveButton = this.page.locator(genericWheelLocators.saveButton);
+        this.cancelButton = this.page.locator(genericWheelLocators.cancelButton);
     }
 
-    private async openDropdown(ariaLabel: string) {
-        const hiddenInput = this.page.locator(
-            `div.p-dropdown:has(.p-dropdown-trigger[aria-label="${ariaLabel}"]) .p-hidden-accessible input`
-        ).first();
-        await hiddenInput.waitFor({ state: 'attached' });
-        await hiddenInput.focus();
-        await this.page.keyboard.press('Space');
-        await this.page.waitForTimeout(500);
+    private async openDropdown() {
+        await this.clickElement(this.regionDropdown);
     }
 
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName} on Generic Wheel...`);
-        await this.openDropdown(genericWheelLocators.dropdownSelectRegion);
+        await this.openDropdown();
         const optionLocator = this.page.getByRole('option', { name: regionName, exact: true });
         await this.clickElement(optionLocator);
-        await this.page.waitForTimeout(1000); 
+        await this.page.waitForTimeout(1000);
+    }
+
+    async selectAllocationStrategy(strategyName: string) {
+        console.log(`Selecting allocation strategy: ${strategyName} on Generic Wheel...`);
+        await this.clickElement(this.allocationStrategyDropdown);
+        const optionLocator = this.page.getByRole('option', { name: strategyName, exact: true });
+        await this.clickElement(optionLocator);
+        await this.page.waitForTimeout(1000);
+    }
+
+    async selectRegionInPopup(regionName: string) {
+        console.log(`Selecting region: ${regionName} on Generic Wheel...`);
+        await this.clickElement(this.regionDropdown);
+        const optionLocator = this.page.getByRole('option', { name: regionName, exact: true }).first();
+        await this.clickElement(optionLocator);
+        await this.page.waitForTimeout(1000);
     }
 
     async clickCreatePromotion() {

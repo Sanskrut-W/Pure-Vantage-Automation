@@ -28,6 +28,9 @@ export default defineConfig({
 
         // Fail tests if a single action (click, fill, etc.) takes longer than 2 minutes
         actionTimeout: 120000,
+        viewport: null,
+        deviceScaleFactor: undefined,
+
 
         // Artifacts
         trace: 'on',
