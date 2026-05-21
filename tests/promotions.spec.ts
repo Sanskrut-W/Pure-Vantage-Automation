@@ -5,7 +5,6 @@ import { CommonUtils } from '../utils/commonUtils';
 test.describe("Promotion config test suite",()=>{
     var globalpromotionName:string;
     test.beforeEach("Navigate to Promotion config page from sidebar",async({page,sidebarPage,promotionConfigPage})=>{
-        globalpromotionName='Copy of RashTest Copy';
         await page.goto('/main/home');
         await page.reload();
         await sidebarPage.waitForPageLoad()
@@ -42,19 +41,16 @@ test.describe("Promotion config test suite",()=>{
     });
     
     test("TC-5 Verify Create promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{
-        
         await promotionConfigPage.createPromotion();        
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-5 Verify functionality of Create Promotion button');
     });
     test("TC-6 Verify copy promotion button",async ({page,promotionConfigPage},testInfo)=>{
-        
         await promotionConfigPage.copyBtn.first().click();
         await expect(promotionConfigPage.dialog).toBeVisible({timeout:20000});   
         await CommonUtils.highlightElementBorder(promotionConfigPage.dialog);     
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-6 Verify functionality of Create Promotion button');
     });
     test("TC-7 Verify copy promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{
-        
         const copyName=await promotionConfigPage.clonePromotion();
         await expect(promotionConfigPage.page.getByText(copyName)).toBeVisible({timeout:20000});
         globalpromotionName=copyName;
@@ -117,7 +113,6 @@ test.describe("Promotion config test suite",()=>{
         await promotionConfigPage.VerifyEditPageContent();
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-14 Verify Edit Promotion page content');
     });
-
 
 
 

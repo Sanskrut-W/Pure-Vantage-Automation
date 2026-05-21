@@ -68,7 +68,7 @@ export class SidebarPage extends BasePage {
         this.toastConfigNode = this.page.getByText(sidebarLocators.menuToastConfig, { exact: true });
         this.promotionsNode = this.page.getByText(sidebarLocators.menuPromotions, { exact: true });
         this.genericWheelNode = this.page.getByText(sidebarLocators.menuGenericWheel, { exact: true });
-        this.promotionConfigNode = this.page.getByText(sidebarLocators.menuPromotionConfig, { exact: true });
+        this.promotionConfigNode = this.page.getByText(sidebarLocators.menuPromotionConfig, { exact: true }).first();
         this.promotionOrderingNode = this.page.getByText(sidebarLocators.menuPromotionOrdering, { exact: false });
         this.scratchAndWinNode = this.page.getByText(sidebarLocators.menuScratchAndWin, { exact: true });
         this.timedPromotionsNode = this.page.getByText(sidebarLocators.menuTimedPromotions, { exact: true });
