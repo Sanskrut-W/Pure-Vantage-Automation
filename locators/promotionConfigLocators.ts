@@ -20,6 +20,9 @@ export const promotionConfigLocators = {
     cancelBtn:'button[aria-lable="Cancel"]',
     cloneBtn:'button[aria-lable="Clone"]',
 
-
+    regionConfiguration:'#regionConfiguration',
+    dynamicCtaInput:'#dynamic-cta-input',
     clonePromotionName:'#promotionName',
+
+
 };

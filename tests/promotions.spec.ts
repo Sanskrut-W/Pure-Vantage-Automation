@@ -63,30 +63,22 @@ test.describe("Promotion config test suite",()=>{
     });
 
 
-    test("TC-8 Verify copy promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{
+    test("TC-8 Verify delete promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{
         await promotionConfigPage.deleteBtn.first().click();
         await expect(promotionConfigPage.dialog).toBeVisible({timeout:20000});
         await CommonUtils.highlightElement(promotionConfigPage.dialog);
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-8 Verify functionality of Create Promotion button');
     });
 
-    
-    test("TC-9 Verify delete promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{    
-        await promotionConfigPage.deleteBtn.first().click();
-        await expect(promotionConfigPage.dialog).toBeVisible({timeout:20000});
-        await CommonUtils.highlightElement(promotionConfigPage.page.getByRole('button',{name:"Yes"}))
-        await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-9 Verify functionality of Create Promotion button');
-    });
 
-
-    test("TC-10 Verify delete promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{    
-        await promotionConfigPage.deleteBtn.first().click();
-        await expect(promotionConfigPage.dialog).toBeVisible({timeout:20000});
-        await promotionConfigPage.clickElement(promotionConfigPage.page.getByRole('button',{name:"Yes"}));
+    test("TC-9 Verify delete promotion button functionality and tapping 'Yes'",async ({page,promotionConfigPage},testInfo)=>{    
+        await promotionConfigPage.DeleteFirstPromotion(globalpromotionName);
         await expect(promotionConfigPage.page.getByText(globalpromotionName)).not.toBeVisible({timeout:20000});
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-10 Verify functionality of Create Promotion button');
     });
-    test("TC-11 Verify deleet promotion button and then tapping 'NO' ",async ({page,promotionConfigPage},testInfo)=>{    
+
+
+    test("TC-10 Verify delete promotion button and then tapping 'NO' ",async ({page,promotionConfigPage},testInfo)=>{    
         await promotionConfigPage.deleteBtn.first().click();
         await expect(promotionConfigPage.dialog).toBeVisible({timeout:20000});
         await promotionConfigPage.clickElement(promotionConfigPage.page.getByRole('button',{name:"No"}));
@@ -94,6 +86,41 @@ test.describe("Promotion config test suite",()=>{
         await CommonUtils.highlightElement(promotionConfigPage.page.getByText(globalpromotionName));
         await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-10 Verify functionality of Create Promotion button');
     });
+
+    test("TC-11 Verify edit promotion button functionality",async ({page,promotionConfigPage},testInfo)=>{    
+        await promotionConfigPage.editBtn.first().click();
+        await expect(promotionConfigPage.page).toHaveURL(/.*promotion-config-edit/);
+        await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-11 Verify functionality of Edit Promotion button');
+    });
+    
+    test("TC-12 Edit promotion details and navigating back",async ({promotionConfigPage},testInfo)=>{    
+        await promotionConfigPage.editBtn.first().click();
+        await promotionConfigPage.page.waitForLoadState('networkidle');
+        await CommonUtils.highlightElement(promotionConfigPage.page.getByRole('button',{name:"Update Promotion Details"}).locator('..').getByRole('button').first());
+        await promotionConfigPage.page.getByRole('button',{name:"Update Promotion Details"}).locator('..').getByRole('button').first().click();
+        await expect(promotionConfigPage.page).toHaveURL(/.*promotion-config/);
+        await promotionConfigPage.page.waitForLoadState('networkidle');
+        await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-12 Edit promotion details');
+    });
+
+    test("TC-13 Edit promotion details",async ({promotionConfigPage},testInfo)=>{    
+        let editedName = await promotionConfigPage.editPromotion(globalpromotionName);
+        await promotionConfigPage.page.getByRole('button',{name:"Update Promotion Details"}).locator('..').getByRole('button').first().click();
+        await promotionConfigPage.page.waitForLoadState('networkidle');
+        await expect(promotionConfigPage.page.getByText(editedName)).toBeVisible({timeout:20000});
+        await CommonUtils.highlightElement(promotionConfigPage.page.getByText(editedName));
+        await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-13 Edit promotion details form submit');
+    });
+    test("TC-14 Verify Edit Page Content",async ({promotionConfigPage},testInfo)=>{ 
+        await promotionConfigPage.editBtn.first().click();
+        await promotionConfigPage.page.waitForLoadState('networkidle');   
+        await promotionConfigPage.VerifyEditPageContent();
+        await CommonUtils.captureScreenshot(promotionConfigPage.page,testInfo,'reports/screenshots','TC-14 Verify Edit Promotion page content');
+    });
+
+
+
+
 
 
 
