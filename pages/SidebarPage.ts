@@ -43,6 +43,11 @@ export class SidebarPage extends BasePage {
     readonly adminAccountsNode: Locator;
     readonly messageCategoriesNode: Locator;
     readonly messageCTANode: Locator;
+    readonly platformNode: Locator;
+    readonly formBuilderConfigNode: Locator;
+    readonly formBuilderNode: Locator;
+    readonly systemAdminNode: Locator;
+    readonly stencilConfigNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -88,6 +93,11 @@ export class SidebarPage extends BasePage {
         this.adminAccountsNode = this.page.getByText(sidebarLocators.menuAdminAccounts, { exact: true });
         this.messageCategoriesNode = this.page.getByText(sidebarLocators.menuMessageCategories, { exact: true });
         this.messageCTANode = this.page.getByText(sidebarLocators.menuMessageCTA, { exact: true });
+        this.platformNode = this.page.getByText(sidebarLocators.menuPlatform, { exact: true });
+        this.formBuilderConfigNode = this.page.getByText(sidebarLocators.menuFormBuilderConfig, { exact: true }).first();
+        this.formBuilderNode = this.page.getByText(sidebarLocators.menuFormBuilder, { exact: true }).first();
+        this.systemAdminNode = this.page.getByText(sidebarLocators.menuSystemAdmin, { exact: true });
+        this.stencilConfigNode = this.page.getByText(sidebarLocators.menuStencilConfig, { exact: true }).first();
     }
 
     /**
@@ -448,5 +458,30 @@ export class SidebarPage extends BasePage {
         await this.messageCTANode.scrollIntoViewIfNeeded();
         await this.clickElement(this.messageCTANode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToFormBuilder() {
+        console.log('Navigating via Sidebar: Platform -> Form Builder Configuration -> Form Builder');
+        await this.clickElement(this.platformNode);
+        await this.page.waitForTimeout(1000);
+        await this.formBuilderConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.formBuilderConfigNode);
+        await this.page.waitForTimeout(1000);
+        await this.formBuilderNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.formBuilderNode, { force: true });
+        await this.page.waitForURL(/.*form-builder/, { timeout: 30000 });
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(3000);
+    }
+
+    async navigateToStencilConfig() {
+        console.log('Navigating via Sidebar: System Admin -> Stencil Configuration');
+        await this.clickElement(this.systemAdminNode);
+        await this.page.waitForTimeout(1000);
+        await this.stencilConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.stencilConfigNode, { force: true });
+        await this.page.waitForURL(/.*stencil/, { timeout: 30000 });
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(3000);
     }
 }

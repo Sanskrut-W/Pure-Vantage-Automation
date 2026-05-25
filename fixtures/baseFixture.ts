@@ -32,6 +32,8 @@ import { TransactionTypesPage } from '../pages/TransactionTypesPage';
 import { AdminAccountsPage } from '../pages/AdminAccountsPage';
 import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
 import { MessageCTAPage } from '../pages/MessageCTAPage';
+import { FormBuilderPage } from '../pages/FormBuilderPage';
+import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -73,6 +75,8 @@ type MyFixtures = {
     adminAccountsPage: AdminAccountsPage;
     messageCategoriesPage: MessageCategoriesPage;
     messageCTAPage: MessageCTAPage;
+    formBuilderPage: FormBuilderPage;
+    stencilConfigPage: StencilConfigPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -297,7 +301,19 @@ export const test = base.extend<MyFixtures>({
     messageCTAPage: async ({ page, authenticatedSession }, use) => {
         const messageCTAPage = new MessageCTAPage(page);
         await use(messageCTAPage);
-    }
+    },
+
+    // Instantiate and provide FormBuilderPage
+    formBuilderPage: async ({ page, authenticatedSession }, use) => {
+        const formBuilderPage = new FormBuilderPage(page);
+        await use(formBuilderPage);
+    },
+
+    // Instantiate and provide StencilConfigPage
+    stencilConfigPage: async ({ page, authenticatedSession }, use) => {
+        const stencilConfigPage = new StencilConfigPage(page);
+        await use(stencilConfigPage);
+    },
 });
 
 export { expect } from '@playwright/test';

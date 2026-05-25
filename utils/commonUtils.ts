@@ -29,8 +29,8 @@ export class CommonUtils {
         if (locator) {
             await locator.evaluate((el: HTMLElement) => {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.style.border = '2px solid red';
-                el.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                el.style.setProperty('border', '2px solid red', 'important');
+                el.style.setProperty('background-color', 'rgba(255, 0, 0, 0.1)', 'important');
             });
         } else {
             console.warn('Tried to highlight an empty locator.');
@@ -44,7 +44,7 @@ export class CommonUtils {
         if (locator) {
             await locator.evaluate((el: HTMLElement) => {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.style.border = '2px solid red';
+                el.style.setProperty('border', '2px solid red', 'important');
             });
         } else {
             console.warn('Tried to highlight an empty locator.');
