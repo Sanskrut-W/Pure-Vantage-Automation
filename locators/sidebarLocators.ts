@@ -39,5 +39,12 @@ export const sidebarLocators = {
     menuNotificationManagement: 'Notification Management',
     menuAdminAccounts: 'Admin Accounts',
     menuMessageCategories: 'Message Categories',
-    menuMessageCTA: 'Message CTA'
+    menuMessageCTA: 'Message CTA',
+
+    menuPlatform: 'Platform',
+    menuFormBuilderConfig: 'Form Builder Configuration',
+    menuFormBuilder: 'Form Builder',
+
+    menuSystemAdmin: 'System Admin',
+    menuStencilConfig: 'Stencil Configuration',
 };
