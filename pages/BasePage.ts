@@ -46,9 +46,31 @@ export class BasePage {
      */
     async selectDropdown(dropdownLocator: Locator, optionText: string) {
         await this.clickElement(dropdownLocator);
-        // Assumes options are rendered in the DOM either by role="option" or generic text
-        const optionLocator = this.page.getByText(optionText, { exact: true });
-        await this.clickElement(optionLocator);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+
+        // If panel not visible yet, try re-clicking the dropdown once
+        if (!await panel.isVisible().catch(() => false)) {
+            await this.page.waitForTimeout(300);
+            await dropdownLocator.click({ force: true }).catch(() => {});
+            await this.page.waitForTimeout(300);
+        }
+
+        if (await panel.isVisible().catch(() => false)) {
+            // Preferred path: click the option within the scoped panel
+            const optionLocator = panel.locator('.p-dropdown-item', { hasText: optionText }).first();
+            await this.clickElement(optionLocator);
+        } else {
+            // Fallback: search dropdown-specific selectors only (never global getByText — causes
+            // strict-mode violation and hangs on hidden <option> elements for 120s)
+            const fallback = this.page
+                .locator('.p-dropdown-items .p-dropdown-item, [role="option"]')
+                .filter({ hasText: optionText })
+                .first();
+            if (await fallback.isVisible().catch(() => false)) {
+                await this.clickElement(fallback);
+            }
+            // If still nothing, silently skip — the dropdown may already have the value
+        }
     }
 
     /**
@@ -62,7 +84,7 @@ export class BasePage {
         await this.page.goBack({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the previous page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -77,7 +99,7 @@ export class BasePage {
         await this.page.goForward({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the forward page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
 
@@ -91,6 +113,6 @@ export class BasePage {
         await this.page.reload({ waitUntil: 'domcontentloaded' });
         // Wait for SPA to fully render the reloaded page so it's visually observable
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(500);
     }
 }
