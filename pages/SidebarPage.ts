@@ -62,7 +62,7 @@ export class SidebarPage extends BasePage {
         this.compensationNode = this.page.getByText(sidebarLocators.menuCompensation, { exact: true });
         this.couponManagementNode = this.page.getByText(sidebarLocators.menuCouponManagement, { exact: true });
         this.campaignNode = this.page.getByText(sidebarLocators.menuCampaign, { exact: true });
-        this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true });
+        this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true }).first();
         this.eventCalendarNode = this.page.getByText(sidebarLocators.menuEventCalendar, { exact: true });
         this.fanExclusiveNode = this.page.getByText(sidebarLocators.menuFanExclusive, { exact: true });
         this.leaderboardNode = this.page.getByText(sidebarLocators.menuLeaderboard, { exact: true });
@@ -129,8 +129,11 @@ export class SidebarPage extends BasePage {
     async navigateToCashbackPromotions() {
         console.log('Navigating via Sidebar: Marketing -> Cashback Promotions');
         await this.clickElement(this.marketingNode);
-        await this.clickElement(this.cashbackPromotionsNode);
-        await this.clickElement(this.cashbackPromotionsNode);
+        await this.page.waitForTimeout(500);
+        await this.cashbackPromotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.cashbackPromotionsNode, { force: true });
+        await this.page.waitForTimeout(300);
+        await this.clickElement(this.cashbackPromotionsNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
