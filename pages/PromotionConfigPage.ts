@@ -143,18 +143,15 @@ export class PromotionConfigPage extends BasePage {
         const activeStartDay = startPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
         await this.clickElement(activeStartDay, { force: true });
         await this.page.waitForTimeout(500);
-        await this.dialog.click();
-        await this.clickElement(this.dialog);
         await this.clickElement(this.endDate);
         const endPanel = this.page.locator('#endDate_panel');
         await endPanel.waitFor({ state: 'visible' });
-        
+
         // Finding the LAST valid enable day guarantees it will always geometrically succeed the start date
         const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
         await this.clickElement(activeEndDay, { force: true });
         await this.page.waitForTimeout(500);
-        await this.dialog.click();
-        await this.clickElement(this.dialog);
+        // await this.page.mouse.click(0, 0)
     }
 
     async editDateRange(startDate?: string, endDate?: string) {
@@ -182,9 +179,8 @@ export class PromotionConfigPage extends BasePage {
         await this.dialog.click();
     }
 
-    async createPromotion() {
+    async createPromotion(name: string) {
         await this.clickElement(this.createPromotionBtn);
-        await this.name.fill('test-automation2026');
         await this.selectDropdown(this.promotionType, 'Top Up Tuesday')
         await this.selectDropdown(this.vertical, 'Casino')
         await this.verticalCategory.fill('test')
@@ -193,17 +189,17 @@ export class PromotionConfigPage extends BasePage {
         await this.optIn.fill('test')
         await this.selectDropdown(this.regionId, 'BW - en')
         await this.setDateRange('05/15/2024', '06/20/2024')
+        await this.name.dblclick();
+        await this.name.fill(name);
         await this.logout.click();
         await this.page.waitForTimeout(5000);
-
-        CommonUtils.highlightElement(this.dialog.getByRole('button', { name: 'Save' }));
-        CommonUtils.highlightElement(this.dialog.getByRole('button', { name: 'Cancel' }));
+        await this.clickElement(this.dialog.getByRole('button', { name: 'Save' }));
     }
 
     async editPromotion(promoName: string) {
         if (!promoName) {
             console.error('Promo name not defined clicking the first edit button');
-            promoName=await this.clonePromotion();
+            promoName = await this.clonePromotion();
         }
         let row = await this.page.getByText(promoName);
         await row.locator('..').locator(promotionConfigLocators.editBtn).click();
@@ -237,18 +233,18 @@ export class PromotionConfigPage extends BasePage {
         return copyName;
     }
 
-    async DeleteFirstPromotion(RowName: string) {
-        if (!RowName) {
-            console.error('Promo name not defined cloning the first promotion');
-            RowName = await this.clonePromotion();
-        }
-
+    async DeleteFirstPromotion(RowName: string, confirm: boolean) {
         await expect(this.page.getByText(RowName)).toBeVisible({ timeout: 20000 });
         let row = await this.page.getByText(RowName);
         await row.locator('..').locator(promotionConfigLocators.deleteBtn).click();
         await expect(this.dialog).toBeVisible({ timeout: 20000 });
-        await CommonUtils.highlightElement(this.page.getByRole('button', { name: "Yes" }))
-        await this.clickElement(this.page.getByRole('button', { name: "Yes" }));
+        if (confirm) {
+            await CommonUtils.highlightElement(this.page.getByRole('button', { name: "Yes" }))
+            await this.clickElement(this.page.getByRole('button', { name: "Yes" }));
+        } else {
+            await CommonUtils.highlightElement(this.page.getByRole('button', { name: "No" }))
+            await this.clickElement(this.page.getByRole('button', { name: "No" }));
+        }
 
     }
 

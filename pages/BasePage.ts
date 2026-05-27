@@ -20,12 +20,7 @@ export class BasePage {
      */
     async clickElement(locator: Locator, options?: { force?: boolean }) {
         await locator.waitFor({ state: 'visible' });
-
-        // Magically highlight EVERY element right before clicking without repeating code
-        await CommonUtils.highlightElement(locator);
-
         await locator.click(options);
-        await this.waitForPageLoad();
     }
 
     /**
@@ -49,6 +44,17 @@ export class BasePage {
         // Assumes options are rendered in the DOM either by role="option" or generic text
         const optionLocator = this.page.getByText(optionText, { exact: true });
         await this.clickElement(optionLocator);
+    }
+
+
+    async selectDropdownWithParentLocator(dropdownLocator: Locator, optionText: string, parentLocator?: Locator) {
+        await this.clickElement(dropdownLocator);
+        await this.page.waitForTimeout(1000);
+        await this.page.keyboard.press('ArrowDown');
+        await this.page.waitForTimeout(1000);
+        await this.page.keyboard.press('ArrowDown');
+        await this.page.waitForTimeout(1000);
+        await this.page.keyboard.press('Enter');
     }
 
     /**
@@ -92,5 +98,20 @@ export class BasePage {
         // Wait for SPA to fully render the reloaded page so it's visually observable
         await this.page.waitForLoadState('networkidle');
         await this.page.waitForTimeout(1500);
+    }
+
+    async verifyToast() {
+        await this.page.locator('.p-toast-message-text').waitFor({ state: 'visible' });
+        const toastmessage = await this.page.locator('.p-toast-message-text').textContent();
+        console.log("Toast message = ", toastmessage);
+        console.log('Toast message verified');
+        await CommonUtils.highlightElement(this.page.locator('.p-toast-message-text'));
+        await this.page.waitForTimeout(2000);
+
+        if (toastmessage != null && toastmessage.includes('Success')) {
+            return true;
+        }
+        return false;
+
     }
 }
