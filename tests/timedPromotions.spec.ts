@@ -281,7 +281,7 @@ test.describe("Timed Promotions test suite", () => {
 
 
 
-    test("TC-26 Testing Search functionality", async ({ page, timedPromotionsPage }, testInfo) => {
+    test("TC-28 Testing Search functionality", async ({ page, timedPromotionsPage }, testInfo) => {
         await timedPromotionsPage.searchTimedPromo();
         await CommonUtils.captureScreenshot(timedPromotionsPage.page, testInfo, 'reports/screenshots', 'TC-26 Search the timed promotion');
     })
