@@ -52,52 +52,58 @@ export class SidebarPage extends BasePage {
     constructor(page: Page) {
         super(page);
 
-        // Initialize Locators in the constructor
-        this.marketingNode = this.page.getByText(sidebarLocators.menuMarketing, { exact: true });
-        this.bannerManagementNode = this.page.getByText(sidebarLocators.menuBannerManagement, { exact: true });
-        this.bannerConfigNode = this.page.getByText(sidebarLocators.menuBannerConfig, { exact: true });
-        this.bannerOrderingNode = this.page.getByText(sidebarLocators.menuBannerOrdering, { exact: true });
-        this.tutorialNode = this.page.getByText(sidebarLocators.menuTutorial, { exact: true });
-        this.tutorialConfigNode = this.page.getByText(sidebarLocators.menuTutorialConfig, { exact: true });
-        this.compensationNode = this.page.getByText(sidebarLocators.menuCompensation, { exact: true });
-        this.couponManagementNode = this.page.getByText(sidebarLocators.menuCouponManagement, { exact: true });
-        this.campaignNode = this.page.getByText(sidebarLocators.menuCampaign, { exact: true });
-        this.cashbackPromotionsNode = this.page.getByText(sidebarLocators.menuCashbackPromotions, { exact: true }).first();
-        this.eventCalendarNode = this.page.getByText(sidebarLocators.menuEventCalendar, { exact: true });
-        this.fanExclusiveNode = this.page.getByText(sidebarLocators.menuFanExclusive, { exact: true });
-        this.leaderboardNode = this.page.getByText(sidebarLocators.menuLeaderboard, { exact: true });
-        this.loyaltyPromotionsNode = this.page.getByText(sidebarLocators.menuLoyaltyPromotions, { exact: true });
-        this.segmentScheduleNode = this.page.getByText(sidebarLocators.menuSegmentSchedule, { exact: true });
-        this.segmentationNode = this.page.getByText(sidebarLocators.menuSegmentation, { exact: true });
-        this.telegramLeaderboardNode = this.page.getByText(sidebarLocators.menuTelegramLeaderboard, { exact: true });
-        this.toastConfigNode = this.page.getByText(sidebarLocators.menuToastConfig, { exact: true });
-        this.promotionsNode = this.page.getByText(sidebarLocators.menuPromotions, { exact: true });
-        this.genericWheelNode = this.page.getByText(sidebarLocators.menuGenericWheel, { exact: true });
-        this.promotionConfigNode = this.page.getByText(sidebarLocators.menuPromotionConfig, { exact: true }).first();
-        this.promotionOrderingNode = this.page.getByText(sidebarLocators.menuPromotionOrdering, { exact: false });
-        this.scratchAndWinNode = this.page.getByText(sidebarLocators.menuScratchAndWin, { exact: true });
-        this.timedPromotionsNode = this.page.getByText(sidebarLocators.menuTimedPromotions, { exact: true });
-        this.tagManagementNode = this.page.getByText(sidebarLocators.menuTagManagement, { exact: true });
-        this.playerTaggingNode = this.page.getByText(sidebarLocators.menuPlayerTagging, { exact: true });
-        this.playerTaggingLogsNode = this.page.getByText(sidebarLocators.menuPlayerTaggingLogs, { exact: true });
-        this.segmentTaggingNode = this.page.getByText(sidebarLocators.menuSegmentTagging, { exact: true });
-        this.tagConfigNode = this.page.getByText(sidebarLocators.menuTagConfig, { exact: true });
-        this.tutorialOrderingNode = this.page.getByText(sidebarLocators.menuTutorialOrdering, { exact: true });
-        this.marketingCompsNode = this.page.getByText(sidebarLocators.menuMarketingComps, { exact: true });
-        this.compAlertsNode = this.page.getByText(sidebarLocators.menuCompAlerts, { exact: true });
-        this.compsBulkNode = this.page.getByText(sidebarLocators.menuCompsBulk, { exact: true });
-        this.compConfigNode = this.page.getByText(sidebarLocators.menuCompConfig, { exact: true });
-        this.manualCompsNode = this.page.getByText(sidebarLocators.menuManualComps, { exact: true });
-        this.transactionTypesNode = this.page.getByText(sidebarLocators.menuTransactionTypes, { exact: true });
-        this.notificationManagementNode = this.page.getByText(sidebarLocators.menuNotificationManagement, { exact: true });
-        this.adminAccountsNode = this.page.getByText(sidebarLocators.menuAdminAccounts, { exact: true });
-        this.messageCategoriesNode = this.page.getByText(sidebarLocators.menuMessageCategories, { exact: true });
-        this.messageCTANode = this.page.getByText(sidebarLocators.menuMessageCTA, { exact: true });
-        this.platformNode = this.page.getByText(sidebarLocators.menuPlatform, { exact: true });
-        this.formBuilderConfigNode = this.page.getByText(sidebarLocators.menuFormBuilderConfig, { exact: true }).first();
-        this.formBuilderNode = this.page.getByText(sidebarLocators.menuFormBuilder, { exact: true }).first();
-        this.systemAdminNode = this.page.getByText(sidebarLocators.menuSystemAdmin, { exact: true });
-        this.stencilConfigNode = this.page.getByText(sidebarLocators.menuStencilConfig, { exact: true }).first();
+        // All sidebar nodes use span.menuitem-text:text-is("...") — scoped to the Angular sidebar
+        // label class AND exact-text matched so "Promotions" never matches "Cashback Promotions",
+        // "Tutorial" never matches "Tutorial Config", etc. Also prevents strict-mode violations
+        // from <h2> headings and breadcrumbs that repeat the same text after navigation.
+        const menu = (label: string) =>
+            this.page.locator(`span.menuitem-text:text-is("${label}")`).first();
+
+        this.marketingNode              = menu(sidebarLocators.menuMarketing);
+        this.bannerManagementNode       = menu(sidebarLocators.menuBannerManagement);
+        this.bannerConfigNode           = menu(sidebarLocators.menuBannerConfig);
+        this.bannerOrderingNode         = menu(sidebarLocators.menuBannerOrdering);
+        this.tutorialNode               = menu(sidebarLocators.menuTutorial);
+        this.tutorialConfigNode         = menu(sidebarLocators.menuTutorialConfig);
+        this.compensationNode           = menu(sidebarLocators.menuCompensation);
+        this.couponManagementNode       = menu(sidebarLocators.menuCouponManagement);
+        this.campaignNode               = menu(sidebarLocators.menuCampaign);
+        this.cashbackPromotionsNode     = menu(sidebarLocators.menuCashbackPromotions);
+        this.eventCalendarNode          = menu(sidebarLocators.menuEventCalendar);
+        this.fanExclusiveNode           = menu(sidebarLocators.menuFanExclusive);
+        this.leaderboardNode            = menu(sidebarLocators.menuLeaderboard);
+        this.loyaltyPromotionsNode      = menu(sidebarLocators.menuLoyaltyPromotions);
+        this.segmentScheduleNode        = menu(sidebarLocators.menuSegmentSchedule);
+        this.segmentationNode           = menu(sidebarLocators.menuSegmentation);
+        this.telegramLeaderboardNode    = menu(sidebarLocators.menuTelegramLeaderboard);
+        this.toastConfigNode            = menu(sidebarLocators.menuToastConfig);
+        this.promotionsNode             = menu(sidebarLocators.menuPromotions);
+        this.genericWheelNode           = menu(sidebarLocators.menuGenericWheel);
+        this.promotionConfigNode        = menu(sidebarLocators.menuPromotionConfig);
+        this.promotionOrderingNode      = menu(sidebarLocators.menuPromotionOrdering);
+        this.scratchAndWinNode          = menu(sidebarLocators.menuScratchAndWin);
+        this.timedPromotionsNode        = menu(sidebarLocators.menuTimedPromotions);
+        this.tagManagementNode          = menu(sidebarLocators.menuTagManagement);
+        this.playerTaggingNode          = menu(sidebarLocators.menuPlayerTagging);
+        this.playerTaggingLogsNode      = menu(sidebarLocators.menuPlayerTaggingLogs);
+        this.segmentTaggingNode         = menu(sidebarLocators.menuSegmentTagging);
+        this.tagConfigNode              = menu(sidebarLocators.menuTagConfig);
+        this.tutorialOrderingNode       = menu(sidebarLocators.menuTutorialOrdering);
+        this.marketingCompsNode         = menu(sidebarLocators.menuMarketingComps);
+        this.compAlertsNode             = menu(sidebarLocators.menuCompAlerts);
+        this.compsBulkNode              = menu(sidebarLocators.menuCompsBulk);
+        this.compConfigNode             = menu(sidebarLocators.menuCompConfig);
+        this.manualCompsNode            = menu(sidebarLocators.menuManualComps);
+        this.transactionTypesNode       = menu(sidebarLocators.menuTransactionTypes);
+        this.notificationManagementNode = menu(sidebarLocators.menuNotificationManagement);
+        this.adminAccountsNode          = menu(sidebarLocators.menuAdminAccounts);
+        this.messageCategoriesNode      = menu(sidebarLocators.menuMessageCategories);
+        this.messageCTANode             = menu(sidebarLocators.menuMessageCTA);
+        this.platformNode               = menu(sidebarLocators.menuPlatform);
+        this.formBuilderConfigNode      = menu(sidebarLocators.menuFormBuilderConfig);
+        this.formBuilderNode            = menu(sidebarLocators.menuFormBuilder);
+        this.systemAdminNode            = menu(sidebarLocators.menuSystemAdmin);
+        this.stencilConfigNode          = menu(sidebarLocators.menuStencilConfig);
     }
 
     /**

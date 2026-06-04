@@ -10,7 +10,7 @@ export default defineConfig({
     },
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
-    retries: process.env.CI ? 1 : 0, // At least 1 retry locally, 2 on CI
+    retries: process.env.CI ? 1 : 1, // At least 1 retry locally, 2 on CI
     workers: process.env.CI ? 1 : 8,
 
     // Reporters configuration

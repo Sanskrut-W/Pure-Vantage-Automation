@@ -11,14 +11,14 @@ test.describe('Campaign Management Action Buttons Tests', () => {
 
         await sidebarPage.navigateToCampaign();
         await expect(page).toHaveURL(/.*campaign-management/);
-        
-        // Wait for page to load completely (Assuming there's a table to load campaigns)
-        await page.waitForLoadState('networkidle'); 
-        await campaignPage.clickSelectRegion(); // Make sure campaigns populate by triggering region selection if needed
+        await page.waitForLoadState('networkidle');
+
+        // Select a region so campaign data loads and action buttons become visible
+        await campaignPage.selectRegion('Betway Ghana');
+        await page.waitForLoadState('networkidle');
     });
 
     test('TC-1 Verify Edit Campaign Button Functionality', async ({ page, campaignPage }, testInfo) => {
-        // Ensure there is at least one edit button available to click
         await expect(campaignPage.editBtn.first()).toBeVisible({ timeout: 30000 });
         
         await campaignPage.clickEditFirstCampaign();
