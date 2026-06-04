@@ -1,3 +1,3 @@
 export const compsBulkLocators = {
-    setupBulkCompBtn: 'button[aria-label="Setup Bulk Comp"]'
+    setupBulkCompBtn: 'button[aria-label="Create Bulk Comp"]'
 };
