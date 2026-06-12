@@ -15,6 +15,7 @@ export class TutorialConfigPage extends BasePage {
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.selectDropdown(this.regionDropdown, regionName);
+        await this.page.waitForLoadState('networkidle');
     }
 
     async clickCreateConfig() {

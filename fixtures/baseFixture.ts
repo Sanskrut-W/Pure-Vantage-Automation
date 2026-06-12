@@ -32,6 +32,7 @@ import { TransactionTypesPage } from '../pages/TransactionTypesPage';
 import { AdminAccountsPage } from '../pages/AdminAccountsPage';
 import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
 import { MessageCTAPage } from '../pages/MessageCTAPage';
+import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
 import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
@@ -75,6 +76,7 @@ type MyFixtures = {
     adminAccountsPage: AdminAccountsPage;
     messageCategoriesPage: MessageCategoriesPage;
     messageCTAPage: MessageCTAPage;
+    messageTemplatesPage: MessageTemplatesPage;
     formBuilderPage: FormBuilderPage;
     stencilConfigPage: StencilConfigPage;
 };
@@ -295,6 +297,12 @@ export const test = base.extend<MyFixtures>({
     messageCategoriesPage: async ({ page, authenticatedSession }, use) => {
         const messageCategoriesPage = new MessageCategoriesPage(page);
         await use(messageCategoriesPage);
+    },
+
+    // Instantiate and provide MessageTemplatesPage
+    messageTemplatesPage: async ({ page, authenticatedSession }, use) => {
+        const messageTemplatesPage = new MessageTemplatesPage(page);
+        await use(messageTemplatesPage);
     },
 
     // Instantiate and provide MessageCTAPage

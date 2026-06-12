@@ -43,6 +43,7 @@ export class SidebarPage extends BasePage {
     readonly adminAccountsNode: Locator;
     readonly messageCategoriesNode: Locator;
     readonly messageCTANode: Locator;
+    readonly messageTemplatesNode: Locator;
     readonly platformNode: Locator;
     readonly formBuilderConfigNode: Locator;
     readonly formBuilderNode: Locator;
@@ -99,6 +100,7 @@ export class SidebarPage extends BasePage {
         this.adminAccountsNode          = menu(sidebarLocators.menuAdminAccounts);
         this.messageCategoriesNode      = menu(sidebarLocators.menuMessageCategories);
         this.messageCTANode             = menu(sidebarLocators.menuMessageCTA);
+        this.messageTemplatesNode       = menu(sidebarLocators.menuMessageTemplates);
         this.platformNode               = menu(sidebarLocators.menuPlatform);
         this.formBuilderConfigNode      = menu(sidebarLocators.menuFormBuilderConfig);
         this.formBuilderNode            = menu(sidebarLocators.menuFormBuilder);
@@ -161,16 +163,14 @@ export class SidebarPage extends BasePage {
     }
 
     async navigateToTutorialConfig() {
-        console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Config');
-
-        // Utilize the parent BasePage generic click functionality
+        console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
         await this.clickElement(this.marketingNode);
-        // await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(500);
+        await this.tutorialNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.tutorialNode);
-        // await this.page.waitForTimeout(5000);
-
-        await this.clickElement(this.tutorialConfigNode);
-        await this.clickElement(this.tutorialConfigNode);
+        await this.page.waitForTimeout(500);
+        await this.tutorialConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.tutorialConfigNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -450,20 +450,36 @@ export class SidebarPage extends BasePage {
     }
 
     async navigateToMessageCategories() {
-        console.log('Navigating via Sidebar: Notification Management -> Message Categories');
+        console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message Categories');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
         await this.notificationManagementNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500); // Wait for menu to expand
+        await this.page.waitForTimeout(500);
         await this.messageCategoriesNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.messageCategoriesNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
-    async navigateToMessageCTA() {
-        console.log('Navigating via Sidebar: Notification Management -> Message CTA');
+    async navigateToMessageTemplates() {
+        console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message Templates');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
         await this.notificationManagementNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500); // Wait for menu to expand
+        await this.page.waitForTimeout(500);
+        await this.messageTemplatesNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.messageTemplatesNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToMessageCTA() {
+        console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message CTA');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.notificationManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.notificationManagementNode);
+        await this.page.waitForTimeout(500);
         await this.messageCTANode.scrollIntoViewIfNeeded();
         await this.clickElement(this.messageCTANode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');

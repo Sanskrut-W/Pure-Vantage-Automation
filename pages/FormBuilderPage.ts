@@ -50,7 +50,6 @@ export class FormBuilderPage extends BasePage {
         await this.clickElement(this.regionDropdown);
         await this.clickElement(this.page.getByText(regionName, { exact: true }));
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(5000);
     }
 
     async verifyColumnHeaders() {

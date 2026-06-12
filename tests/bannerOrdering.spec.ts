@@ -1,6 +1,7 @@
 // npx playwright test tests/bannerOrdering.spec.ts --headed
 import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import fs from 'fs';
 
 test.describe('Banner Ordering Tests', () => {
 
@@ -30,7 +31,6 @@ test.describe('Banner Ordering Tests', () => {
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_banner_ordering_page');
         } catch (e) {
             console.log('Timeout hit. Dumping HTML and taking emergency screenshot for debugging...');
-            const fs = require('fs');
             fs.writeFileSync('reports/debug-ordering.html', await page.content());
             await page.screenshot({ path: 'reports/debug-ordering-screenshot.png', fullPage: true });
             throw e;
