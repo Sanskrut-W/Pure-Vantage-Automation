@@ -7,6 +7,7 @@ import { CampaignPage } from '../pages/CampaignPage';
 import { CashbackPage } from '../pages/CashbackPage';
 import { EventCalendarPage } from '../pages/EventCalendarPage';
 import { FanExclusivePage } from '../pages/FanExclusivePage';
+import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { LeaderboardPage } from '../pages/LeaderboardPage';
 import { LoyaltyPromotionsPage } from '../pages/LoyaltyPromotionsPage';
 import { SegmentSchedulePage } from '../pages/SegmentSchedulePage';
@@ -14,6 +15,7 @@ import { SegmentationPage } from '../pages/SegmentationPage';
 import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
 import { ToastConfigPage } from '../pages/ToastConfigPage';
 import { GenericWheelPage } from '../pages/GenericWheelPage';
+import { InternalNotificationPage } from '../pages/InternalNotificationPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -30,6 +32,7 @@ type MyFixtures = {
     cashbackPage: CashbackPage;
     eventCalendarPage: EventCalendarPage;
     fanExclusivePage: FanExclusivePage;
+    formBuilderPage: FormBuilderPage;
     leaderboardPage: LeaderboardPage;
     loyaltyPromotionsPage: LoyaltyPromotionsPage;
     segmentSchedulePage: SegmentSchedulePage;
@@ -37,6 +40,7 @@ type MyFixtures = {
     telegramLeaderboardPage: TelegramLeaderboardPage;
     toastConfigPage: ToastConfigPage;
     genericWheelPage: GenericWheelPage;
+    internalNotificationPage: InternalNotificationPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -113,6 +117,12 @@ export const test = base.extend<MyFixtures>({
         await use(fanExclusivePage);
     },
 
+    // Instantiate and provide FormBuilderPage
+    formBuilderPage: async ({ page, authenticatedSession }, use) => {
+        const formBuilderPage = new FormBuilderPage(page);
+        await use(formBuilderPage);
+    },
+
     // Instantiate and provide LeaderboardPage
     leaderboardPage: async ({ page, authenticatedSession }, use) => {
         const leaderboardPage = new LeaderboardPage(page);
@@ -153,7 +163,13 @@ export const test = base.extend<MyFixtures>({
     genericWheelPage: async ({ page, authenticatedSession }, use) => {
         const genericWheelPage = new GenericWheelPage(page);
         await use(genericWheelPage);
-    }
+    },
+
+    // Instantiate and provide InternalNotificationPage
+    internalNotificationPage: async ({ page, authenticatedSession }, use) => {
+        const internalNotificationPage = new InternalNotificationPage(page);
+        await use(internalNotificationPage);
+    },
 });
 
 export { expect } from '@playwright/test';

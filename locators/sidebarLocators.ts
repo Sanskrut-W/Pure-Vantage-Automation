@@ -12,6 +12,9 @@ export const sidebarLocators = {
     menuCashbackPromotions: 'Cashback Promotions',
     menuEventCalendar: 'Event Calender',
     menuFanExclusive: 'Fan Exclusive',
+    menuPlatform: 'Platform',
+    menuFormBuilderConfiguration: 'Form Builder Configuration',
+    menuFormBuilder: 'Form Builder',
     menuLeaderboard: 'Leaderboard',
     menuLoyaltyPromotions: 'Loyalty Promotions',
     menuSegmentSchedule: 'Segment Schedule',
@@ -19,5 +22,7 @@ export const sidebarLocators = {
     menuTelegramLeaderboard: 'Telegram Leaderboard',
     menuToastConfig: 'Toast Configuration',
     menuPromotions: 'Promotions',
-    menuGenericWheel: 'Generic Wheel'
+    menuGenericWheel: 'Generic Wheel',
+    menuSystemAdmin: 'System Admin',
+    menuInternalNotification: 'Internal Notifications',
 };
