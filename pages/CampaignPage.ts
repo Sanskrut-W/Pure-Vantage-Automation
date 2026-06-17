@@ -35,6 +35,18 @@ export class CampaignPage extends BasePage {
     }
 
     /**
+     * Clicks the Select Region button and selects a specific region by name.
+     */
+    async selectRegion(regionName: string) {
+        console.log(`Selecting Region: ${regionName}`);
+        await this.clickSelectRegion();
+        const optionLocator = this.page.getByRole('option', { name: regionName, exact: true });
+        await optionLocator.scrollIntoViewIfNeeded();
+        await this.clickElement(optionLocator);
+        await this.page.waitForTimeout(500);
+    }
+
+    /**
      * Clicks the Create Campaign button if visible on the Campaign Management page.
      */
     async clickCreateCampaign() {

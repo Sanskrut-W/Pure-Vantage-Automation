@@ -111,8 +111,7 @@ export class CouponPage extends BasePage {
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.selectDropdown(this.selectRegionDropdown, regionName);
-        await this.page.waitForLoadState('domcontentloaded');
-        await this.page.waitForTimeout(1000);
+        await this.page.waitForLoadState('networkidle');
     }
 
     async selectEditedBy(editorName: string) {

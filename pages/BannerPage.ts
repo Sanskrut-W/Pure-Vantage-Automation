@@ -77,7 +77,7 @@ export class BannerPage extends BasePage {
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.selectDropdown(this.regionDropdown, regionName);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.page.waitForLoadState('networkidle');
     }
 
     async searchRegion(regionName: string) {
@@ -214,7 +214,7 @@ export class BannerPage extends BasePage {
         await this.clickSelectPlatforms();
         await this.selectPlatformFromDropdown('Android', 'IOS');
         await this.setDateRange('05/15/2024', '06/20/2024');
-        await this.selectCampaign('RashmiTest');
+        await this.selectCampaign('RashTest');
         await this.clickLoginStatus('Logged In');
         await this.clickLoginStatus('Logged Out');
         await this.page.waitForTimeout(4000);
@@ -232,6 +232,7 @@ export class BannerPage extends BasePage {
         console.log(`Selecting region in Banner Ordering: ${region}`);
         await this.selectDropdown(this.orderingRegionDropdown, region);
         await this.page.waitForLoadState('domcontentloaded');
+        await this.page.waitForTimeout(3000);
     }
 
     async selectOrderingChannel(channel: string) {

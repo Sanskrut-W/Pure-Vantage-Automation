@@ -16,6 +16,27 @@ import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
 import { ToastConfigPage } from '../pages/ToastConfigPage';
 import { GenericWheelPage } from '../pages/GenericWheelPage';
 import { InternalNotificationPage } from '../pages/InternalNotificationPage';
+import { PromotionConfigPage } from '../pages/PromotionConfigPage';
+import { PromotionOrderingPage } from '../pages/PromotionOrderingPage';
+import { ScratchAndWinPage } from '../pages/ScratchAndWinPage';
+import { TimedPromotionsPage } from '../pages/TimedPromotionsPage';
+import { PlayerTaggingPage } from '../pages/PlayerTaggingPage';
+import { PlayerTaggingLogsPage } from '../pages/PlayerTaggingLogsPage';
+import { SegmentTaggingPage } from '../pages/SegmentTaggingPage';
+import { TagConfigPage } from '../pages/TagConfigPage';
+import { TutorialConfigPage } from '../pages/TutorialConfigPage';
+import { TutorialOrderingPage } from '../pages/TutorialOrderingPage';
+import { CompAlertsPage } from '../pages/CompAlertsPage';
+import { CompsBulkPage } from '../pages/CompsBulkPage';
+import { CompConfigPage } from '../pages/CompConfigPage';
+import { ManualCompsPage } from '../pages/ManualCompsPage';
+import { TransactionTypesPage } from '../pages/TransactionTypesPage';
+import { AdminAccountsPage } from '../pages/AdminAccountsPage';
+import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
+import { MessageCTAPage } from '../pages/MessageCTAPage';
+import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
+import { NotificationSchedulePage } from '../pages/NotificationSchedulePage';
+import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -41,6 +62,27 @@ type MyFixtures = {
     toastConfigPage: ToastConfigPage;
     genericWheelPage: GenericWheelPage;
     internalNotificationPage: InternalNotificationPage;
+    promotionConfigPage: PromotionConfigPage;
+    promotionOrderingPage: PromotionOrderingPage;
+    scratchAndWinPage: ScratchAndWinPage;
+    timedPromotionsPage: TimedPromotionsPage;
+    playerTaggingPage: PlayerTaggingPage;
+    playerTaggingLogsPage: PlayerTaggingLogsPage;
+    segmentTaggingPage: SegmentTaggingPage;
+    tagConfigPage: TagConfigPage;
+    tutorialConfigPage: TutorialConfigPage;
+    tutorialOrderingPage: TutorialOrderingPage;
+    compAlertsPage: CompAlertsPage;
+    compsBulkPage: CompsBulkPage;
+    compConfigPage: CompConfigPage;
+    manualCompsPage: ManualCompsPage;
+    transactionTypesPage: TransactionTypesPage;
+    adminAccountsPage: AdminAccountsPage;
+    messageCategoriesPage: MessageCategoriesPage;
+    messageCTAPage: MessageCTAPage;
+    messageTemplatesPage: MessageTemplatesPage;
+    notificationSchedulePage: NotificationSchedulePage;
+    stencilConfigPage: StencilConfigPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -169,6 +211,131 @@ export const test = base.extend<MyFixtures>({
     internalNotificationPage: async ({ page, authenticatedSession }, use) => {
         const internalNotificationPage = new InternalNotificationPage(page);
         await use(internalNotificationPage);
+    },
+    // Instantiate and provide PromotionConfigPage
+    promotionConfigPage: async ({ page, authenticatedSession }, use) => {
+        const promotionConfigPage = new PromotionConfigPage(page);
+        await use(promotionConfigPage);
+    },
+
+    // Instantiate and provide PromotionOrderingPage
+    promotionOrderingPage: async ({ page, authenticatedSession }, use) => {
+        const promotionOrderingPage = new PromotionOrderingPage(page);
+        await use(promotionOrderingPage);
+    },
+
+    // Instantiate and provide ScratchAndWinPage
+    scratchAndWinPage: async ({ page, authenticatedSession }, use) => {
+        const scratchAndWinPage = new ScratchAndWinPage(page);
+        await use(scratchAndWinPage);
+    },
+
+    // Instantiate and provide TimedPromotionsPage
+    timedPromotionsPage: async ({ page, authenticatedSession }, use) => {
+        const timedPromotionsPage = new TimedPromotionsPage(page);
+        await use(timedPromotionsPage);
+    },
+
+    // Instantiate and provide PlayerTaggingPage
+    playerTaggingPage: async ({ page, authenticatedSession }, use) => {
+        const playerTaggingPage = new PlayerTaggingPage(page);
+        await use(playerTaggingPage);
+    },
+
+    // Instantiate and provide PlayerTaggingLogsPage
+    playerTaggingLogsPage: async ({ page, authenticatedSession }, use) => {
+        const playerTaggingLogsPage = new PlayerTaggingLogsPage(page);
+        await use(playerTaggingLogsPage);
+    },
+
+    // Instantiate and provide SegmentTaggingPage
+    segmentTaggingPage: async ({ page, authenticatedSession }, use) => {
+        const segmentTaggingPage = new SegmentTaggingPage(page);
+        await use(segmentTaggingPage);
+    },
+
+    // Instantiate and provide TagConfigPage
+    tagConfigPage: async ({ page, authenticatedSession }, use) => {
+        const tagConfigPage = new TagConfigPage(page);
+        await use(tagConfigPage);
+    },
+
+    // Instantiate and provide TutorialConfigPage
+    tutorialConfigPage: async ({ page, authenticatedSession }, use) => {
+        const tutorialConfigPage = new TutorialConfigPage(page);
+        await use(tutorialConfigPage);
+    },
+
+    // Instantiate and provide TutorialOrderingPage
+    tutorialOrderingPage: async ({ page, authenticatedSession }, use) => {
+        const tutorialOrderingPage = new TutorialOrderingPage(page);
+        await use(tutorialOrderingPage);
+    },
+
+    // Instantiate and provide CompAlertsPage
+    compAlertsPage: async ({ page, authenticatedSession }, use) => {
+        const compAlertsPage = new CompAlertsPage(page);
+        await use(compAlertsPage);
+    },
+
+    // Instantiate and provide CompsBulkPage
+    compsBulkPage: async ({ page, authenticatedSession }, use) => {
+        const compsBulkPage = new CompsBulkPage(page);
+        await use(compsBulkPage);
+    },
+
+    // Instantiate and provide CompConfigPage
+    compConfigPage: async ({ page, authenticatedSession }, use) => {
+        const compConfigPage = new CompConfigPage(page);
+        await use(compConfigPage);
+    },
+
+    // Instantiate and provide ManualCompsPage
+    manualCompsPage: async ({ page, authenticatedSession }, use) => {
+        const manualCompsPage = new ManualCompsPage(page);
+        await use(manualCompsPage);
+    },
+
+    // Instantiate and provide TransactionTypesPage
+    transactionTypesPage: async ({ page, authenticatedSession }, use) => {
+        const transactionTypesPage = new TransactionTypesPage(page);
+        await use(transactionTypesPage);
+    },
+
+    // Instantiate and provide AdminAccountsPage
+    adminAccountsPage: async ({ page, authenticatedSession }, use) => {
+        const adminAccountsPage = new AdminAccountsPage(page);
+        await use(adminAccountsPage);
+    },
+
+    // Instantiate and provide MessageCategoriesPage
+    messageCategoriesPage: async ({ page, authenticatedSession }, use) => {
+        const messageCategoriesPage = new MessageCategoriesPage(page);
+        await use(messageCategoriesPage);
+    },
+
+    // Instantiate and provide MessageTemplatesPage
+    messageTemplatesPage: async ({ page, authenticatedSession }, use) => {
+        const messageTemplatesPage = new MessageTemplatesPage(page);
+        await use(messageTemplatesPage);
+    },
+
+    // Instantiate and provide MessageCTAPage
+    messageCTAPage: async ({ page, authenticatedSession }, use) => {
+        const messageCTAPage = new MessageCTAPage(page);
+        await use(messageCTAPage);
+    },
+
+    // Instantiate and provide NotificationSchedulePage
+    notificationSchedulePage: async ({ page, authenticatedSession }, use) => {
+        const notificationSchedulePage = new NotificationSchedulePage(page);
+        await use(notificationSchedulePage);
+    },
+
+    // Instantiate and provide StencilConfigPage
+    stencilConfigPage: async ({ page, authenticatedSession }, use) => {
+        const stencilConfigPage = new StencilConfigPage(page);
+        await use(stencilConfigPage);
     },
 });
 
