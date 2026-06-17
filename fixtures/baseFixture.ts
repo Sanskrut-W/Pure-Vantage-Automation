@@ -7,6 +7,7 @@ import { CampaignPage } from '../pages/CampaignPage';
 import { CashbackPage } from '../pages/CashbackPage';
 import { EventCalendarPage } from '../pages/EventCalendarPage';
 import { FanExclusivePage } from '../pages/FanExclusivePage';
+import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { LeaderboardPage } from '../pages/LeaderboardPage';
 import { LoyaltyPromotionsPage } from '../pages/LoyaltyPromotionsPage';
 import { SegmentSchedulePage } from '../pages/SegmentSchedulePage';
@@ -14,6 +15,7 @@ import { SegmentationPage } from '../pages/SegmentationPage';
 import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
 import { ToastConfigPage } from '../pages/ToastConfigPage';
 import { GenericWheelPage } from '../pages/GenericWheelPage';
+import { InternalNotificationPage } from '../pages/InternalNotificationPage';
 import { PromotionConfigPage } from '../pages/PromotionConfigPage';
 import { PromotionOrderingPage } from '../pages/PromotionOrderingPage';
 import { ScratchAndWinPage } from '../pages/ScratchAndWinPage';
@@ -34,7 +36,6 @@ import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
 import { MessageCTAPage } from '../pages/MessageCTAPage';
 import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
 import { NotificationSchedulePage } from '../pages/NotificationSchedulePage';
-import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
 import path from 'path';
@@ -52,6 +53,7 @@ type MyFixtures = {
     cashbackPage: CashbackPage;
     eventCalendarPage: EventCalendarPage;
     fanExclusivePage: FanExclusivePage;
+    formBuilderPage: FormBuilderPage;
     leaderboardPage: LeaderboardPage;
     loyaltyPromotionsPage: LoyaltyPromotionsPage;
     segmentSchedulePage: SegmentSchedulePage;
@@ -59,6 +61,7 @@ type MyFixtures = {
     telegramLeaderboardPage: TelegramLeaderboardPage;
     toastConfigPage: ToastConfigPage;
     genericWheelPage: GenericWheelPage;
+    internalNotificationPage: InternalNotificationPage;
     promotionConfigPage: PromotionConfigPage;
     promotionOrderingPage: PromotionOrderingPage;
     scratchAndWinPage: ScratchAndWinPage;
@@ -79,7 +82,6 @@ type MyFixtures = {
     messageCTAPage: MessageCTAPage;
     messageTemplatesPage: MessageTemplatesPage;
     notificationSchedulePage: NotificationSchedulePage;
-    formBuilderPage: FormBuilderPage;
     stencilConfigPage: StencilConfigPage;
 };
 
@@ -157,6 +159,12 @@ export const test = base.extend<MyFixtures>({
         await use(fanExclusivePage);
     },
 
+    // Instantiate and provide FormBuilderPage
+    formBuilderPage: async ({ page, authenticatedSession }, use) => {
+        const formBuilderPage = new FormBuilderPage(page);
+        await use(formBuilderPage);
+    },
+
     // Instantiate and provide LeaderboardPage
     leaderboardPage: async ({ page, authenticatedSession }, use) => {
         const leaderboardPage = new LeaderboardPage(page);
@@ -199,6 +207,11 @@ export const test = base.extend<MyFixtures>({
         await use(genericWheelPage);
     },
 
+    // Instantiate and provide InternalNotificationPage
+    internalNotificationPage: async ({ page, authenticatedSession }, use) => {
+        const internalNotificationPage = new InternalNotificationPage(page);
+        await use(internalNotificationPage);
+    },
     // Instantiate and provide PromotionConfigPage
     promotionConfigPage: async ({ page, authenticatedSession }, use) => {
         const promotionConfigPage = new PromotionConfigPage(page);
@@ -317,12 +330,6 @@ export const test = base.extend<MyFixtures>({
     notificationSchedulePage: async ({ page, authenticatedSession }, use) => {
         const notificationSchedulePage = new NotificationSchedulePage(page);
         await use(notificationSchedulePage);
-    },
-
-    // Instantiate and provide FormBuilderPage
-    formBuilderPage: async ({ page, authenticatedSession }, use) => {
-        const formBuilderPage = new FormBuilderPage(page);
-        await use(formBuilderPage);
     },
 
     // Instantiate and provide StencilConfigPage
