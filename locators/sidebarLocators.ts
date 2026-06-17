@@ -41,6 +41,7 @@ export const sidebarLocators = {
     menuMessageCategories: 'Message Categories',
     menuMessageCTA: "Message CTA's",
     menuMessageTemplates: 'Message Templates',
+    menuNotificationSchedule: 'Notification Schedule',
 
     menuPlatform: 'Platform',
     menuFormBuilderConfig: 'Form Builder Configuration',

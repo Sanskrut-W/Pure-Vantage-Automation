@@ -44,6 +44,7 @@ export class SidebarPage extends BasePage {
     readonly messageCategoriesNode: Locator;
     readonly messageCTANode: Locator;
     readonly messageTemplatesNode: Locator;
+    readonly notificationScheduleNode: Locator;
     readonly platformNode: Locator;
     readonly formBuilderConfigNode: Locator;
     readonly formBuilderNode: Locator;
@@ -100,7 +101,8 @@ export class SidebarPage extends BasePage {
         this.adminAccountsNode          = menu(sidebarLocators.menuAdminAccounts);
         this.messageCategoriesNode      = menu(sidebarLocators.menuMessageCategories);
         this.messageCTANode             = menu(sidebarLocators.menuMessageCTA);
-        this.messageTemplatesNode       = menu(sidebarLocators.menuMessageTemplates);
+        this.messageTemplatesNode        = menu(sidebarLocators.menuMessageTemplates);
+        this.notificationScheduleNode   = menu(sidebarLocators.menuNotificationSchedule);
         this.platformNode               = menu(sidebarLocators.menuPlatform);
         this.formBuilderConfigNode      = menu(sidebarLocators.menuFormBuilderConfig);
         this.formBuilderNode            = menu(sidebarLocators.menuFormBuilder);
@@ -482,6 +484,18 @@ export class SidebarPage extends BasePage {
         await this.page.waitForTimeout(500);
         await this.messageCTANode.scrollIntoViewIfNeeded();
         await this.clickElement(this.messageCTANode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToNotificationSchedule() {
+        console.log('Navigating via Sidebar: Marketing -> Notification Management -> Notification Schedule');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.notificationManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.notificationManagementNode);
+        await this.page.waitForTimeout(500);
+        await this.notificationScheduleNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.notificationScheduleNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
