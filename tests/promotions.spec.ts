@@ -93,12 +93,14 @@ test.describe("Promotion config test suite", () => {
     });
 
     test("TC-11 Verify edit promotion button functionality", async ({ page, promotionConfigPage }, testInfo) => {
+        await promotionConfigPage.editBtn.first().waitFor({ state: 'visible', timeout: 30000 });
         await promotionConfigPage.editBtn.first().click();
         await expect(promotionConfigPage.page).toHaveURL(/.*promotion-config-edit/);
         await CommonUtils.captureScreenshot(promotionConfigPage.page, testInfo, 'reports/screenshots', 'TC-11 Verify functionality of Edit Promotion button');
     });
 
     test("TC-12 Edit promotion details and navigating back", async ({ promotionConfigPage }, testInfo) => {
+        await promotionConfigPage.editBtn.first().waitFor({ state: 'visible', timeout: 30000 });
         await promotionConfigPage.editBtn.first().click();
         await promotionConfigPage.page.waitForLoadState('networkidle');
         await CommonUtils.highlightElement(promotionConfigPage.page.getByRole('button', { name: "Update Promotion Details" }).locator('..').getByRole('button').first());

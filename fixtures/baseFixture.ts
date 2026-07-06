@@ -34,6 +34,7 @@ import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
 import { MessageCTAPage } from '../pages/MessageCTAPage';
 import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
 import { NotificationSchedulePage } from '../pages/NotificationSchedulePage';
+import { WhitelistTestAccountsPage } from '../pages/WhitelistTestAccountsPage';
 import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
@@ -79,6 +80,7 @@ type MyFixtures = {
     messageCTAPage: MessageCTAPage;
     messageTemplatesPage: MessageTemplatesPage;
     notificationSchedulePage: NotificationSchedulePage;
+    whitelistTestAccountsPage: WhitelistTestAccountsPage;
     formBuilderPage: FormBuilderPage;
     stencilConfigPage: StencilConfigPage;
 };
@@ -317,6 +319,12 @@ export const test = base.extend<MyFixtures>({
     notificationSchedulePage: async ({ page, authenticatedSession }, use) => {
         const notificationSchedulePage = new NotificationSchedulePage(page);
         await use(notificationSchedulePage);
+    },
+
+    // Instantiate and provide WhitelistTestAccountsPage
+    whitelistTestAccountsPage: async ({ page, authenticatedSession }, use) => {
+        const whitelistTestAccountsPage = new WhitelistTestAccountsPage(page);
+        await use(whitelistTestAccountsPage);
     },
 
     // Instantiate and provide FormBuilderPage

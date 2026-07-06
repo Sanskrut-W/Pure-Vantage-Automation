@@ -414,15 +414,9 @@ test.describe('Message Templates Tests', () => {
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-21_msg_tmpl_create_empty');
 
-        // Click Save without filling any fields
-        await dialog.locator('button:has-text("Save")').first().click();
-        await page.waitForTimeout(1000);
-
-        // Dialog must remain open OR error must appear
-        const dialogStillOpen = await dialog.isVisible();
-        const errorVisible = await page.locator('.p-error, .p-invalid, [class*="error"], [class*="invalid"]').first().isVisible();
-
-        expect(dialogStillOpen || errorVisible, 'Save with empty mandatory fields must show error or keep dialog open').toBe(true);
+        // With empty mandatory fields the Save button must be disabled (PrimeVue validation pattern)
+        const saveBtn = dialog.locator('button:has-text("Save")').first();
+        await expect(saveBtn).toBeDisabled({ timeout: 3000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-21_msg_tmpl_create_validation');
         await messageTemplatesPage.closeDialogWithCancel();

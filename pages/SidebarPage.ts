@@ -39,6 +39,7 @@ export class SidebarPage extends BasePage {
     readonly compConfigNode: Locator;
     readonly manualCompsNode: Locator;
     readonly transactionTypesNode: Locator;
+    readonly whitelistTestAccountsNode: Locator;
     readonly notificationManagementNode: Locator;
     readonly adminAccountsNode: Locator;
     readonly messageCategoriesNode: Locator;
@@ -97,6 +98,7 @@ export class SidebarPage extends BasePage {
         this.compConfigNode             = menu(sidebarLocators.menuCompConfig);
         this.manualCompsNode            = menu(sidebarLocators.menuManualComps);
         this.transactionTypesNode       = menu(sidebarLocators.menuTransactionTypes);
+        this.whitelistTestAccountsNode  = menu(sidebarLocators.menuWhitelistTestAccounts);
         this.notificationManagementNode = menu(sidebarLocators.menuNotificationManagement);
         this.adminAccountsNode          = menu(sidebarLocators.menuAdminAccounts);
         this.messageCategoriesNode      = menu(sidebarLocators.menuMessageCategories);
@@ -487,6 +489,15 @@ export class SidebarPage extends BasePage {
         await this.page.waitForLoadState('domcontentloaded');
     }
 
+    async navigateToWhitelistTestAccounts() {
+        console.log('Navigating via Sidebar: Marketing -> Whitelist Test Accounts');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.whitelistTestAccountsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.whitelistTestAccountsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
     async navigateToNotificationSchedule() {
         console.log('Navigating via Sidebar: Marketing -> Notification Management -> Notification Schedule');
         await this.clickElement(this.marketingNode);
@@ -515,12 +526,17 @@ export class SidebarPage extends BasePage {
 
     async navigateToStencilConfig() {
         console.log('Navigating via Sidebar: System Admin -> Stencil Configuration');
-        await this.clickElement(this.systemAdminNode);
+        // System Admin is at the bottom of the sidebar — must scroll to it before clicking
+        await this.systemAdminNode.scrollIntoViewIfNeeded();
+        await this.systemAdminNode.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(this.systemAdminNode, { force: true });
         await this.page.waitForTimeout(1000);
         await this.stencilConfigNode.scrollIntoViewIfNeeded();
+        await this.stencilConfigNode.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(this.stencilConfigNode, { force: true });
         await this.clickElement(this.stencilConfigNode, { force: true });
         await this.page.waitForURL(/.*stencil/, { timeout: 30000 });
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(3000);
+        await this.page.waitForTimeout(1000);
     }
 }

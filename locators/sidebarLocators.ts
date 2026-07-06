@@ -36,6 +36,7 @@ export const sidebarLocators = {
     menuCompConfig: 'Comp Config',
     menuManualComps: 'Manual Comps',
     menuTransactionTypes: 'Transaction Types',
+    menuWhitelistTestAccounts: 'Whitelist Test Accounts',
     menuNotificationManagement: 'Notification Management',
     menuAdminAccounts: 'Admin Accounts',
     menuMessageCategories: 'Message Categories',

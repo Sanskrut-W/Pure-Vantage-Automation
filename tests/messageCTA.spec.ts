@@ -55,13 +55,14 @@ test.describe('Message CTA Tests', () => {
         await messageCTAPage.clickRegionDropdown();
         await page.waitForTimeout(500);
 
-        // Verify options are displayed
-        const options = page.getByRole('option');
+        // Verify options are displayed (use PrimeVue overlay panel — getByRole('option') hits hidden native <select>)
+        const options = page.locator('.p-dropdown-panel .p-dropdown-item');
+        await options.first().waitFor({ state: 'visible', timeout: 5000 });
         const optionCount = await options.count();
         expect(optionCount, 'Region dropdown must have at least one option').toBeGreaterThan(0);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_msg_cta_dropdown_open');
 
-        // Select the first option directly — avoids leaving dropdown in broken state
+        // Select the first visible overlay option
         await options.first().click();
         await page.waitForLoadState('networkidle');
 

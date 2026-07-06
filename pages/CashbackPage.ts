@@ -310,10 +310,14 @@ export class CashbackPage extends BasePage {
         return byLabel;
     }
 
-    async fillCompCodeInDialog(dialog: Locator, code: string) {
-        console.log(`Filling comp code: "${code}"`);
-        const field = await this.resolveInputByLabel(dialog, cashbackLocators.fieldCompCode);
-        await this.fillInput(field, code);
+    async fillCompCodeInDialog(dialog: Locator, _code: string) {
+        console.log('Selecting comp code (PrimeVue dropdown, first available option)...');
+        // id="compCode" is the exact dropdown div — same pattern used by selectRegionInDialog etc.
+        await dialog.locator('#compCode').click();
+        await this.page.waitForTimeout(300);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        await panel.locator('.p-dropdown-item').first().click();
     }
 
     async fillMinCompAmountInDialog(dialog: Locator, amount: string) {
@@ -350,7 +354,10 @@ export class CashbackPage extends BasePage {
             await calendarInput.fill(fallbackDate);
             await this.page.keyboard.press('Tab');
         }
-        await this.page.waitForTimeout(300);
+        await this.page.waitForTimeout(200);
+        // Dismiss calendar popup by clicking the dialog title
+        await dialog.locator('.p-dialog-title').click({ force: true }).catch(() => {});
+        await this.page.waitForTimeout(200);
     }
 
     /** Picks a start date by opening the calendar and selecting the first enabled day. */
