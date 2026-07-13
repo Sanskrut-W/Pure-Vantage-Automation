@@ -1,0 +1,347 @@
+"Test ID","Summary","Description","Precondition","Step No","Step Details","Expected Results"
+"TC_01","Verify Simulate Bet Settlements screen opens with all fields","Verify that the Settlements screen under Simulate Bet opens successfully with all default controls.","User is logged in.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.","Settlements screen opens successfully displaying Player Account Id, Region Code, Payout Amount, Cash Out Amount, Betslip Id and Settlement Status fields, along with Simulate and Reset buttons."
+"TC_02","Verify Simulate button stays disabled with all mandatory fields blank","Verify that the Simulate button remains disabled when all mandatory Settlement fields are left blank.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Leave all mandatory fields blank.","Simulate button remains disabled."
+"TC_03","Verify Player Account Id requires a valid UUID","Verify that the Player Account Id field validates the entered value is a valid UUID.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Enter an invalid (non-UUID) value in Player Account Id field.
+6. Enter a valid UUID in Player Account Id field.","A validation error stating the field must be a valid UUID is displayed for the invalid value, and disappears once a valid UUID is entered."
+"TC_04","Verify Payout Amount only accepts integers","Verify that the Payout Amount field does not accept letters, only integers.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Enter a mix of letters and numbers in the Payout Amount field.","Letters are rejected; only the numeric digits remain in the field."
+"TC_05","Verify Cash Out Amount only accepts integers","Verify that the Cash Out Amount field does not accept letters, only integers.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Enter a mix of letters and numbers in the Cash Out Amount field.","Letters are rejected; only the numeric digits remain in the field."
+"TC_06","Verify Sport is disabled until Feed is selected","Verify that the Sport field in the Bets table stays disabled until a Feed is selected.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Verify Sport dropdown is disabled by default.
+6. Select a Feed.","Sport dropdown is disabled before a Feed is selected, and becomes enabled once a Feed is selected."
+"TC_07","Verify League and Event are disabled until both Feed and Sport are selected","Verify that League and Event stay disabled until both Feed and Sport are selected.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Verify League and Event dropdowns are disabled by default.
+6. Select a Feed.
+7. Select a Sport.","League and Event remain disabled with only Feed selected, and become enabled once both Feed and Sport are selected."
+"TC_08","Verify Market is disabled until Event is selected","Verify that Market stays disabled until Event is selected.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select a Feed.
+6. Select a Sport.
+7. Select a League.
+8. Verify Market is disabled.
+9. Select an Event.","Market remains disabled until Event is selected, then becomes enabled."
+"TC_09","Verify Outcome is disabled until Market is selected","Verify that Outcome stays disabled until Market is selected.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select a Feed.
+6. Select a Sport.
+7. Select a League.
+8. Select an Event.
+9. Verify Outcome is disabled.
+10. Select a Market.","Outcome remains disabled until Market is selected, then becomes enabled."
+"TC_10","Verify clearing Market also clears Outcome","Verify that clearing the Market field also clears Outcome.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Clear the Market field.","Outcome clears back to its placeholder and becomes disabled again."
+"TC_11","Verify clearing Event also clears Market and Outcome","Verify that clearing the Event field also clears Market and Outcome.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport, Event, Market and Outcome in order.
+6. Clear the Event field.","Market and Outcome both become disabled again."
+"TC_12","Verify clearing League also clears Event, Market and Outcome","Verify that clearing the League field also clears Event, Market and Outcome.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Clear the League field.","Event clears back to its placeholder; Market and Outcome become disabled again."
+"TC_13","Verify clearing Sport clears League, Event, Market and Outcome","Verify that clearing the Sport field clears all its dependent fields.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport, League and Event in order.
+6. Clear the Sport field.","League and Event both become disabled again."
+"TC_14","Verify changing Feed clears League, Event, Market and Outcome","Verify that changing (not clearing) the Feed field clears all its dependent fields.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Change Feed to a different value (do not clear it).","League and Event clear back to their placeholders; Market and Outcome become disabled again."
+"TC_15","Verify the Bets table is displayed on the Settlements screen","Verify that the Bets table component is displayed on the Settlements screen.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Verify the Bets table/section is visible.","The Bets table component with the 'Bets' heading is displayed."
+"TC_17","Verify a bet requires at least one of League, Event, Market or Outcome to be added","Verify that Feed and Sport alone do not form a valid, addable bet.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select a Feed.
+6. Select a Sport.
+7. Click the Add (+) button without selecting League, Event, Market or Outcome.
+8. Fill all mandatory Settlement fields.","Simulate button remains disabled since no valid bet was added."
+"TC_18","Verify a valid bet can be added and enables Simulate once the form is otherwise complete","Verify that adding one valid bet plus completing the Settlement fields enables Simulate.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Settlement fields.","Simulate button becomes enabled."
+"TC_19","Verify the Delete button removes a bet from the Bets table","Verify that deleting the only added bet disables Simulate again.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Settlement fields.
+8. Click the Delete (trash) button on the added bet.","Simulate button becomes disabled again since the only bet was removed."
+"TC_20","Verify Reset clears every field","Verify that the Reset button clears every field on the Settlements screen, including the Bets section.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Fill all mandatory Settlement fields.
+6. Select Feed, Sport and League.
+7. Click 'Reset'.","Player Account Id and Betslip Id clear to empty; Region Code and Settlement Status clear to their placeholders; Payout Amount and Cash Out Amount reset to 0; Feeds, Sport and League clear to their placeholders with Sport and League disabled again; Simulate button is disabled."
+"TC_21","Verify a successful simulation shows a confirmation toast","Verify that running a simulation with valid data shows a success toast.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Settlement fields.
+8. Click 'Simulate'.","A success toast confirming the simulation ran is displayed."
+"TC_23","Verify Bulk Settlements screen opens with all fields","Verify that switching to Bulk mode on the Settlements screen shows all expected fields.","Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.","Amount To Simulate, Region and Settlement Status fields are displayed, along with Simulate and Reset buttons."
+"TC_24","Verify Simulate button stays disabled with all Bulk mandatory fields blank","Verify that the Simulate button remains disabled when all Bulk Settlement fields are blank.","Bulk Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.
+6. Leave all fields blank.","Simulate button remains disabled."
+"TC_25","Verify Amount To Simulate rejects a value above its maximum limit","Verify that entering a value above the documented maximum (100,000,000,000,000,000,000) still blocks the simulation from running.","Bulk Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.
+6. Enter a value greater than 100,000,000,000,000,000,000 in Amount To Simulate.
+7. Select a Region.
+8. Select a Settlement Status.","Either the Simulate button remains disabled, or a red validation message appears just below the Amount To Simulate field."
+"TC_26","Verify Amount To Simulate accepts its maximum limit exactly","Verify that entering exactly the maximum value (100,000,000,000,000,000,000) is accepted.","Bulk Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.
+6. Enter exactly 100,000,000,000,000,000,000 in Amount To Simulate.","The value 100,000,000,000,000,000,000 is accepted in the field."
+"TC_27","Verify a successful Bulk simulation shows a confirmation toast","Verify that running a Bulk simulation with valid data shows a success toast.","Bulk Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.
+6. Enter a valid Amount To Simulate.
+7. Select a Region.
+8. Select a Settlement Status.
+9. Click 'Simulate'.","A success toast confirming the bulk simulation ran is displayed."
+"TC_28","Verify Reset clears every Bulk field","Verify that Reset clears every field on the Bulk Settlements screen.","Bulk Settlements screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Settlements'.
+5. Click on 'Bulk' toggle.
+6. Enter an Amount To Simulate.
+7. Select a Region.
+8. Select a Settlement Status.
+9. Click 'Reset'.","Amount To Simulate resets to 0; Region and Settlement Status clear to their placeholders; Simulate button is disabled."
+"TC_29","Verify Bets Placed screen opens with all fields","Verify that the Bets Placed screen opens successfully with all default controls.","User is logged in.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.","Bets Placed screen opens displaying Player Account Id, Region Code, Wager Amount and Betslip Id fields, along with Simulate and Reset buttons."
+"TC_30","Verify Simulate button stays disabled with all Bets Placed mandatory fields blank","Verify that the Simulate button remains disabled when all mandatory Bets Placed fields are blank.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Leave all mandatory fields blank.","Simulate button remains disabled."
+"TC_31","Verify Wager Amount only accepts integers","Verify that the Wager Amount field does not accept letters, only integers.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Enter a mix of letters and numbers in the Wager Amount field.","Letters are rejected; only the numeric digits remain in the field."
+"TC_32","Verify Player Account Id requires a valid UUID","Verify that the Player Account Id field on Bets Placed validates the entered value is a valid UUID.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Enter an invalid (non-UUID) value in Player Account Id field.
+6. Enter a valid UUID in Player Account Id field.","A validation error stating the field must be a valid UUID is displayed for the invalid value, and disappears once a valid UUID is entered."
+"TC_33","Verify Sport is disabled until Feed is selected","Verify that the Sport field in the Bets table stays disabled until a Feed is selected.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Verify Sport dropdown is disabled by default.
+6. Select a Feed.","Sport dropdown is disabled before a Feed is selected, and becomes enabled once a Feed is selected."
+"TC_34","Verify League and Event are disabled until both Feed and Sport are selected","Verify that League and Event stay disabled until both Feed and Sport are selected.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Verify League and Event dropdowns are disabled by default.
+6. Select a Feed.
+7. Select a Sport.","League and Event remain disabled with only Feed selected, and become enabled once both Feed and Sport are selected."
+"TC_35","Verify Market is disabled until Event is selected","Verify that Market stays disabled until Event is selected.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select a Feed.
+6. Select a Sport.
+7. Select a League.
+8. Verify Market is disabled.
+9. Select an Event.","Market remains disabled until Event is selected, then becomes enabled."
+"TC_36","Verify Outcome is disabled until Market is selected","Verify that Outcome stays disabled until Market is selected.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select a Feed.
+6. Select a Sport.
+7. Select a League.
+8. Select an Event.
+9. Verify Outcome is disabled.
+10. Select a Market.","Outcome remains disabled until Market is selected, then becomes enabled."
+"TC_37","Verify clearing Market also clears Outcome","Verify that clearing the Market field also clears Outcome.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Clear the Market field.","Outcome clears back to its placeholder and becomes disabled again."
+"TC_38","Verify clearing Event also clears Market and Outcome","Verify that clearing the Event field also clears Market and Outcome.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport, Event, Market and Outcome in order.
+6. Clear the Event field.","Market and Outcome both become disabled again."
+"TC_39","Verify clearing League also clears Event, Market and Outcome","Verify that clearing the League field also clears Event, Market and Outcome.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Clear the League field.","Event clears back to its placeholder; Market and Outcome become disabled again."
+"TC_40","Verify clearing Sport clears League, Event, Market and Outcome","Verify that clearing the Sport field clears all its dependent fields.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport, League and Event in order.
+6. Clear the Sport field.","League and Event both become disabled again."
+"TC_41","Verify changing Feed clears League, Event, Market and Outcome","Verify that changing (not clearing) the Feed field clears all its dependent fields.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport, League, Event, Market and Outcome in order.
+6. Change Feed to a different value (do not clear it).","League and Event clear back to their placeholders; Market and Outcome become disabled again."
+"TC_42","Verify the Bets table is displayed on the Bets Placed screen","Verify that the Bets table component is displayed on the Bets Placed screen.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Verify the Bets table/section is visible.","The Bets table component with the 'Bets' heading is displayed."
+"TC_43","Verify a bet requires at least one of League, Event, Market or Outcome to be added","Verify that Feed and Sport alone do not form a valid, addable bet.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select a Feed.
+6. Select a Sport.
+7. Click the Add (+) button without selecting League, Event, Market or Outcome.
+8. Fill all mandatory Bets Placed fields.","Simulate button remains disabled since no valid bet was added."
+"TC_44","Verify a valid bet can be added and enables Simulate once the form is otherwise complete","Verify that adding one valid bet plus completing the Bets Placed fields enables Simulate.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Bets Placed fields.","Simulate button becomes enabled."
+"TC_45","Verify the Delete button removes a bet from the Bets table","Verify that deleting the only added bet disables Simulate again.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Bets Placed fields.
+8. Click the Delete (trash) button on the added bet.","Simulate button becomes disabled again since the only bet was removed."
+"TC_46","Verify Reset clears every field","Verify that the Reset button clears every field on the Bets Placed screen, including the Bets section.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Fill all mandatory Bets Placed fields.
+6. Select Feed, Sport and League.
+7. Click 'Reset'.","Player Account Id and Betslip Id clear to empty; Region Code clears to its placeholder; Wager Amount resets to 0; Feeds, Sport and League clear to their placeholders with Sport and League disabled again; Simulate button is disabled."
+"TC_47","Verify a successful simulation shows a confirmation toast","Verify that running a simulation with valid data shows a success toast.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Bets Placed fields.
+8. Click 'Simulate'.","A success toast confirming the simulation ran is displayed."
+"TC_48","Verify Feed and Sport values are not sent to the backend","Verify that Feed and Sport selections are used only to populate League/Event/Market/Outcome, and are excluded from the outgoing simulation request.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Select Feed, Sport and League.
+6. Click the Add (+) button.
+7. Fill all mandatory Bets Placed fields.
+8. Click 'Simulate'.","The outgoing simulation request body does not include a 'feed' or 'sport' key."
+"TC_49","Verify Bulk Bets Placed screen opens with all fields","Verify that switching to Bulk mode on the Bets Placed screen shows all expected fields.","Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.","Amount To Simulate and Region fields are displayed, along with Simulate and Reset buttons."
+"TC_50","Verify Simulate button stays disabled with all Bulk Bets Placed mandatory fields blank","Verify that the Simulate button remains disabled when all Bulk Bets Placed fields are blank.","Bulk Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.
+6. Leave all fields blank.","Simulate button remains disabled."
+"TC_51","Verify Amount To Simulate rejects a value above its maximum limit","Verify that entering a value above the assumed maximum (100,000,000,000,000,000,000) still blocks the simulation from running.","Bulk Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.
+6. Enter a value greater than 100,000,000,000,000,000,000 in Amount To Simulate.
+7. Select a Region.","Either the Simulate button remains disabled, or a red validation message appears just below the Amount To Simulate field."
+"TC_52","Verify Amount To Simulate accepts its maximum limit exactly","Verify that entering exactly the maximum value (100,000,000,000,000,000,000) is accepted.","Bulk Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.
+6. Enter exactly 100,000,000,000,000,000,000 in Amount To Simulate.","The value 100,000,000,000,000,000,000 is accepted in the field."
+"TC_53","Verify a successful Bulk Bets Placed simulation shows a confirmation toast","Verify that running a Bulk Bets Placed simulation with valid data shows a success toast.","Bulk Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.
+6. Enter a valid Amount To Simulate.
+7. Select a Region.
+8. Click 'Simulate'.","A success toast confirming the bulk simulation ran is displayed (allow extra time, as bulk simulation processes multiple bets server-side)."
+"TC_54","Verify Reset clears every Bulk Bets Placed field","Verify that Reset clears every field on the Bulk Bets Placed screen.","Bulk Bets Placed screen is open.","","1. Launch the site.
+2. Expand 'Workflow Management' from Hamburger menu.
+3. Click on 'Simulate Bet'.
+4. Click on 'Bets Placed'.
+5. Click on 'Bulk' toggle.
+6. Enter an Amount To Simulate.
+7. Select a Region.
+8. Click 'Reset'.","Amount To Simulate resets to 1; Region clears to its placeholder; Simulate button is disabled."

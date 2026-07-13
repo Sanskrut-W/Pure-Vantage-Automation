@@ -7,3 +7,9 @@ reports/
 auth.json
 session.json
 .env
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
