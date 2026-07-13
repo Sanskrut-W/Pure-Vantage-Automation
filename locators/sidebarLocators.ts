@@ -12,6 +12,9 @@ export const sidebarLocators = {
     menuCashbackPromotions: 'Cashback Promotions',
     menuEventCalendar: 'Event Calender',
     menuFanExclusive: 'Fan Exclusive',
+    menuPlatform: 'Platform',
+    menuFormBuilderConfiguration: 'Form Builder Configuration',
+    menuFormBuilder: 'Form Builder',
     menuLeaderboard: 'Leaderboard',
     menuLoyaltyPromotions: 'Loyalty Promotions',
     menuSegmentSchedule: 'Segment Schedule',
@@ -20,6 +23,8 @@ export const sidebarLocators = {
     menuToastConfig: 'Toast Configuration',
     menuPromotions: 'Promotions',
     menuGenericWheel: 'Generic Wheel',
+    menuSystemAdmin: 'System Admin',
+    menuInternalNotification: 'Internal Notifications',
     menuPromotionConfig: 'Promotion Config',
     menuPromotionOrdering: 'Promotions Ordering',
     menuScratchAndWin: 'Scratch and Win',
@@ -43,11 +48,6 @@ export const sidebarLocators = {
     menuMessageCTA: "Message CTA's",
     menuMessageTemplates: 'Message Templates',
     menuNotificationSchedule: 'Notification Schedule',
-
-    menuPlatform: 'Platform',
     menuFormBuilderConfig: 'Form Builder Configuration',
-    menuFormBuilder: 'Form Builder',
-
-    menuSystemAdmin: 'System Admin',
     menuStencilConfig: 'Stencil Configuration',
 };
