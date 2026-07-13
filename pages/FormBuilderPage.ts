@@ -4,9 +4,10 @@ import { formBuilderLocators } from '../locators/formBuilderLocators';
 import { CommonUtils } from '../utils/commonUtils';
 
 export class FormBuilderPage extends BasePage {
+    readonly page: Page;
     readonly searchInput: Locator;
-    readonly regionDropdown: Locator;
     readonly createFormBtn: Locator;
+    readonly regionDropdown: Locator;
     readonly firstPageBtn: Locator;
     readonly prevPageBtn: Locator;
     readonly nextPageBtn: Locator;
@@ -25,6 +26,9 @@ export class FormBuilderPage extends BasePage {
 
     constructor(page: Page) {
         super(page);
+        this.page = page;
+        this.searchInput = page.locator(formBuilderLocators.searchInput);
+        this.createFormBtn = page.locator(formBuilderLocators.createFormButton);
         this.searchInput = this.page.locator(formBuilderLocators.searchInput);
         this.regionDropdown = this.page.locator(formBuilderLocators.regionDropdown);
         this.createFormBtn = this.page.locator(formBuilderLocators.createFormBtn);
@@ -45,12 +49,28 @@ export class FormBuilderPage extends BasePage {
         this.popupCancelBtn = this.dialog.locator(formBuilderLocators.popupCancelBtn);
     }
 
+    async isSearchBoxVisible() {
+        await this.searchInput.waitFor({ state: 'visible', timeout: 20000 });
+        return await this.searchInput.isVisible();
+    }
+
+    async regionContainerContains(text: string) {
+        const region = this.page.locator(`xpath=${formBuilderLocators.regionContainerXPath}`);
+        await region.waitFor({ state: 'visible', timeout: 20000 });
+        await expect(region).toContainText(text, { timeout: 20000 });
+        return true;
+    }
+
+    async isCreateFormButtonVisible() {
+        await this.createFormBtn.waitFor({ state: 'visible', timeout: 20000 });
+        return await this.createFormBtn.isVisible();
+    }
+
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.clickElement(this.regionDropdown);
         await this.clickElement(this.page.getByText(regionName, { exact: true }));
         await this.page.waitForLoadState('networkidle');
-        await this.page.waitForTimeout(5000);
     }
 
     async verifyColumnHeaders() {
@@ -111,7 +131,7 @@ export class FormBuilderPage extends BasePage {
 
     async createForm(region: string, title: string, codeName: string, subTitle: string) {
         await this.clickElement(this.createFormBtn);
-        await expect(this.dialog).toBeVisible({timeout:20000});
+        await expect(this.dialog).toBeVisible({ timeout: 20000 });
         await this.selectPopupRegion(region);
         await this.fillInput(this.popupTitleInput, title);
         await this.fillInput(this.popupCodeNameInput, codeName);

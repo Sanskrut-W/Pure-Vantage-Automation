@@ -36,7 +36,7 @@ export class SegmentSchedulePage extends BasePage {
         await this.openDropdown(segmentScheduleLocators.dropdownSelectRegion);
         const optionLocator = this.page.getByRole('option', { name: regionName, exact: true });
         await this.clickElement(optionLocator);
-        await this.page.waitForTimeout(1000);
+        await this.page.waitForLoadState('networkidle');
     }
 
     /**

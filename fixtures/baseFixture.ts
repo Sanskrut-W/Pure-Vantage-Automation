@@ -7,6 +7,7 @@ import { CampaignPage } from '../pages/CampaignPage';
 import { CashbackPage } from '../pages/CashbackPage';
 import { EventCalendarPage } from '../pages/EventCalendarPage';
 import { FanExclusivePage } from '../pages/FanExclusivePage';
+import { FormBuilderPage } from '../pages/FormBuilderPage';
 import { LeaderboardPage } from '../pages/LeaderboardPage';
 import { LoyaltyPromotionsPage } from '../pages/LoyaltyPromotionsPage';
 import { SegmentSchedulePage } from '../pages/SegmentSchedulePage';
@@ -14,6 +15,7 @@ import { SegmentationPage } from '../pages/SegmentationPage';
 import { TelegramLeaderboardPage } from '../pages/TelegramLeaderboardPage';
 import { ToastConfigPage } from '../pages/ToastConfigPage';
 import { GenericWheelPage } from '../pages/GenericWheelPage';
+import { InternalNotificationPage } from '../pages/InternalNotificationPage';
 import { PromotionConfigPage } from '../pages/PromotionConfigPage';
 import { PromotionOrderingPage } from '../pages/PromotionOrderingPage';
 import { ScratchAndWinPage } from '../pages/ScratchAndWinPage';
@@ -32,7 +34,9 @@ import { TransactionTypesPage } from '../pages/TransactionTypesPage';
 import { AdminAccountsPage } from '../pages/AdminAccountsPage';
 import { MessageCategoriesPage } from '../pages/MessageCategoriesPage';
 import { MessageCTAPage } from '../pages/MessageCTAPage';
-import { FormBuilderPage } from '../pages/FormBuilderPage';
+import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
+import { NotificationSchedulePage } from '../pages/NotificationSchedulePage';
+import { WhitelistTestAccountsPage } from '../pages/WhitelistTestAccountsPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
 import fs from 'fs';
 import path from 'path';
@@ -57,6 +61,7 @@ type MyFixtures = {
     telegramLeaderboardPage: TelegramLeaderboardPage;
     toastConfigPage: ToastConfigPage;
     genericWheelPage: GenericWheelPage;
+    internalNotificationPage: InternalNotificationPage;
     promotionConfigPage: PromotionConfigPage;
     promotionOrderingPage: PromotionOrderingPage;
     scratchAndWinPage: ScratchAndWinPage;
@@ -75,6 +80,9 @@ type MyFixtures = {
     adminAccountsPage: AdminAccountsPage;
     messageCategoriesPage: MessageCategoriesPage;
     messageCTAPage: MessageCTAPage;
+    messageTemplatesPage: MessageTemplatesPage;
+    notificationSchedulePage: NotificationSchedulePage;
+    whitelistTestAccountsPage: WhitelistTestAccountsPage;
     formBuilderPage: FormBuilderPage;
     stencilConfigPage: StencilConfigPage;
 };
@@ -153,6 +161,12 @@ export const test = base.extend<MyFixtures>({
         await use(fanExclusivePage);
     },
 
+    // Instantiate and provide FormBuilderPage
+    formBuilderPage: async ({ page, authenticatedSession }, use) => {
+        const formBuilderPage = new FormBuilderPage(page);
+        await use(formBuilderPage);
+    },
+
     // Instantiate and provide LeaderboardPage
     leaderboardPage: async ({ page, authenticatedSession }, use) => {
         const leaderboardPage = new LeaderboardPage(page);
@@ -195,6 +209,11 @@ export const test = base.extend<MyFixtures>({
         await use(genericWheelPage);
     },
 
+    // Instantiate and provide InternalNotificationPage
+    internalNotificationPage: async ({ page, authenticatedSession }, use) => {
+        const internalNotificationPage = new InternalNotificationPage(page);
+        await use(internalNotificationPage);
+    },
     // Instantiate and provide PromotionConfigPage
     promotionConfigPage: async ({ page, authenticatedSession }, use) => {
         const promotionConfigPage = new PromotionConfigPage(page);
@@ -297,16 +316,28 @@ export const test = base.extend<MyFixtures>({
         await use(messageCategoriesPage);
     },
 
+    // Instantiate and provide MessageTemplatesPage
+    messageTemplatesPage: async ({ page, authenticatedSession }, use) => {
+        const messageTemplatesPage = new MessageTemplatesPage(page);
+        await use(messageTemplatesPage);
+    },
+
     // Instantiate and provide MessageCTAPage
     messageCTAPage: async ({ page, authenticatedSession }, use) => {
         const messageCTAPage = new MessageCTAPage(page);
         await use(messageCTAPage);
     },
 
-    // Instantiate and provide FormBuilderPage
-    formBuilderPage: async ({ page, authenticatedSession }, use) => {
-        const formBuilderPage = new FormBuilderPage(page);
-        await use(formBuilderPage);
+    // Instantiate and provide NotificationSchedulePage
+    notificationSchedulePage: async ({ page, authenticatedSession }, use) => {
+        const notificationSchedulePage = new NotificationSchedulePage(page);
+        await use(notificationSchedulePage);
+    },
+
+    // Instantiate and provide WhitelistTestAccountsPage
+    whitelistTestAccountsPage: async ({ page, authenticatedSession }, use) => {
+        const whitelistTestAccountsPage = new WhitelistTestAccountsPage(page);
+        await use(whitelistTestAccountsPage);
     },
 
     // Instantiate and provide StencilConfigPage

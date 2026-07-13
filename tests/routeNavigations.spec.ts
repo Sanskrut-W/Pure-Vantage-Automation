@@ -1,4 +1,4 @@
-﻿// npx playwright test tests/routeNavigations.spec.ts --headed
+﻿// // npx playwright test tests/routeNavigations.spec.ts --headed
 import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
 
@@ -116,10 +116,8 @@ test.describe('Banner Ordering - Route Persistence', () => {
         await page.goto('/main/home');
         await page.reload();
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        // (double-click sidebar nav pushes old-URL → stencil-URL twice; goto creates 1 entry)
-        await page.goto('/main/component-display/stencil-marketing/banner-ordering');
-        await expect(page).toHaveURL(/stencil-marketing\/banner-ordering/);
+        await sidebarPage.navigateToBannerOrdering();
+        await expect(page).toHaveURL(/banner-ordering/);
         await bannerPage.waitForPageLoad();
     });
 
@@ -190,9 +188,8 @@ test.describe('Campaign Management - Route Persistence', () => {
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/campaign-management');
-        await expect(page).toHaveURL(/stencil-marketing\/campaign-management/);
+        await sidebarPage.navigateToCampaign();
+        await expect(page).toHaveURL(/campaign-management/);
         await page.waitForLoadState('networkidle');
     });
 
@@ -364,9 +361,8 @@ test.describe('Cashback Promotions - Route Persistence', () => {
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/cashback-promotions');
-        await expect(page).toHaveURL(/stencil-marketing\/cashback-promotions/);
+        await sidebarPage.navigateToCashbackPromotions();
+        await expect(page).toHaveURL(/cashback-promotions/);
         await sidebarPage.waitForPageLoad();
     });
 
@@ -431,9 +427,8 @@ test.describe('Coupon Management - Route Persistence', () => {
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/coupon-management');
-        await expect(page).toHaveURL(/stencil-marketing\/coupon-management/);
+        await sidebarPage.navigateToCouponManagement();
+        await expect(page).toHaveURL(/coupon-management/);
         await sidebarPage.waitForPageLoad();
     });
 
@@ -539,9 +534,8 @@ test.describe('Event Calendar - Route Persistence', () => {
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/event-calender');
-        await expect(page).toHaveURL(/stencil-marketing\/event-calender/);
+        await sidebarPage.navigateToEventCalendar();
+        await expect(page).toHaveURL(/event-calender/);
         await sidebarPage.waitForPageLoad();
     });
 
@@ -660,15 +654,12 @@ test.describe('Event Calendar - Route Persistence', () => {
 
 test.describe('Fan Exclusive - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, fanExclusivePage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/fan-exclusive');
-        await expect(page).toHaveURL(/stencil-marketing\/fan-exclusive/);
+        await sidebarPage.navigateToFanExclusive();
+        await expect(page).toHaveURL(/fan-exclusive/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(fanExclusivePage.createFanExclusiveBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-22 Navigate to Fan Exclusive and verify URL persists after reload', async ({ page, sidebarPage, fanExclusivePage }, testInfo) => {
@@ -783,16 +774,12 @@ test.describe('Fan Exclusive - Route Persistence', () => {
 
 test.describe('Leaderboard - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, leaderboardPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        // Leaderboard's old-URL slug is leaderboard-component; stencil-marketing URL follows same pattern
-        await page.goto('/main/component-display/stencil-marketing/leaderboard-component');
-        await expect(page).toHaveURL(/stencil-marketing\/leaderboard/);
+        await sidebarPage.navigateToLeaderboard();
+        await expect(page).toHaveURL(/leaderboard/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(leaderboardPage.createLeaderboardBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-26 Navigate to Leaderboard and verify URL persists after reload', async ({ page, sidebarPage, leaderboardPage }, testInfo) => {
@@ -907,15 +894,12 @@ test.describe('Leaderboard - Route Persistence', () => {
 
 test.describe('Loyalty Promotions - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, loyaltyPromotionsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/loyalty-promotions');
-        await expect(page).toHaveURL(/stencil-marketing\/loyalty-promotions/);
+        await sidebarPage.navigateToLoyaltyPromotions();
+        await expect(page).toHaveURL(/loyalty-promotions/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(loyaltyPromotionsPage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-30 Navigate to Loyalty Promotions and verify URL persists after reload', async ({ page, sidebarPage, loyaltyPromotionsPage }, testInfo) => {
@@ -1035,15 +1019,12 @@ test.describe('Loyalty Promotions - Route Persistence', () => {
 
 test.describe('Segment Schedule - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, segmentSchedulePage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/segment-schedule');
-        await expect(page).toHaveURL(/stencil-marketing\/segment-schedule/);
+        await sidebarPage.navigateToSegmentSchedule();
+        await expect(page).toHaveURL(/segment-schedule/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(segmentSchedulePage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-34 Navigate to Segment Schedule and verify URL persists after reload', async ({ page, sidebarPage, segmentSchedulePage }, testInfo) => {
@@ -1163,16 +1144,12 @@ test.describe('Segment Schedule - Route Persistence', () => {
 
 test.describe('Segmentation - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, segmentationPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly — Segmentation lives under stencil-segmentation (not stencil-marketing)
-        await page.goto('/main/component-display/stencil-segmentation/segmentation');
-        // URL uses stencil-segmentation prefix, NOT stencil-marketing
-        await expect(page).toHaveURL(/stencil-segmentation\/segmentation/);
+        await sidebarPage.navigateToSegmentation();
+        await expect(page).toHaveURL(/segmentation/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(segmentationPage.createSegmentBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-38 Navigate to Segmentation and verify URL persists after reload', async ({ page, sidebarPage, segmentationPage }, testInfo) => {
@@ -1320,15 +1297,12 @@ test.describe('Segmentation - Route Persistence', () => {
 
 test.describe('Telegram Leaderboard - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, telegramLeaderboardPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/telegram-leaderboard');
-        await expect(page).toHaveURL(/stencil-marketing\/telegram-leaderboard/);
+        await sidebarPage.navigateToTelegramLeaderboard();
+        await expect(page).toHaveURL(/telegram-leaderboard/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(telegramLeaderboardPage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-43 Navigate to Telegram Leaderboard and verify URL persists after reload', async ({ page, sidebarPage, telegramLeaderboardPage }, testInfo) => {
@@ -1423,14 +1397,12 @@ test.describe('Telegram Leaderboard - Route Persistence', () => {
 
 test.describe('Toast Configuration - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, toastConfigPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToToastConfig();
-        await expect(page).toHaveURL(/stencil-marketing\/toast-config/);
+        await expect(page).toHaveURL(/toast-config/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(toastConfigPage.createToastConfigBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-46 Navigate to Toast Configuration and verify URL persists after reload', async ({ page, sidebarPage, toastConfigPage }, testInfo) => {
@@ -1583,14 +1555,12 @@ test.describe('Toast Configuration - Route Persistence', () => {
 
 test.describe('Generic Wheel - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, genericWheelPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToGenericWheel();
-        await expect(page).toHaveURL(/stencil-marketing\/generic-wheel/);
+        await expect(page).toHaveURL(/generic-wheel/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(genericWheelPage.createPromotionBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-51 Navigate to Generic Wheel and verify URL persists after reload', async ({ page, sidebarPage, genericWheelPage }, testInfo) => {
@@ -1679,15 +1649,12 @@ test.describe('Generic Wheel - Route Persistence', () => {
 
 test.describe('Promotion Config - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, promotionConfigPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/promotion-config');
-        await expect(page).toHaveURL(/stencil-marketing\/promotion-config/);
+        await sidebarPage.navigateToPromotionConfig();
+        await expect(page).toHaveURL(/promotion-config/);
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(promotionConfigPage.createPromotionBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-55 Navigate to Promotion Config and verify URL persists after reload', async ({ page, sidebarPage, promotionConfigPage }, testInfo) => {
@@ -1853,13 +1820,11 @@ test.describe('Promotion Config - Route Persistence', () => {
 
 test.describe('Promotion Ordering - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, promotionOrderingPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToPromotionOrdering();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(promotionOrderingPage.promoTypeDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-61 Navigate to Promotion Ordering and verify URL persists after reload', async ({ page, sidebarPage, promotionOrderingPage }, testInfo) => {
@@ -1984,13 +1949,11 @@ test.describe('Promotion Ordering - Route Persistence', () => {
 
 test.describe('Scratch And Win Management - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, scratchAndWinPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToScratchAndWin();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(scratchAndWinPage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-65 Navigate to Scratch And Win Management and verify URL persists after reload', async ({ page, sidebarPage, scratchAndWinPage }, testInfo) => {
@@ -2083,13 +2046,11 @@ test.describe('Scratch And Win Management - Route Persistence', () => {
 
 test.describe('Timed Promotions - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, timedPromotionsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTimedPromotions();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(timedPromotionsPage.createTimedPromotionBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-68 Navigate to Timed Promotions and verify URL persists after reload', async ({ page, sidebarPage, timedPromotionsPage }, testInfo) => {
@@ -2152,14 +2113,11 @@ test.describe('Timed Promotions - Route Persistence', () => {
 
 test.describe('Player Tagging - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, playerTaggingPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly — Player Tagging old URL is /tag-player, so stencil URL follows same pattern
-        await page.goto('/main/component-display/stencil-marketing/tag-player');
+        await sidebarPage.navigateToPlayerTagging();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(playerTaggingPage.tagPlayerBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-70 Navigate to Player Tagging and verify URL persists after reload', async ({ page, sidebarPage, playerTaggingPage }, testInfo) => {
@@ -2248,14 +2206,12 @@ test.describe('Player Tagging - Route Persistence', () => {
 
 test.describe('Player Tagging Logs - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, playerTaggingLogsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
-        // Use page.goto() directly to avoid Angular redirect creating extra history entries
-        await page.goto('/main/component-display/stencil-marketing/player-tagging-logs');
+        await sidebarPage.navigateToPlayerTaggingLogs();
         await page.waitForLoadState('networkidle');
-        // Since there are no buttons, we wait for the URL to be correct
-        await expect(page).toHaveURL(/stencil-marketing\/player-tagging-logs/);
+        await expect(page).toHaveURL(/player-tagging-logs/);
     });
 
     test('TC-73 Navigate to Player Tagging Logs and verify URL persists after reload', async ({ page, sidebarPage }, testInfo) => {
@@ -2290,13 +2246,11 @@ test.describe('Player Tagging Logs - Route Persistence', () => {
 
 test.describe('Segment Tagging - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, segmentTaggingPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToSegmentTagging();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(segmentTaggingPage.createSegmentationTagBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-74 Navigate to Segment Tagging and verify URL persists after reload', async ({ page, sidebarPage, segmentTaggingPage }, testInfo) => {
@@ -2359,13 +2313,11 @@ test.describe('Segment Tagging - Route Persistence', () => {
 
 test.describe('Tag Configuration - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, tagConfigPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTagConfig();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(tagConfigPage.createTagBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-76 Navigate to Tag Configuration and verify URL persists after reload', async ({ page, sidebarPage, tagConfigPage }, testInfo) => {
@@ -2454,13 +2406,11 @@ test.describe('Tag Configuration - Route Persistence', () => {
 
 test.describe('Tutorial Configuration - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, tutorialConfigPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTutorialConfig();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(tutorialConfigPage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-79 Navigate to Tutorial Configuration and verify URL persists after reload', async ({ page, sidebarPage, tutorialConfigPage }, testInfo) => {
@@ -2525,13 +2475,11 @@ test.describe('Tutorial Configuration - Route Persistence', () => {
 
 test.describe('Tutorial Ordering - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, tutorialOrderingPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTutorialOrdering();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(tutorialOrderingPage.regionDropdown).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-81 Navigate to Tutorial Ordering and verify URL persists after reload', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
@@ -2594,13 +2542,11 @@ test.describe('Tutorial Ordering - Route Persistence', () => {
 
 test.describe('Comp Alerts - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, compAlertsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompAlerts();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(compAlertsPage.createAlertBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-83 Navigate to Comp Alerts and verify URL persists after reload', async ({ page, sidebarPage, compAlertsPage }, testInfo) => {
@@ -2663,13 +2609,11 @@ test.describe('Comp Alerts - Route Persistence', () => {
 
 test.describe('Comps Bulk - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, compsBulkPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompsBulk();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(compsBulkPage.setupBulkCompBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-85 Navigate to Comps Bulk and verify URL persists after reload', async ({ page, sidebarPage, compsBulkPage }, testInfo) => {
@@ -2732,13 +2676,11 @@ test.describe('Comps Bulk - Route Persistence', () => {
 
 test.describe('Comp Config - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, compConfigPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompConfig();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(compConfigPage.payoutReportBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-87 Navigate to Comp Config and verify URL persists after reload', async ({ page, sidebarPage, compConfigPage }, testInfo) => {
@@ -2827,13 +2769,11 @@ test.describe('Comp Config - Route Persistence', () => {
 
 test.describe('Manual Comps - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, manualCompsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToManualComps();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(manualCompsPage.createManualCompBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-90 Navigate to Manual Comps and verify URL persists after reload', async ({ page, sidebarPage, manualCompsPage }, testInfo) => {
@@ -2896,13 +2836,11 @@ test.describe('Manual Comps - Route Persistence', () => {
 
 test.describe('Transaction Types - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, transactionTypesPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTransactionTypes();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(transactionTypesPage.createTransactionTypeBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-92 Navigate to Transaction Types and verify URL persists after reload', async ({ page, sidebarPage, transactionTypesPage }, testInfo) => {
@@ -2998,13 +2936,11 @@ test.describe('Transaction Types - Route Persistence', () => {
 
 test.describe('Admin Accounts - Route Persistence', () => {
 
-    test.beforeEach(async ({ page, sidebarPage, adminAccountsPage }) => {
+    test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToAdminAccounts();
         await page.waitForLoadState('networkidle');
-        // Wait for the page content to fully render before any test starts
-        await expect(adminAccountsPage.createAccountBtn).toBeVisible({ timeout: 30000 });
     });
 
     test('TC-96 Navigate to Admin Accounts and verify URL persists after reload', async ({ page, sidebarPage, adminAccountsPage }, testInfo) => {
@@ -3126,185 +3062,181 @@ test.describe('Admin Accounts - Route Persistence', () => {
 
 
 
-// // ═══════════════════════════════════════════════════════════
-// //  Message Categories — Route Persistence on Refresh / Back / Forward
-// // ═══════════════════════════════════════════════════════════
+// // // ═══════════════════════════════════════════════════════════
+// // //  Message Categories — Route Persistence on Refresh / Back / Forward
+// // // ═══════════════════════════════════════════════════════════
 
-// test.describe('Message Categories - Route Persistence', () => {
+// // test.describe('Message Categories - Route Persistence', () => {
 
-//     test.beforeEach(async ({ page, sidebarPage, messageCategoriesPage }) => {
-//         await page.goto('/main/home');
-//         await sidebarPage.waitForPageLoad();
-//         await sidebarPage.navigateToMessageCategories();
-//         await page.waitForLoadState('networkidle');
-//         // Wait for the page content to fully render before any test starts
-//         await expect(messageCategoriesPage.createCategoryBtn).toBeVisible({ timeout: 30000 });
-//     });
+// //     test.beforeEach(async ({ page, sidebarPage }) => {
+// //         await page.goto('/main/home');
+// //         await sidebarPage.waitForPageLoad();
+// //         await sidebarPage.navigateToMessageCategories();
+// //         await page.waitForLoadState('networkidle');
+// //     });
 
-//     test('TC-100 Navigate to Message Categories and verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100_step1_on_message_categories');
+// //     test('TC-100 Navigate to Message Categories and verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100_step1_on_message_categories');
 
-//         const urlBeforeRefresh = page.url();
-//         await sidebarPage.browserRefresh();
+// //         const urlBeforeRefresh = page.url();
+// //         await sidebarPage.browserRefresh();
 
-//         expect(page.url()).toBe(urlBeforeRefresh);
-//         await expect(messageCategoriesPage.createCategoryBtn).toBeVisible({ timeout: 20000 });
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100_step2_after_refresh');
-//     });
+// //         expect(page.url()).toBe(urlBeforeRefresh);
+// //         await expect(messageCategoriesPage.createCategoryBtn).toBeVisible({ timeout: 20000 });
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100_step2_after_refresh');
+// //     });
 
-//     test('TC-100b Navigate to Message Categories and verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         const targetUrl = page.url();
-//         const homeUrl = new URL('/main/home', page.url()).href;
+// //     test('TC-100b Navigate to Message Categories and verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         const targetUrl = page.url();
+// //         const homeUrl = new URL('/main/home', page.url()).href;
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step1_on_message_categories');
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step1_on_message_categories');
 
-//         await sidebarPage.browserBack();
-//         expect(page.url()).toBe(homeUrl);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step2_after_back');
+// //         await sidebarPage.browserBack();
+// //         expect(page.url()).toBe(homeUrl);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step2_after_back');
 
-//         await sidebarPage.browserForward();
-//         expect(page.url()).toBe(targetUrl);
-//         await expect(messageCategoriesPage.createCategoryBtn).toBeVisible({ timeout: 20000 });
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step3_after_forward');
-//     });
+// //         await sidebarPage.browserForward();
+// //         expect(page.url()).toBe(targetUrl);
+// //         await expect(messageCategoriesPage.createCategoryBtn).toBeVisible({ timeout: 20000 });
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-100b_step3_after_forward');
+// //     });
 
-//     test('TC-101 Click Create Category, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         await messageCategoriesPage.clickCreateCategory();
+// //     test('TC-101 Click Create Category, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         await messageCategoriesPage.clickCreateCategory();
 
-//         const urlBeforeRefresh = page.url();
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101_step1_before_refresh');
+// //         const urlBeforeRefresh = page.url();
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101_step1_before_refresh');
 
-//         await sidebarPage.browserRefresh();
+// //         await sidebarPage.browserRefresh();
 
-//         expect(page.url()).toBe(urlBeforeRefresh);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101_step2_after_refresh');
-//     });
+// //         expect(page.url()).toBe(urlBeforeRefresh);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101_step2_after_refresh');
+// //     });
 
-//     test('TC-101b Click Create Category, then verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         await messageCategoriesPage.clickCreateCategory();
-//         const urlAfterActions = page.url();
+// //     test('TC-101b Click Create Category, then verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         await messageCategoriesPage.clickCreateCategory();
+// //         const urlAfterActions = page.url();
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step1_after_actions');
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step1_after_actions');
 
-//         await sidebarPage.browserBack();
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step2_after_back');
+// //         await sidebarPage.browserBack();
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step2_after_back');
 
-//         await sidebarPage.browserForward();
-//         expect(page.url()).toBe(urlAfterActions);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step3_after_forward');
-//     });
+// //         await sidebarPage.browserForward();
+// //         expect(page.url()).toBe(urlAfterActions);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-101b_step3_after_forward');
+// //     });
 
-//     test('TC-102 Click Edit, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         // Checking if Edit is visible, might need data to be present
-//         if (await messageCategoriesPage.editBtn.isVisible()) {
-//             await messageCategoriesPage.clickEdit();
+// //     test('TC-102 Click Edit, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         // Checking if Edit is visible, might need data to be present
+// //         if (await messageCategoriesPage.editBtn.isVisible()) {
+// //             await messageCategoriesPage.clickEdit();
 
-//             const urlBeforeRefresh = page.url();
-//             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-102_step1_before_refresh');
+// //             const urlBeforeRefresh = page.url();
+// //             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-102_step1_before_refresh');
 
-//             await sidebarPage.browserRefresh();
+// //             await sidebarPage.browserRefresh();
 
-//             expect(page.url()).toBe(urlBeforeRefresh);
-//             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-102_step2_after_refresh');
-//         } else {
-//             console.log("Edit button not visible, skipping TC-102 core logic");
-//         }
-//     });
+// //             expect(page.url()).toBe(urlBeforeRefresh);
+// //             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-102_step2_after_refresh');
+// //         } else {
+// //             console.log("Edit button not visible, skipping TC-102 core logic");
+// //         }
+// //     });
 
-//     test('TC-103 Click Delete, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
-//         if (await messageCategoriesPage.deleteBtn.isVisible()) {
-//             await messageCategoriesPage.clickDelete();
+// //     test('TC-103 Click Delete, then verify URL persists after reload', async ({ page, sidebarPage, messageCategoriesPage }, testInfo) => {
+// //         if (await messageCategoriesPage.deleteBtn.isVisible()) {
+// //             await messageCategoriesPage.clickDelete();
 
-//             const urlBeforeRefresh = page.url();
-//             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-103_step1_before_refresh');
+// //             const urlBeforeRefresh = page.url();
+// //             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-103_step1_before_refresh');
 
-//             await sidebarPage.browserRefresh();
+// //             await sidebarPage.browserRefresh();
 
-//             expect(page.url()).toBe(urlBeforeRefresh);
-//             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-103_step2_after_refresh');
-//         } else {
-//             console.log("Delete button not visible, skipping TC-103 core logic");
-//         }
-//     });
-// });
+// //             expect(page.url()).toBe(urlBeforeRefresh);
+// //             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-103_step2_after_refresh');
+// //         } else {
+// //             console.log("Delete button not visible, skipping TC-103 core logic");
+// //         }
+// //     });
+// // });
 
-// // ═══════════════════════════════════════════════════════════
-// //  Message CTA — Route Persistence on Refresh / Back / Forward
-// // ═══════════════════════════════════════════════════════════
+// // // ═══════════════════════════════════════════════════════════
+// // //  Message CTA — Route Persistence on Refresh / Back / Forward
+// // // ═══════════════════════════════════════════════════════════
 
-// test.describe('Message CTA - Route Persistence', () => {
+// // test.describe('Message CTA - Route Persistence', () => {
 
-//     test.beforeEach(async ({ page, sidebarPage, messageCTAPage }) => {
-//         await page.goto('/main/home');
-//         await sidebarPage.waitForPageLoad();
-//         await sidebarPage.navigateToMessageCTA();
-//         await page.waitForLoadState('networkidle');
-//         // Wait for the page content to fully render before any test starts
-//         await expect(messageCTAPage.createCTABtn).toBeVisible({ timeout: 30000 });
-//     });
+// //     test.beforeEach(async ({ page, sidebarPage }) => {
+// //         await page.goto('/main/home');
+// //         await sidebarPage.waitForPageLoad();
+// //         await sidebarPage.navigateToMessageCTA();
+// //         await page.waitForLoadState('networkidle');
+// //     });
 
-//     test('TC-104 Navigate to Message CTA and verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104_step1_on_message_cta');
+// //     test('TC-104 Navigate to Message CTA and verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104_step1_on_message_cta');
 
-//         const urlBeforeRefresh = page.url();
-//         await sidebarPage.browserRefresh();
+// //         const urlBeforeRefresh = page.url();
+// //         await sidebarPage.browserRefresh();
 
-//         expect(page.url()).toBe(urlBeforeRefresh);
-//         await expect(messageCTAPage.createCTABtn).toBeVisible({ timeout: 20000 });
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104_step2_after_refresh');
-//     });
+// //         expect(page.url()).toBe(urlBeforeRefresh);
+// //         await expect(messageCTAPage.createCTABtn).toBeVisible({ timeout: 20000 });
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104_step2_after_refresh');
+// //     });
 
-//     test('TC-104b Navigate to Message CTA and verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
-//         const targetUrl = page.url();
-//         const homeUrl = new URL('/main/home', page.url()).href;
+// //     test('TC-104b Navigate to Message CTA and verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
+// //         const targetUrl = page.url();
+// //         const homeUrl = new URL('/main/home', page.url()).href;
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step1_on_message_cta');
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step1_on_message_cta');
 
-//         await sidebarPage.browserBack();
-//         expect(page.url()).toBe(homeUrl);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step2_after_back');
+// //         await sidebarPage.browserBack();
+// //         expect(page.url()).toBe(homeUrl);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step2_after_back');
 
-//         await sidebarPage.browserForward();
-//         expect(page.url()).toBe(targetUrl);
-//         await expect(messageCTAPage.createCTABtn).toBeVisible({ timeout: 20000 });
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step3_after_forward');
-//     });
+// //         await sidebarPage.browserForward();
+// //         expect(page.url()).toBe(targetUrl);
+// //         await expect(messageCTAPage.createCTABtn).toBeVisible({ timeout: 20000 });
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-104b_step3_after_forward');
+// //     });
 
-//     test('TC-105 Click Create CTA, then verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
-//         await messageCTAPage.clickCreateCTA();
+// //     test('TC-105 Click Create CTA, then verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
+// //         await messageCTAPage.clickCreateCTA();
 
-//         const urlBeforeRefresh = page.url();
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105_step1_before_refresh');
+// //         const urlBeforeRefresh = page.url();
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105_step1_before_refresh');
 
-//         await sidebarPage.browserRefresh();
+// //         await sidebarPage.browserRefresh();
 
-//         expect(page.url()).toBe(urlBeforeRefresh);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105_step2_after_refresh');
-//     });
+// //         expect(page.url()).toBe(urlBeforeRefresh);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105_step2_after_refresh');
+// //     });
 
-//     test('TC-105b Click Create CTA, then verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
-//         await messageCTAPage.clickCreateCTA();
-//         const urlAfterActions = page.url();
+// //     test('TC-105b Click Create CTA, then verify URL persists after Back and Forward', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
+// //         await messageCTAPage.clickCreateCTA();
+// //         const urlAfterActions = page.url();
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step1_after_actions');
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step1_after_actions');
 
-//         await sidebarPage.browserBack();
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step2_after_back');
+// //         await sidebarPage.browserBack();
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step2_after_back');
 
-//         await sidebarPage.browserForward();
-//         expect(page.url()).toBe(urlAfterActions);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step3_after_forward');
-//     });
+// //         await sidebarPage.browserForward();
+// //         expect(page.url()).toBe(urlAfterActions);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-105b_step3_after_forward');
+// //     });
 
-//     test('TC-106 Click Region Dropdown, then verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
-//         await messageCTAPage.clickRegionDropdown();
+// //     test('TC-106 Click Region Dropdown, then verify URL persists after reload', async ({ page, sidebarPage, messageCTAPage }, testInfo) => {
+// //         await messageCTAPage.clickRegionDropdown();
 
-//         const urlBeforeRefresh = page.url();
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-106_step1_before_refresh');
+// //         const urlBeforeRefresh = page.url();
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-106_step1_before_refresh');
 
-//         await sidebarPage.browserRefresh();
+// //         await sidebarPage.browserRefresh();
 
-//         expect(page.url()).toBe(urlBeforeRefresh);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-106_step2_after_refresh');
-//     });
-// });
+// //         expect(page.url()).toBe(urlBeforeRefresh);
+// //         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-106_step2_after_refresh');
+// //     });
+// // });

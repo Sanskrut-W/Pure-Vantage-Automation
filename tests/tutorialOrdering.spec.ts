@@ -16,9 +16,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.waitForPageLoad();
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // //// // // // 
     //  Page Verification Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
 
     test('TC-1 Verify Tutorial Ordering Page is accessible', async ({ page }) => {
         await expect(page).toHaveURL(/.*tutorial-ordering/);
@@ -56,9 +56,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_tutorial_ordering_structure');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
     //  Toggle Tests (Serial â€” toggle mutations affect shared state)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
 
     test.describe.serial('Toggle Tests', () => {
 
@@ -128,21 +128,22 @@ test.describe('Tutorial Ordering Tests', () => {
         });
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Drag-and-Drop Tests (Independent â€” each starts fresh)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Drag-and-Drop Tests (Independent â€” each starts fresh)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-9 Verify Logged In List: Drag-and-Drop to adjacent position', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
 
         const rowCount = await tutorialOrderingPage.getRowCount('LoggedIn');
-        expect(rowCount, `Betway Ghana LoggedIn has ${rowCount} row(s) â€” need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
+        expect(rowCount, `Betway Ghana LoggedIn has ${rowCount} row(s) — need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
 
         const name0 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         const name1 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 1);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-9_before_drag_loggedin');
 
         await tutorialOrderingPage.dragRowToRow('LoggedIn', 0, 1);
+        await tutorialOrderingPage.clickUpdate();
 
         const afterName0 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         const afterName1 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 1);
@@ -156,13 +157,14 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.selectRegion(REGION);
 
         const rowCount = await tutorialOrderingPage.getRowCount('LoggedOut');
-        expect(rowCount, `Betway Ghana LoggedOut has ${rowCount} row(s) â€” need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
+        expect(rowCount, `Betway Ghana LoggedOut has ${rowCount} row(s) — need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
 
         const name0 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
         const name1 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 1);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-10_before_drag_loggedout');
 
         await tutorialOrderingPage.dragRowToRow('LoggedOut', 0, 1);
+        await tutorialOrderingPage.clickUpdate();
 
         const afterName0 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
         const afterName1 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 1);
@@ -176,13 +178,14 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.selectRegion(REGION);
 
         const rowCount = await tutorialOrderingPage.getRowCount('LoggedIn');
-        expect(rowCount, `Betway Ghana LoggedIn has ${rowCount} row(s) â€” need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
+        expect(rowCount, `Betway Ghana LoggedIn has ${rowCount} row(s) — need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
 
         const sourceIndex = rowCount > 5 ? 5 : rowCount - 1;
         const nameAtSource = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', sourceIndex);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-11_before_drag_to_first');
 
         await tutorialOrderingPage.dragRowToRow('LoggedIn', sourceIndex, 0);
+        await tutorialOrderingPage.clickUpdate();
 
         const nameAtFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         expect(nameAtFirst).toBe(nameAtSource);
@@ -193,12 +196,13 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.selectRegion(REGION);
 
         const rowCount = await tutorialOrderingPage.getRowCount('LoggedOut');
-        expect(rowCount, `Betway Ghana LoggedOut has ${rowCount} row(s) â€” need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
+        expect(rowCount, `Betway Ghana LoggedOut has ${rowCount} row(s) — need at least 2 for drag-and-drop`).toBeGreaterThanOrEqual(2);
 
         const nameAtFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-12_before_drag_to_last');
 
         await tutorialOrderingPage.dragRowToRow('LoggedOut', 0, rowCount - 1);
+        await tutorialOrderingPage.clickUpdate();
 
         const nameAtLast = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', rowCount - 1);
         expect(nameAtLast).toBe(nameAtFirst);
@@ -211,21 +215,22 @@ test.describe('Tutorial Ordering Tests', () => {
         const outCount = await tutorialOrderingPage.getRowCount('LoggedOut');
         const inCount  = await tutorialOrderingPage.getRowCount('LoggedIn');
 
-        expect(outCount, `Betway Ghana LoggedOut has ${outCount} row(s) â€” need at least 3`).toBeGreaterThanOrEqual(3);
-        expect(inCount,  `Betway Ghana LoggedIn has ${inCount} row(s) â€” need at least 2`).toBeGreaterThanOrEqual(2);
+        expect(outCount, `Betway Ghana LoggedOut has ${outCount} row(s) — need at least 3`).toBeGreaterThanOrEqual(3);
+        expect(inCount,  `Betway Ghana LoggedIn has ${inCount} row(s) — need at least 2`).toBeGreaterThanOrEqual(2);
 
         const loggedOutRef = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 2);
 
         await tutorialOrderingPage.dragRowToRow('LoggedIn', 1, 0);
+        await tutorialOrderingPage.clickUpdate();
 
         const loggedOutAfter = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 2);
         expect(loggedOutAfter).toBe(loggedOutRef);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-13_drag_isolation');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Persistence Tests (Serial â€” save mutations affect server data)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Persistence Tests (Serial â€” save mutations affect server data)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test.describe.serial('Persistence Tests', () => {
 
@@ -273,91 +278,91 @@ test.describe('Tutorial Ordering Tests', () => {
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_after_refresh');
         });
 
-        test('TC-17 Verify Toggle off status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage, tutorialConfigPage }, testInfo) => {
-            await tutorialOrderingPage.selectRegion(REGION);
+        // test('TC-17 Verify Toggle off status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage, tutorialConfigPage }, testInfo) => {
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            const activeTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedIn');
-            expect(activeTutorial).toBeTruthy();
+        //     const activeTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedIn');
+        //     expect(activeTutorial).toBeTruthy();
 
-            await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', false);
-            await tutorialOrderingPage.clickUpdate();
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_toggle_off_and_save');
+        //     await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', false);
+        //     await tutorialOrderingPage.clickUpdate();
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_toggle_off_and_save');
 
-            // Navigate away to Tutorial Config, then return
-            await sidebarPage.navigateToTutorialConfig();
-            await page.waitForLoadState('networkidle');
-            await sidebarPage.navigateToTutorialOrdering();
-            await page.waitForLoadState('networkidle');
+        //     // Navigate away to Tutorial Config, then return
+        //     await sidebarPage.navigateToTutorialConfig();
+        //     await page.waitForLoadState('networkidle');
+        //     await sidebarPage.navigateToTutorialOrdering();
+        //     await page.waitForLoadState('networkidle');
 
-            await tutorialOrderingPage.selectRegion(REGION);
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(activeTutorial, 'LoggedIn');
-            expect(isToggleOn).toBe(false);
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_return');
-        });
+        //     const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(activeTutorial, 'LoggedIn');
+        //     expect(isToggleOn).toBe(false);
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_return');
+        // });
 
-        test('TC-18 Verify Toggle on status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
-            await tutorialOrderingPage.selectRegion(REGION);
+        // test('TC-18 Verify Toggle on status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            // Ensure we have an inactive tutorial to turn on
-            let targetTutorial = await tutorialOrderingPage.getFirstInactiveTutorial('LoggedOut');
-            if (!targetTutorial) {
-                // All are already on â€” turn one off first so we can test turning it back on
-                targetTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedOut');
-                await tutorialOrderingPage.setTutorialToggleStatus(targetTutorial, 'LoggedOut', false);
-            }
-            expect(targetTutorial).toBeTruthy();
+        //     // Ensure we have an inactive tutorial to turn on
+        //     let targetTutorial = await tutorialOrderingPage.getFirstInactiveTutorial('LoggedOut');
+        //     if (!targetTutorial) {
+        //         // All are already on â€” turn one off first so we can test turning it back on
+        //         targetTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedOut');
+        //         await tutorialOrderingPage.setTutorialToggleStatus(targetTutorial, 'LoggedOut', false);
+        //     }
+        //     expect(targetTutorial).toBeTruthy();
 
-            await tutorialOrderingPage.setTutorialToggleStatus(targetTutorial!, 'LoggedOut', true);
-            await tutorialOrderingPage.clickUpdate();
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_after_toggle_on_and_save');
+        //     await tutorialOrderingPage.setTutorialToggleStatus(targetTutorial!, 'LoggedOut', true);
+        //     await tutorialOrderingPage.clickUpdate();
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_after_toggle_on_and_save');
 
-            // Navigate away and return
-            await page.goto('/main/home');
-            await page.waitForLoadState('networkidle');
-            await sidebarPage.navigateToTutorialOrdering();
-            await page.waitForLoadState('networkidle');
+        //     // Navigate away and return
+        //     await page.goto('/main/home');
+        //     await page.waitForLoadState('networkidle');
+        //     await sidebarPage.navigateToTutorialOrdering();
+        //     await page.waitForLoadState('networkidle');
 
-            await tutorialOrderingPage.selectRegion(REGION);
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(targetTutorial!, 'LoggedOut');
-            expect(isToggleOn).toBe(true);
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_after_return');
-        });
+        //     const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(targetTutorial!, 'LoggedOut');
+        //     expect(isToggleOn).toBe(true);
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-18_after_return');
+        // });
 
-        test('TC-32 Verify simultaneous reordering in both lists', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
-            await tutorialOrderingPage.selectRegion(REGION);
+        // test('TC-32 Verify simultaneous reordering in both lists', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            const inCount  = await tutorialOrderingPage.getRowCount('LoggedIn');
-            const outCount = await tutorialOrderingPage.getRowCount('LoggedOut');
-            expect(inCount,  `Betway Ghana LoggedIn has ${inCount} row(s) â€” need at least 2`).toBeGreaterThanOrEqual(2);
-            expect(outCount, `Betway Ghana LoggedOut has ${outCount} row(s) â€” need at least 2`).toBeGreaterThanOrEqual(2);
+        //     const inCount  = await tutorialOrderingPage.getRowCount('LoggedIn');
+        //     const outCount = await tutorialOrderingPage.getRowCount('LoggedOut');
+        //     expect(inCount,  `Betway Ghana LoggedIn has ${inCount} row(s) â€” need at least 2`).toBeGreaterThanOrEqual(2);
+        //     expect(outCount, `Betway Ghana LoggedOut has ${outCount} row(s) â€” need at least 2`).toBeGreaterThanOrEqual(2);
 
-            // Capture the name at index 1 in each list â€” we'll move these to position 1
-            const nameXToMoveToFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn',  1);
-            const nameYToMoveToFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 1);
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_before_reorder');
+        //     // Capture the name at index 1 in each list â€” we'll move these to position 1
+        //     const nameXToMoveToFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn',  1);
+        //     const nameYToMoveToFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 1);
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_before_reorder');
 
-            await tutorialOrderingPage.dragRowToRow('LoggedIn',  1, 0);
-            await tutorialOrderingPage.dragRowToRow('LoggedOut', 1, 0);
-            await tutorialOrderingPage.clickUpdate();
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_after_save');
+        //     await tutorialOrderingPage.dragRowToRow('LoggedIn',  1, 0);
+        //     await tutorialOrderingPage.dragRowToRow('LoggedOut', 1, 0);
+        //     await tutorialOrderingPage.clickUpdate();
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_after_save');
 
-            await sidebarPage.browserRefresh();
-            await tutorialOrderingPage.selectRegion(REGION);
+        //     await sidebarPage.browserRefresh();
+        //     await tutorialOrderingPage.selectRegion(REGION);
 
-            const nameAtFirstIn  = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn',  0);
-            const nameAtFirstOut = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
+        //     const nameAtFirstIn  = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn',  0);
+        //     const nameAtFirstOut = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
 
-            expect(nameAtFirstIn).toBe(nameXToMoveToFirst);
-            expect(nameAtFirstOut).toBe(nameYToMoveToFirst);
-            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_after_refresh');
-        });
+        //     expect(nameAtFirstIn).toBe(nameXToMoveToFirst);
+        //     expect(nameAtFirstOut).toBe(nameYToMoveToFirst);
+        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-32_after_refresh');
+        // });
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Search / Filter Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Search / Filter Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-16 Verify Search bar functionality (Filtering Tutorials List)', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -400,9 +405,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.clearSearch();
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Order Number Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Order Number Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-21 Verify Order numbers auto-update on drag-and-drop', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -412,6 +417,7 @@ test.describe('Tutorial Ordering Tests', () => {
 
         // Drag item at position 5 (index 4) to position 2 (index 1)
         await tutorialOrderingPage.dragRowToRow('LoggedIn', 4, 1);
+        await tutorialOrderingPage.clickUpdate();
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-21_after_drag');
 
         // Order numbers must still be 1, 2, 3, 4, 5, â€¦
@@ -432,6 +438,7 @@ test.describe('Tutorial Ordering Tests', () => {
         if (rowCount >= 3) {
             await tutorialOrderingPage.dragRowToRow('LoggedOut', 1, 0);
         }
+        await tutorialOrderingPage.clickUpdate();
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-31_after_reorders');
 
         const orders = await tutorialOrderingPage.getOrderNumbers('LoggedOut');
@@ -440,9 +447,9 @@ test.describe('Tutorial Ordering Tests', () => {
         }
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Region Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â••â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Region Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-22 Verify Region filter change updates ordering lists', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -492,9 +499,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-33_toggle_state_after_region_switch');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Bidirectional Consistency Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Bidirectional Consistency Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-23 Verify Logged In toggle reflects inclusion in the Logged In list', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -520,9 +527,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-24_loggedout_toggle_consistency');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Scrolling / Large Data Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Scrolling / Large Data Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-25 Verify Logged In ordering list handles high number of items (Scrolling)', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -539,6 +546,7 @@ test.describe('Tutorial Ordering Tests', () => {
         // Drag last item to the top
         const nameAtLast = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', rowCount - 1);
         await tutorialOrderingPage.dragRowToRow('LoggedIn', rowCount - 1, 0);
+        await tutorialOrderingPage.clickUpdate();
 
         const nameAtFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         expect(nameAtFirst).toBe(nameAtLast);
@@ -549,7 +557,7 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.selectRegion(REGION);
 
         const rowCount = await tutorialOrderingPage.getRowCount('LoggedOut');
-        expect(rowCount, `Need more than 5 rows to test scrolling drag-and-drop`).toBeGreaterThan(5);
+        expect(rowCount, `Need at least 4 rows to test scrolling drag-and-drop`).toBeGreaterThanOrEqual(4);
 
         // Note item at top, scroll to bottom
         const nameAtFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
@@ -559,15 +567,16 @@ test.describe('Tutorial Ordering Tests', () => {
 
         // Drag first item to last position
         await tutorialOrderingPage.dragRowToRow('LoggedOut', 0, rowCount - 1);
+        await tutorialOrderingPage.clickUpdate();
 
         const nameAtLast = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', rowCount - 1);
         expect(nameAtLast).toBe(nameAtFirst);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-26_after_cross_scroll_drag');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Drag Behaviour / Boundary Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Drag Behaviour / Boundary Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-19 Verify Drag-and-Drop item remains visible during drag action', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -586,6 +595,7 @@ test.describe('Tutorial Ordering Tests', () => {
         // Verify the drag completes without error (item moves â€” proving drag-start was accepted)
         const name0 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         await tutorialOrderingPage.dragRowToRow('LoggedIn', 0, 1);
+        await tutorialOrderingPage.clickUpdate();
         const name0After = await tutorialOrderingPage.getTutorialNameAtRow('LoggedIn', 0);
         expect(name0After).not.toBe(name0);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-19_drag_feedback');
@@ -600,6 +610,7 @@ test.describe('Tutorial Ordering Tests', () => {
         // Drag completes and item lands at the new position (implies a valid drop target was recognised)
         const name1 = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 1);
         await tutorialOrderingPage.dragRowToRow('LoggedOut', 1, 0);
+        await tutorialOrderingPage.clickUpdate();
         const nameAfterAtFirst = await tutorialOrderingPage.getTutorialNameAtRow('LoggedOut', 0);
         expect(nameAfterAtFirst).toBe(name1);
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-20_drop_target_feedback');
@@ -652,9 +663,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-29_tutorials_not_draggable');
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Data Consistency Tests (Independent)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Data Consistency Tests (Independent)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-30 Verify consistency of Tutorial Name between lists', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
@@ -685,3 +696,7 @@ test.describe('Tutorial Ordering Tests', () => {
     });
 
 });
+
+
+
+

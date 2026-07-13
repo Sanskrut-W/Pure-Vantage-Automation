@@ -31,7 +31,7 @@ export class BannerPage extends BasePage {
         /////// Banner Config Page Locators ///////
         // Initialize Locators using Playwright accessibility best-practices
         this.createBannerBtn = page.getByRole('button', { name: bannerLocators.buttonCreateBanner });
-        this.regionDropdown = page.getByLabel(bannerLocators.dropdownRegion);
+        this.regionDropdown = page.locator(`div.p-dropdown:has(.p-dropdown-trigger[aria-label="${bannerLocators.dropdownRegion}"]) span.p-dropdown-label`).first();
         this.bannerTypeDropdown = page.getByLabel(bannerLocators.dropdownBannerType);
         this.searchInput = page.getByPlaceholder(bannerLocators.inputSearch).nth(1);
         this.bannerNameInput = page.getByLabel(bannerLocators.inputBannerName);
@@ -77,7 +77,7 @@ export class BannerPage extends BasePage {
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.selectDropdown(this.regionDropdown, regionName);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.page.waitForLoadState('networkidle');
     }
 
     async searchRegion(regionName: string) {
