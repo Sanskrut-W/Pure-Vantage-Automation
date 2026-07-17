@@ -23,17 +23,17 @@ test.describe('Notification Schedule Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_notif_schedule_search_bar');
     });
 
-    // test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
-    //     await notificationSchedulePage.selectFirstCommunicationType();
+    test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
+        await notificationSchedulePage.selectFirstCommunicationType();
 
-    //     await notificationSchedulePage.searchFor('Test Email 6 Offer');
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_results');
+        await notificationSchedulePage.searchFor('Test Email 6 Offer');
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_results');
 
-    //     const filteredRows = await notificationSchedulePage.getRowCount();
-    //     expect(filteredRows).toBe(1);
+        const filteredRows = await notificationSchedulePage.getRowCount();
+        expect(filteredRows).toBe(1);
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_exact');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_exact');
+    });
 
     test('TC-4 Verify Notification Type dropdown filter is available on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await expect(notificationSchedulePage.communicationTypeDropdown).toBeVisible();
@@ -65,59 +65,59 @@ test.describe('Notification Schedule Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_notif_schedule_type_selected');
     });
 
-    // test('TC-6 Verify all required columns are available in the Notification Schedule table', async ({ page, notificationSchedulePage }, testInfo) => {
-    //     await notificationSchedulePage.selectFirstCommunicationType();
+    test('TC-6 Verify all required columns are available in the Notification Schedule table', async ({ page, notificationSchedulePage }, testInfo) => {
+        await notificationSchedulePage.selectFirstCommunicationType();
 
-    //     const columnTitles = await notificationSchedulePage.getColumnTitles();
+        const columnTitles = await notificationSchedulePage.getColumnTitles();
 
-    //     expect(columnTitles).toContain('Template Name');
-    //     expect(columnTitles).toContain('Region');
-    //     expect(columnTitles).toContain('Campaign');
-    //     expect(columnTitles).toContain('Dry Run');
-    //     expect(columnTitles).toContain('Processed');
-    //     expect(columnTitles).toContain('Sent to Region');
-    //     expect(columnTitles).toContain('Scheduled Date');
-    //     expect(columnTitles).toContain('Created Date');
+        expect(columnTitles).toContain('Template Name');
+        expect(columnTitles).toContain('Region');
+        expect(columnTitles).toContain('Campaign');
+        expect(columnTitles).toContain('Dry Run');
+        expect(columnTitles).toContain('Processed');
+        expect(columnTitles).toContain('Sent to Region');
+        expect(columnTitles).toContain('Scheduled Date');
+        expect(columnTitles).toContain('Created Date');
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_notif_schedule_columns');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_notif_schedule_columns');
+    });
 
-    // test('TC-7 Verify Processing Complete (Processed) status is available in the table', async ({ page, notificationSchedulePage }, testInfo) => {
-    //     await notificationSchedulePage.selectFirstCommunicationType();
+    test('TC-7 Verify Processing Complete (Processed) status is available in the table', async ({ page, notificationSchedulePage }, testInfo) => {
+        await notificationSchedulePage.selectFirstCommunicationType();
 
-    //     const rowCount = await notificationSchedulePage.getRowCount();
-    //     expect(rowCount, 'Must have at least 1 row to verify Processed column').toBeGreaterThan(0);
+        const rowCount = await notificationSchedulePage.getRowCount();
+        expect(rowCount, 'Must have at least 1 row to verify Processed column').toBeGreaterThan(0);
 
-    //     // Processed column header must be visible
-    //     const processedHeader = page.locator('th .p-column-title:text-is("Processed")');
-    //     await expect(processedHeader).toBeVisible();
+        // Processed column header must be visible
+        const processedHeader = page.locator('th .p-column-title:text-is("Processed")');
+        await expect(processedHeader).toBeVisible();
 
-    //     // Processed column contains p-inputswitch toggle in data rows
-    //     const processedToggle = page.locator('td p-inputswitch, td .p-inputswitch').first();
-    //     await expect(processedToggle).toBeVisible({ timeout: 5000 });
+        // Processed column contains p-inputswitch toggle in data rows
+        const processedToggle = page.locator('td p-inputswitch, td .p-inputswitch').first();
+        await expect(processedToggle).toBeVisible({ timeout: 5000 });
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-7_notif_schedule_processed_status');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-7_notif_schedule_processed_status');
+    });
 
-    // test('TC-8 Verify sorting is available for key columns', async ({ page, notificationSchedulePage }, testInfo) => {
-    //     await notificationSchedulePage.selectFirstCommunicationType();
+    test('TC-8 Verify sorting is available for key columns', async ({ page, notificationSchedulePage }, testInfo) => {
+        await notificationSchedulePage.selectFirstCommunicationType();
 
-    //     const sortableCols = await notificationSchedulePage.getSortableColumnTitles();
+        const sortableCols = await notificationSchedulePage.getSortableColumnTitles();
 
-    //     // Sortable columns per HTML
-    //     expect(sortableCols).toContain('Template Name');
-    //     expect(sortableCols).toContain('Region');
-    //     expect(sortableCols).toContain('Campaign');
-    //     expect(sortableCols).toContain('Sent to Region');
-    //     expect(sortableCols).toContain('Scheduled Date');
-    //     expect(sortableCols).toContain('Created Date');
+        // Sortable columns per HTML
+        expect(sortableCols).toContain('Template Name');
+        expect(sortableCols).toContain('Region');
+        expect(sortableCols).toContain('Campaign');
+        expect(sortableCols).toContain('Sent to Region');
+        expect(sortableCols).toContain('Scheduled Date');
+        expect(sortableCols).toContain('Created Date');
 
-    //     // NOT sortable per HTML
-    //     expect(sortableCols).not.toContain('Dry Run');
-    //     expect(sortableCols).not.toContain('Processed');
+        // NOT sortable per HTML
+        expect(sortableCols).not.toContain('Dry Run');
+        expect(sortableCols).not.toContain('Processed');
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_notif_schedule_sort_buttons');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_notif_schedule_sort_buttons');
+    });
 
     test('TC-9 Verify pagination is available and functional on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectFirstCommunicationType();

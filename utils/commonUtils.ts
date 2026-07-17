@@ -1,4 +1,5 @@
 import { Locator, Page, TestInfo } from '@playwright/test';
+import { randomUUID } from 'crypto';
 
 export class CommonUtils {
     /**
@@ -7,6 +8,14 @@ export class CommonUtils {
      */
     static async pause(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Generates a fresh, unique GUID/UUID string.
+     * Required by any flow whose Account Id field rejects non-UUID or duplicate values.
+     */
+    static generateUUID(): string {
+        return randomUUID();
     }
 
     /**

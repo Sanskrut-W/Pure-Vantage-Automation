@@ -31,7 +31,16 @@ export class BannerPage extends BasePage {
         /////// Banner Config Page Locators ///////
         // Initialize Locators using Playwright accessibility best-practices
         this.createBannerBtn = page.getByRole('button', { name: bannerLocators.buttonCreateBanner });
-        this.regionDropdown = page.locator(`div.p-dropdown:has(.p-dropdown-trigger[aria-label="${bannerLocators.dropdownRegion}"]) span.p-dropdown-label`).first();
+        // The trigger's aria-label mirrors the dropdown's CURRENT label: "Select a region" while
+        // in placeholder state, but the selected region's name after a selection — so an
+        // aria-label-only anchor stops matching the moment a region is picked (which is why a
+        // second selectRegion call used to time out). The union adds selection-stable anchors:
+        // the app's toolbar-filter class and the placeholder-text variant.
+        this.regionDropdown = page.locator([
+            `div.p-dropdown:has(.p-dropdown-trigger[aria-label="${bannerLocators.dropdownRegion}"])`,
+            'div.p-dropdown.dropdown-input',
+            `div.p-dropdown:has(span.p-dropdown-label:text-is("${bannerLocators.dropdownRegion}"))`,
+        ].join(', ')).first().locator('span.p-dropdown-label');
         this.bannerTypeDropdown = page.getByLabel(bannerLocators.dropdownBannerType);
         this.searchInput = page.getByPlaceholder(bannerLocators.inputSearch).nth(1);
         this.bannerNameInput = page.getByLabel(bannerLocators.inputBannerName);

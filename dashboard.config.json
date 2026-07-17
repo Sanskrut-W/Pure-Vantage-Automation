@@ -1,0 +1,34 @@
+{
+  "projectName": "Pure Vantage Automation",
+  "inputs": [
+    {
+      "id": "env",
+      "label": "Environment",
+      "type": "select",
+      "options": [
+        { "value": "dev", "label": "Dev" },
+        { "value": "staging", "label": "Staging" },
+        { "value": "prod", "label": "Prod" }
+      ],
+      "default": "dev"
+    }
+  ],
+  "discovery": {
+    "lookupPath": "tests",
+    "grouping": "file",
+    "filePattern": ".spec.ts"
+  },
+  "execution": {
+    "command": "npx playwright test",
+    "scriptPathPattern": "tests/{script}.spec.ts",
+    "args": ["{scriptPaths}", "--headed"],
+    "env": {
+      "ENV": "{env}"
+    }
+  },
+  "reporting": {
+    "parser": "playwright-json",
+    "resultsFile": "reports/results.json",
+    "htmlReportDir": "reports/playwright-report"
+  }
+}

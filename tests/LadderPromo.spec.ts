@@ -19,7 +19,7 @@ test.describe('Marketing - Ladder Promotions', () => {
     await promotionsNode.click();
 
     // Click Ladder Promotions link and wait for SPA navigation to complete
-    const ladderPromoLink = page.locator('a[href="/main/component-display/ladder-promotions"]');
+    const ladderPromoLink = page.locator('span.menuitem-text:text-is("Ladder Promotions")').first();
     await ladderPromoLink.waitFor({ state: 'visible', timeout: 10000 });
     await ladderPromoLink.click();
     await page.waitForURL('**/ladder-promotions', { timeout: 15000 });

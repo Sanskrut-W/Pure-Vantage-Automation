@@ -12,7 +12,7 @@ export const whitelistTestAccountsLocators = {
     // Dialog
     dialog:           'div.p-dialog',
     dialogSaveBtn:    'div.p-dialog button:has-text("Save"), div.p-dialog button:has-text("Create")',
-    dialogCancelBtn:  'div.p-dialog button:has-text("Cancel")',
+    dialogCancelBtn:  'div.p-dialog button:has-text("Cancel"), div.p-dialog button:has-text("No"), div.p-confirmdialog button:has-text("No"), div.p-confirmdialog button:has-text("Cancel")',
 
     // Confirmation dialog
     confirmDialog:    'div.p-confirmdialog, div.p-dialog',

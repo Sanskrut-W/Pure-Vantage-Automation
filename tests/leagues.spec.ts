@@ -20,7 +20,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
     await promotionsNode.click();
 
     // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-    const genericPredictorLink = page.locator('a[href="/main/component-display/generic-predictor"]');
+    const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
     await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 });
     await genericPredictorLink.click();
     await page.waitForURL('**/generic-predictor', { timeout: 15000 });
@@ -29,7 +29,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
     // Click "View Leagues" — button may be CSS-hidden while Angular initialises.
     // Force-click once attached; if Angular navigation didn't fire (force on hidden = no-op),
     // wait for the button to become truly visible and click normally as a fallback.
-    const viewLeaguesBtn = page.locator('button[aria-label="View Leagues"]').first();
+    const viewLeaguesBtn = page.getByRole('button', { name: 'View Leagues' }).first();
     await viewLeaguesBtn.waitFor({ state: 'attached', timeout: 30000 });
     await viewLeaguesBtn.click({ force: true });
     await page.waitForTimeout(1000);
@@ -42,7 +42,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
     // Wait for the leagues Stencil component to finish hydrating and expose its buttons
     await page.waitForSelector('generic-predictor-leagues.hydrated', { timeout: 30000 });
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await expect(createBtn).toBeVisible({ timeout: 30000 });
   });
 
@@ -58,16 +58,16 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC2
   test('Verify Create League popup', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const leagueNameInput = dialog.locator('input').first();
-    const countryDropdown  = dialog.locator('div.p-dropdown').nth(0);
-    const sportDropdown    = dialog.locator('div.p-dropdown').nth(1);
+    const leagueNameInput = dialog.locator('#leagueName');
+    const sportDropdown    = dialog.locator('#sport');
+    const countryDropdown  = dialog.locator('#country');
     const saveBtn   = dialog.getByRole('button', { name: 'Save',   exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
     const cancelBtn = dialog.getByRole('button', { name: 'Cancel', exact: true }).or(dialog.locator('button[aria-label="Cancel"]')).first();
 
@@ -85,7 +85,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC3
   test('Verify mandatory fields', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -104,7 +104,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC4
   test('Verify league creation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -112,12 +112,11 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
     const leagueName = `AutoLeague-${Date.now()}`;
-    const leagueNameInput = dialog.locator('input').first();
+    const leagueNameInput = dialog.locator('#leagueName');
     await leagueNameInput.fill(leagueName);
 
-    // Sport is nth(0), Country is nth(1) in the dialog DOM order
-    const sportDropdown   = dialog.locator('div.p-dropdown').nth(0);
-    const countryDropdown = dialog.locator('div.p-dropdown').nth(1);
+    const sportDropdown   = dialog.locator('#sport');
+    const countryDropdown = dialog.locator('#country');
     const dropdownPanel   = page.locator('.p-dropdown-panel');
 
     // Select Sport
@@ -147,6 +146,10 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
     const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
     await saveBtn.click();
 
+    const toastText = page.locator('.p-toast-message-text').first();
+    await expect(toastText).toBeVisible({ timeout: 10000 });
+    await expect(toastText).toContainText(/success/i);
+
     await expect(dialog).not.toBeVisible({ timeout: 20000 });
     await page.waitForLoadState('networkidle');
 
@@ -157,14 +160,14 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC5
   test('Verify Country field restriction', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const countryDropdown = dialog.locator('div.p-dropdown').nth(1); // Country is nth(1) in dialog DOM
+    const countryDropdown = dialog.locator('#country');
     await countryDropdown.click();
     await page.waitForTimeout(300);
 
@@ -187,14 +190,14 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC6
   test('Verify Sport field restriction', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const sportDropdown = dialog.locator('div.p-dropdown').nth(0); // Sport is nth(0) in dialog DOM
+    const sportDropdown = dialog.locator('#sport');
     await sportDropdown.click();
     await page.waitForTimeout(300);
 
@@ -216,14 +219,14 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC7
   test('Verify League Name character limit', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create League', exact: true }).or(page.locator('button[aria-label="Create League"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const leagueNameInput = dialog.locator('input').first();
+    const leagueNameInput = dialog.locator('#leagueName');
     await leagueNameInput.fill('A'.repeat(101));
 
     await page.evaluate(() => document.body.click());
@@ -240,7 +243,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC8
   test('Verify Edit League', async ({ page }, testInfo) => {
-    const editBtn = page.locator('button[aria-label="Edit"]').first();
+    const editBtn = page.getByRole('button', { name: 'Edit', exact: true }).or(page.locator('button[aria-label="Edit"]')).first();
     await editBtn.waitFor({ state: 'visible', timeout: 15000 });
     await editBtn.click();
 
@@ -277,7 +280,11 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
     const confirmDialog = page.locator('.p-confirm-dialog').or(page.getByRole('dialog').last());
     await expect(confirmDialog).toBeVisible({ timeout: 10000 });
-    await page.locator('button:has-text("Yes")').first().click();
+    await confirmDialog.getByRole('button', { name: 'Yes', exact: true }).or(page.locator('button[aria-label="Yes"]')).first().click();
+
+    const toastText = page.locator('.p-toast-message-text').first();
+    await expect(toastText).toBeVisible({ timeout: 10000 });
+    await expect(toastText).toContainText(/success/i);
 
     await page.waitForLoadState('networkidle');
 
@@ -301,13 +308,13 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
     }
     const initialCount = await rows.count();
 
-    const deleteBtn = page.locator('button[aria-label="Delete"]').first();
+    const deleteBtn = page.getByRole('button', { name: 'Delete', exact: true }).or(page.locator('button[aria-label="Delete"]')).first();
     await deleteBtn.waitFor({ state: 'visible', timeout: 15000 });
     await deleteBtn.click();
 
     const confirmDialog = page.locator('.p-confirm-dialog').or(page.getByRole('dialog').last());
     await expect(confirmDialog).toBeVisible({ timeout: 10000 });
-    await confirmDialog.getByRole('button', { name: 'No' }).or(page.locator('button:has-text("No")')).first().click();
+    await confirmDialog.getByRole('button', { name: 'No', exact: true }).or(page.locator('button[aria-label="No"]')).first().click();
 
     await page.waitForTimeout(500);
 
@@ -319,7 +326,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   // TC11
   test('Verify View Leagues navigation', async ({ page }, testInfo) => {
-    const viewLeagueBtn = page.locator('button[aria-label="View League"]').first();
+    const viewLeagueBtn = page.getByRole('button', { name: 'League Teams', exact: true }).or(page.locator('button[aria-label="League Teams"]')).first();
     await viewLeagueBtn.waitFor({ state: 'visible', timeout: 15000 });
     await viewLeagueBtn.click();
 
@@ -327,7 +334,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
     // Wait for the League Teams Stencil component to hydrate and expose its buttons
     await page.waitForSelector('generic-predictor-league-teams.hydrated', { timeout: 30000 }).catch(() => {});
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await expect(createBtn).toBeVisible({ timeout: 30000 });
     await expect(page.locator('table, .p-datatable').first()).toBeVisible({ timeout: 20000 });
 
@@ -338,7 +345,7 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LEAGUE TEAMS  (TC12 – TC23)
-// Navigation: same as above + click "View League" on first league row
+// Navigation: same as above + click "League Teams" on first league row
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Marketing - Generic Predictor League Teams', () => {
 
@@ -355,7 +362,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     await promotionsNode.click();
 
     // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-    const genericPredictorLink = page.locator('a[href="/main/component-display/generic-predictor"]');
+    const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
     await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 });
     await genericPredictorLink.click();
     await page.waitForURL('**/generic-predictor', { timeout: 15000 });
@@ -364,7 +371,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     // Click "View Leagues" — button may be CSS-hidden while Angular initialises.
     // Force-click once attached; if Angular navigation didn't fire (force on hidden = no-op),
     // wait for the button to become truly visible and click normally as a fallback.
-    const viewLeaguesBtn = page.locator('button[aria-label="View Leagues"]').first();
+    const viewLeaguesBtn = page.getByRole('button', { name: 'View Leagues' }).first();
     await viewLeaguesBtn.waitFor({ state: 'attached', timeout: 30000 });
     await viewLeaguesBtn.click({ force: true });
     await page.waitForTimeout(1000);
@@ -377,30 +384,30 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
     // Wait for Stencil component and the row buttons to be ready
     await page.waitForSelector('generic-predictor-leagues.hydrated', { timeout: 30000 });
-    const viewLeagueBtn = page.locator('button[aria-label="View League"]').first();
+    const viewLeagueBtn = page.getByRole('button', { name: 'League Teams', exact: true }).or(page.locator('button[aria-label="League Teams"]')).first();
     await expect(viewLeagueBtn).toBeVisible({ timeout: 30000 });
     await viewLeagueBtn.click();
     await page.waitForLoadState('networkidle');
 
     // Wait for the League Teams Stencil component to hydrate and expose its buttons
     await page.waitForSelector('generic-predictor-league-teams.hydrated', { timeout: 30000 }).catch(() => {});
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await expect(createBtn).toBeVisible({ timeout: 30000 });
   });
 
   // TC12
   test('Verify Create Team popup', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const teamNameInput       = dialog.locator('input').nth(0);
-    const teamShortNameInput  = dialog.locator('input').nth(1);
-    const teamNumberInput     = dialog.locator('input').nth(2);
-    const additionalInfoInput = dialog.locator('input, textarea').last();
+    const teamNameInput       = dialog.locator('#teamName');
+    const teamShortNameInput  = dialog.locator('#teamShortName');
+    const teamNumberInput     = dialog.locator('#teamNumber input');
+    const additionalInfoInput = dialog.locator('#additionalInfo');
     const saveBtn   = dialog.getByRole('button', { name: 'Save',   exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
     const cancelBtn = dialog.getByRole('button', { name: 'Cancel', exact: true }).or(dialog.locator('button[aria-label="Cancel"]')).first();
 
@@ -419,7 +426,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC13
   test('Verify Team Name mandatory field', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -427,7 +434,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
     // Leave Team Name blank — fill Team Short Name only
-    const teamShortNameInput = dialog.locator('input').nth(1);
+    const teamShortNameInput = dialog.locator('#teamShortName');
     await teamShortNameInput.fill('ShortName');
 
     const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
@@ -442,7 +449,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC14
   test('Verify Team Short Name mandatory field', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -450,7 +457,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
     // Fill Team Name — leave Team Short Name blank
-    const teamNameInput = dialog.locator('input').nth(0);
+    const teamNameInput = dialog.locator('#teamName');
     await teamNameInput.fill('Test Team Name');
 
     const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
@@ -465,7 +472,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC15
   test('Verify Team creation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -474,15 +481,19 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
     const teamName = `AutoTeam-${Date.now()}`;
 
-    await dialog.locator('input').nth(0).fill(teamName);
-    await dialog.locator('input').nth(1).fill('ATN');
-    await dialog.locator('input').nth(2).fill('99');
-    await dialog.locator('input, textarea').last().fill('Automated test additional info');
+    await dialog.locator('#teamName').fill(teamName);
+    await dialog.locator('#teamShortName').fill('ATN');
+    await dialog.locator('#teamNumber input').fill('99');
+    await dialog.locator('#additionalInfo').fill('Automated test additional info');
 
     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-CreateTeam_filled');
 
     const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true }).or(dialog.locator('button[aria-label="Save"]')).first();
     await saveBtn.click();
+
+    const toastText = page.locator('.p-toast-message-text').first();
+    await expect(toastText).toBeVisible({ timeout: 10000 });
+    await expect(toastText).toContainText(/success/i);
 
     await expect(dialog).not.toBeVisible({ timeout: 20000 });
     await page.waitForLoadState('networkidle');
@@ -494,14 +505,14 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC16
   test('Verify Edit Team', async ({ page }, testInfo) => {
-    const editBtn = page.locator('button[aria-label="Edit"]').first();
+    const editBtn = page.getByRole('button', { name: 'Edit', exact: true }).or(page.locator('button[aria-label="Edit"]')).first();
     await editBtn.waitFor({ state: 'visible', timeout: 15000 });
     await editBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const teamNameInput = dialog.locator('input').nth(0);
+    const teamNameInput = dialog.locator('#teamName');
     await teamNameInput.clear();
     await teamNameInput.fill(`AutoTeam-Edited-${Date.now()}`);
 
@@ -531,7 +542,11 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
     const confirmDialog = page.locator('.p-confirm-dialog').or(page.getByRole('dialog').last());
     await expect(confirmDialog).toBeVisible({ timeout: 10000 });
-    await page.locator('button:has-text("Yes")').first().click();
+    await confirmDialog.getByRole('button', { name: 'Yes', exact: true }).or(page.locator('button[aria-label="Yes"]')).first().click();
+
+    const toastText = page.locator('.p-toast-message-text').first();
+    await expect(toastText).toBeVisible({ timeout: 10000 });
+    await expect(toastText).toContainText(/success/i);
 
     await page.waitForLoadState('networkidle');
 
@@ -547,13 +562,13 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     await expect(rows.first()).toBeVisible({ timeout: 15000 });
     const initialCount = await rows.count();
 
-    const deleteBtn = page.locator('button[aria-label="Delete"]').first();
+    const deleteBtn = page.getByRole('button', { name: 'Delete', exact: true }).or(page.locator('button[aria-label="Delete"]')).first();
     await deleteBtn.waitFor({ state: 'visible', timeout: 15000 });
     await deleteBtn.click();
 
     const confirmDialog = page.locator('.p-confirm-dialog').or(page.getByRole('dialog').last());
     await expect(confirmDialog).toBeVisible({ timeout: 10000 });
-    await confirmDialog.getByRole('button', { name: 'No' }).or(page.locator('button:has-text("No")')).first().click();
+    await confirmDialog.getByRole('button', { name: 'No', exact: true }).or(page.locator('button[aria-label="No"]')).first().click();
 
     await page.waitForTimeout(500);
 
@@ -565,7 +580,7 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC19
   test('Verify Cancel button', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
@@ -573,10 +588,10 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
     const cancelTeamName = `CancelTeam-${Date.now()}`;
-    await dialog.locator('input').nth(0).fill(cancelTeamName);
-    await dialog.locator('input').nth(1).fill('CTN');
-    await dialog.locator('input').nth(2).fill('42');
-    await dialog.locator('input, textarea').last().fill('Additional info for cancel test');
+    await dialog.locator('#teamName').fill(cancelTeamName);
+    await dialog.locator('#teamShortName').fill('CTN');
+    await dialog.locator('#teamNumber input').fill('42');
+    await dialog.locator('#additionalInfo').fill('Additional info for cancel test');
 
     const cancelBtn = dialog.getByRole('button', { name: 'Cancel', exact: true }).or(dialog.locator('button[aria-label="Cancel"]')).first();
     await cancelBtn.click();
@@ -590,14 +605,14 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC20
   test('Verify Team Name maximum length validation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    await dialog.locator('input').nth(0).fill('A'.repeat(101));
+    await dialog.locator('#teamName').fill('A'.repeat(101));
     await page.evaluate(() => document.body.click());
     await page.waitForTimeout(500);
 
@@ -612,14 +627,14 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC21
   test('Verify Team Short Name maximum length validation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    await dialog.locator('input').nth(1).fill('A'.repeat(51));
+    await dialog.locator('#teamShortName').fill('A'.repeat(51));
     await page.evaluate(() => document.body.click());
     await page.waitForTimeout(500);
 
@@ -634,14 +649,14 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC22
   test('Verify Additional Info maximum length validation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    await dialog.locator('input, textarea').last().fill('A'.repeat(151));
+    await dialog.locator('#additionalInfo').fill('A'.repeat(151));
     await page.evaluate(() => document.body.click());
     await page.waitForTimeout(500);
 
@@ -656,14 +671,14 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   // TC23
   test('Verify Team Number validation', async ({ page }, testInfo) => {
-    const createBtn = page.locator('button[aria-label="Create"]').first();
+    const createBtn = page.getByRole('button', { name: 'Create Team', exact: true }).or(page.locator('button[aria-label="Create Team"]')).first();
     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
     await createBtn.click();
 
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const teamNumberInput = dialog.locator('input').nth(2);
+    const teamNumberInput = dialog.locator('#teamNumber input');
     await teamNumberInput.fill('abcABC');
     await page.waitForTimeout(300);
 

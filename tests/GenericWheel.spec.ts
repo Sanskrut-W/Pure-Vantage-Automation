@@ -22,7 +22,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
     await promotionsNode.click();
 
-    const genericWheelLink = page.locator('a[href*="generic-wheel"]').first();
+    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
     await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
     await genericWheelLink.click();
     await page.waitForURL('**/generic-wheel', { timeout: 15000 });

@@ -118,6 +118,23 @@ export class SidebarPage extends BasePage {
     }
 
     /**
+     * Expands a parent menu node ONLY if its child item is not already visible.
+     * Menu clicks toggle: clicking an already-expanded node collapses it and hides
+     * its children, so mid-test navigation (menu state unknown) must check first.
+     */
+    private async ensureMenuExpanded(parentNode: Locator, childNode: Locator) {
+        const alreadyExpanded = await childNode
+            .waitFor({ state: 'visible', timeout: 1500 })
+            .then(() => true).catch(() => false);
+        if (alreadyExpanded) return;
+
+        await parentNode.scrollIntoViewIfNeeded();
+        await this.clickElement(parentNode);
+        await this.page.waitForTimeout(500); // allow expand animation
+        await childNode.waitFor({ state: 'visible', timeout: 10000 });
+    }
+
+    /**
      * Navigates down the menu hierarchy: Marketing -> Banner Management -> Banner Config
      */
     async navigateToBannerConfig() {
@@ -173,11 +190,8 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.tutorialNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialNode);
-        await this.page.waitForTimeout(500);
+        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
+        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialConfigNode);
         await this.tutorialConfigNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.tutorialConfigNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
@@ -385,11 +399,8 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Ordering');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.tutorialNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialNode);
-        await this.page.waitForTimeout(500); // Wait for Tutorial menu to fully expand
+        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
+        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialOrderingNode);
         await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.tutorialOrderingNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');

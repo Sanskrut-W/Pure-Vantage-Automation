@@ -27,10 +27,14 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
         await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 20000 });
         // Verify Create Banner button
         await expect(bannerPage.createBannerBtn).toBeVisible();
-        // Verify Search bar
-        await expect(bannerPage.searchInput).toBeVisible();
-        const tableContainer = bannerPage.page.locator('.p-datatable');
-        if (await tableContainer.count() > 0) {
+        // Verify Search bar — the table-scoped second Search input (nth(1), used by searchRegion)
+        // only renders once a region is selected, so on the pristine landing page assert the
+        // first Search input instead.
+        await expect(page.getByPlaceholder('Search').first()).toBeVisible();
+        // The data table also only materializes after a region is selected — treat as optional
+        // here, and scope to .first() to avoid a strict-mode violation on multiple matches.
+        const tableContainer = bannerPage.page.locator('.p-datatable').first();
+        if (await tableContainer.isVisible().catch(() => false)) {
             await expect(tableContainer).toBeVisible();
         }
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1_banner_config_page');
