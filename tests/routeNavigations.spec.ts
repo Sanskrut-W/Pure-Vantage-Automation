@@ -41,8 +41,10 @@ test.describe('Banner Config - Route Persistence', () => {
 
         await sidebarPage.browserForward();
         expect(page.url()).toBe(bannerConfigUrl);
-        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 5000 });
-        await expect(bannerPage.createBannerBtn).toBeVisible();
+        // Stencil components re-hydrate slowly after history Forward — 20s matches the
+        // budget the (passing) tutorial-page equivalents of this assertion already use.
+        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 20000 });
+        await expect(bannerPage.createBannerBtn).toBeVisible({ timeout: 20000 });
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1b_step3_after_forward_on_banner_config');
     });
 
@@ -144,7 +146,9 @@ test.describe('Banner Ordering - Route Persistence', () => {
 
         await sidebarPage.browserForward();
         expect(page.url()).toBe(bannerOrderingUrl);
-        await expect(bannerPage.orderingRegionDropdown).toBeVisible({ timeout: 10000 });
+        // Stencil components re-hydrate slowly after history Forward — 20s matches the
+        // budget the (passing) tutorial-page equivalents of this assertion already use.
+        await expect(bannerPage.orderingRegionDropdown).toBeVisible({ timeout: 20000 });
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4b_step3_after_forward_on_banner_ordering');
     });
 
@@ -3000,8 +3004,8 @@ test.describe('Admin Accounts - Route Persistence', () => {
 
     test('TC-98 Click Delete, then verify URL persists after reload', async ({ page, sidebarPage, adminAccountsPage }, testInfo) => {
         // Checking if Delete is visible, might need data to be present
-        if (await adminAccountsPage.deleteBtn.isVisible()) {
-            await adminAccountsPage.clickDelete();
+        if (await adminAccountsPage.deleteBtn.first().isVisible()) {
+            await adminAccountsPage.clickDeleteFirst();
 
             const urlBeforeRefresh = page.url();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-98_step1_before_refresh');

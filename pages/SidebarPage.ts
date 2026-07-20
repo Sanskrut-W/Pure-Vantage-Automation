@@ -122,16 +122,47 @@ export class SidebarPage extends BasePage {
      * Menu clicks toggle: clicking an already-expanded node collapses it and hides
      * its children, so mid-test navigation (menu state unknown) must check first.
      */
-    private async ensureMenuExpanded(parentNode: Locator, childNode: Locator) {
-        const alreadyExpanded = await childNode
-            .waitFor({ state: 'visible', timeout: 1500 })
-            .then(() => true).catch(() => false);
-        if (alreadyExpanded) return;
+    /**
+     * Clicks the parent menu levels UNCONDITIONALLY, then the leaf item, and VERIFIES the URL
+     * actually changed to the expected route — retrying the whole sequence if it didn't.
+     *
+     * Two hard-won facts about this app's sidebar (confirmed by a live probe):
+     * 1. Every menu item reports isVisible()=true with a real bounding box even while its
+     *    submenu is collapsed — so "is it already expanded?" visibility checks CANNOT work
+     *    and silently skip the expansion, leaving clicks to fire into a collapsed menu.
+     *    Parents must simply be clicked every time; the retry loop absorbs any toggle
+     *    mismatch when a menu was already open.
+     * 2. The leaf must be clicked WITHOUT force — a non-force click waits for the expand
+     *    animation to settle; force-clicks land on whichever item is sliding through the
+     *    stale coordinates mid-animation (observed hitting "Whitelist Test Accounts").
+     */
+    private async clickMenuLeafAndVerifyUrl(
+        expandPath: Array<[Locator, Locator]>,
+        leafNode: Locator,
+        urlPattern: RegExp,
+    ) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            for (const [parent] of expandPath) {
+                await parent.scrollIntoViewIfNeeded().catch(() => {});
+                await parent.click({ timeout: 8000 }).catch(() => {});
+                await this.page.waitForTimeout(600); // allow expand/collapse animation
+            }
+            await leafNode.scrollIntoViewIfNeeded().catch(() => {});
+            // Non-force — waits for the node to stop moving before clicking. Force only as a
+            // last-resort fallback (the URL check below still guards the result either way).
+            await leafNode.click({ timeout: 10000 })
+                .catch(() => leafNode.click({ force: true, timeout: 5000 }).catch(() => {}));
 
-        await parentNode.scrollIntoViewIfNeeded();
-        await this.clickElement(parentNode);
-        await this.page.waitForTimeout(500); // allow expand animation
-        await childNode.waitFor({ state: 'visible', timeout: 10000 });
+            const arrived = await this.page
+                .waitForURL(urlPattern, { timeout: 10000 })
+                .then(() => true).catch(() => false);
+            if (arrived) {
+                await this.page.waitForLoadState('domcontentloaded');
+                return;
+            }
+            console.warn(`Sidebar navigation attempt ${attempt + 1} did not reach ${urlPattern} (at ${this.page.url()}) — retrying`);
+        }
+        throw new Error(`Sidebar navigation failed: URL never matched ${urlPattern}, ended at ${this.page.url()}`);
     }
 
     /**
@@ -190,11 +221,11 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
-        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
-        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialConfigNode);
-        await this.tutorialConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialConfigNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.clickMenuLeafAndVerifyUrl(
+            [[this.marketingNode, this.tutorialNode], [this.tutorialNode, this.tutorialConfigNode]],
+            this.tutorialConfigNode,
+            /tutorial-config/,
+        );
     }
 
     async navigateToCouponManagement() {
@@ -399,11 +430,11 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Ordering');
-        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
-        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialOrderingNode);
-        await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialOrderingNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.clickMenuLeafAndVerifyUrl(
+            [[this.marketingNode, this.tutorialNode], [this.tutorialNode, this.tutorialOrderingNode]],
+            this.tutorialOrderingNode,
+            /tutorial-ordering/,
+        );
     }
 
     async navigateToCompAlerts() {
@@ -431,15 +462,13 @@ export class SidebarPage extends BasePage {
     }
 
     async navigateToCompConfig() {
-        console.log('Navigating via Sidebar: Marketing Comps -> Comp Config');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.marketingCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.marketingCompsNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
-        await this.compConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.compConfigNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        console.log('Navigating via Sidebar: Marketing -> Marketing Comps -> Comp Managament');
+        // Probe-confirmed route: /main/component-display/stencil-comps/comp-management
+        await this.clickMenuLeafAndVerifyUrl(
+            [[this.marketingNode, this.marketingCompsNode], [this.marketingCompsNode, this.compConfigNode]],
+            this.compConfigNode,
+            /comp-management/,
+        );
     }
 
     async navigateToManualComps() {

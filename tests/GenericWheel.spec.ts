@@ -1,6 +1,6 @@
 // npx playwright test tests/GenericWheel.spec.ts --headed
 
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import { CommonUtils } from '../utils/commonUtils';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2650,22 +2650,70 @@ test.describe('Marketing - Generic Wheel', () => {
     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_50-GenericWheel-ExistingDataPopulated_success');
   });
 
+  // ─── Edit-popup helpers (TC_51 – TC_69, TC_76, TC_77) ───────────────────────
+  // Business rule: a promotion can only be edited while it is INACTIVE — for
+  // active promotions the Save button stays disabled. So: switch ON the
+  // "Include inactive" toolbar toggle, then open Edit on an inactive row.
+  async function openEditOnInactivePromo(page: Page): Promise<{ dialog: Locator; promoName: string }> {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+
+    // Toolbar "Include inactive" toggle has data-p-disabled="false"; the
+    // per-row status switches are disabled (data-p-disabled="true")
+    const inactiveToggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
+    await inactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
+    if (await inactiveToggle.getAttribute('aria-checked') === 'false') {
+      await inactiveToggle.click();
+      await page.waitForTimeout(800);
+      await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+    }
+
+    // Prefer a row whose status switch is OFF (inactive promotion — editable);
+    // fall back to the first row if no inactive one is listed
+    const rows = container.locator('tbody tr[data-pc-section="bodyrow"]');
+    const inactiveRow = rows.filter({ has: page.locator('[data-pc-name="inputswitch"][aria-checked="false"]') }).first();
+    const targetRow = (await inactiveRow.count()) > 0 ? inactiveRow : rows.first();
+
+    await targetRow.locator('button.pure__table-menu-trigger').click();
+    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+    await editItem.waitFor({ state: 'visible', timeout: 5000 });
+    await editItem.click();
+
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+    const promoName = (await dialog.locator('#promotionNameInput').inputValue()).trim();
+    return { dialog, promoName };
+  }
+
+  // Re-find the same promotion by name (row order can change after Save) and
+  // reopen its Edit popup. "Include inactive" is still ON from the first open.
+  async function reopenEditForPromo(page: Page, promoName: string): Promise<Locator> {
+    const container = page.locator('generic-wheel');
+    const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
+    await searchInput.waitFor({ state: 'visible', timeout: 10000 });
+    await searchInput.click({ clickCount: 3 });
+    await searchInput.fill(promoName);
+    await page.waitForTimeout(800);
+
+    const row = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
+    await row.waitFor({ state: 'visible', timeout: 20000 });
+    await row.locator('button.pure__table-menu-trigger').click();
+    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+    await editItem.waitFor({ state: 'visible', timeout: 5000 });
+    await editItem.click();
+
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+    return dialog;
+  }
+
   // TC_51: Verify Promotion Name update in Edit popup
   test('TC_51 - Verify Promotion Name update in Edit popup', async ({ page }, testInfo) => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow51 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn51 = firstRow51.locator('button.pure__table-menu-trigger');
-    await actionBtn51.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn51.click();
-
-    const editItem51 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem51.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem51.click();
-
-    const dialog51 = page.locator('div[role="dialog"]').first();
-    await expect(dialog51).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog51 } = await openEditOnInactivePromo(page);
 
     // Update the Promotion Name
     const nameInput51 = dialog51.locator('#promotionNameInput');
@@ -2687,17 +2735,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow52 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn52 = firstRow52.locator('button.pure__table-menu-trigger');
-    await actionBtn52.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn52.click();
-
-    const editItem52 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem52.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem52.click();
-
-    const dialog52 = page.locator('div[role="dialog"]').first();
-    await expect(dialog52).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog52 } = await openEditOnInactivePromo(page);
 
     // Open Allocation Strategy dropdown and select the first available option
     await dialog52.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
@@ -2719,17 +2758,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow53 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn53 = firstRow53.locator('button.pure__table-menu-trigger');
-    await actionBtn53.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn53.click();
-
-    const editItem53 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem53.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem53.click();
-
-    const dialog53 = page.locator('div[role="dialog"]').first();
-    await expect(dialog53).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog53 } = await openEditOnInactivePromo(page);
 
     // Open Start Date calendar and pick first enabled day in current month
     await dialog53.locator('#startDateCalendar input').click();
@@ -2772,17 +2802,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow54 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn54 = firstRow54.locator('button.pure__table-menu-trigger');
-    await actionBtn54.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn54.click();
-
-    const editItem54 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem54.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem54.click();
-
-    const dialog54 = page.locator('div[role="dialog"]').first();
-    await expect(dialog54).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog54 } = await openEditOnInactivePromo(page);
 
     // Navigate Start Date calendar 12 months into the future
     await dialog54.locator('#startDateCalendar input').click();
@@ -2848,17 +2869,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow55 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn55 = firstRow55.locator('button.pure__table-menu-trigger');
-    await actionBtn55.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn55.click();
-
-    const editItem55 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem55.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem55.click();
-
-    const dialog55 = page.locator('div[role="dialog"]').first();
-    await expect(dialog55).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog55 } = await openEditOnInactivePromo(page);
 
     // Set Start Date — pick first enabled day in current month
     await dialog55.locator('#startDateCalendar input').click();
@@ -2905,17 +2917,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow56 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn56 = firstRow56.locator('button.pure__table-menu-trigger');
-    await actionBtn56.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn56.click();
-
-    const editItem56 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem56.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem56.click();
-
-    const dialog56 = page.locator('div[role="dialog"]').first();
-    await expect(dialog56).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog56 } = await openEditOnInactivePromo(page);
 
     // Modify Spins Per User
     const spinsInput56 = dialog56.locator('#spinsPerUserInput input');
@@ -2941,17 +2944,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow57 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn57 = firstRow57.locator('button.pure__table-menu-trigger');
-    await actionBtn57.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn57.click();
-
-    const editItem57 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem57.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem57.click();
-
-    const dialog57 = page.locator('div[role="dialog"]').first();
-    await expect(dialog57).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog57 } = await openEditOnInactivePromo(page);
 
     // Modify Daily Spin Limit
     const dailyInput57 = dialog57.locator('#dailySpinLimitInput input');
@@ -2977,17 +2971,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow58 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn58 = firstRow58.locator('button.pure__table-menu-trigger');
-    await actionBtn58.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn58.click();
-
-    const editItem58 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem58.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem58.click();
-
-    const dialog58 = page.locator('div[role="dialog"]').first();
-    await expect(dialog58).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog58 } = await openEditOnInactivePromo(page);
 
     // Modify Spin Validity Days
     const validityInput58 = dialog58.locator('#spinValidityDaysInput input');
@@ -3013,17 +2998,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow59 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn59 = firstRow59.locator('button.pure__table-menu-trigger');
-    await actionBtn59.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn59.click();
-
-    const editItem59 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem59.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem59.click();
-
-    const dialog59 = page.locator('div[role="dialog"]').first();
-    await expect(dialog59).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog59 } = await openEditOnInactivePromo(page);
 
     // Modify Number of Slices (valid range: 2–8)
     const slicesInput59 = dialog59.locator('#numberOfSlicesInput input');
@@ -3049,17 +3025,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow60 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn60 = firstRow60.locator('button.pure__table-menu-trigger');
-    await actionBtn60.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn60.click();
-
-    const editItem60 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem60.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem60.click();
-
-    const dialog60 = page.locator('div[role="dialog"]').first();
-    await expect(dialog60).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog60 } = await openEditOnInactivePromo(page);
 
     // Change Region — select Betway Botswana or Betway Ghana
     await dialog60.locator('#regionDropdown [data-pc-section="trigger"]').click();
@@ -3085,17 +3052,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow61 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn61 = firstRow61.locator('button.pure__table-menu-trigger');
-    await actionBtn61.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn61.click();
-
-    const editItem61 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem61.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem61.click();
-
-    const dialog61 = page.locator('div[role="dialog"]').first();
-    await expect(dialog61).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog61, promoName: promoName61 } = await openEditOnInactivePromo(page);
 
     // Update Redirect URL with a valid URL
     const redirectInput61 = dialog61.locator('#redirectUrlInput');
@@ -3110,15 +3068,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog61).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify URL is persisted
-    const firstRow61b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow61b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow61b.locator('button.pure__table-menu-trigger').click();
-    const editItem61b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem61b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem61b.click();
-
-    const dialog61b = page.locator('div[role="dialog"]').first();
-    await expect(dialog61b).toBeVisible({ timeout: 15000 });
+    const dialog61b = await reopenEditForPromo(page, promoName61);
     const savedUrl61 = await dialog61b.locator('#redirectUrlInput').inputValue();
     expect(savedUrl61.trim().length).toBeGreaterThan(0);
 
@@ -3130,17 +3080,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow62 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn62 = firstRow62.locator('button.pure__table-menu-trigger');
-    await actionBtn62.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn62.click();
-
-    const editItem62 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem62.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem62.click();
-
-    const dialog62 = page.locator('div[role="dialog"]').first();
-    await expect(dialog62).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog62, promoName: promoName62 } = await openEditOnInactivePromo(page);
 
     // Modify Ticket Prefix
     const prefixInput62 = dialog62.locator('#ticketPrefixInput');
@@ -3155,15 +3096,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog62).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify prefix is persisted
-    const firstRow62b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow62b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow62b.locator('button.pure__table-menu-trigger').click();
-    const editItem62b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem62b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem62b.click();
-
-    const dialog62b = page.locator('div[role="dialog"]').first();
-    await expect(dialog62b).toBeVisible({ timeout: 15000 });
+    const dialog62b = await reopenEditForPromo(page, promoName62);
     const savedPrefix62 = await dialog62b.locator('#ticketPrefixInput').inputValue();
     expect(savedPrefix62.trim().length).toBeGreaterThan(0);
 
@@ -3175,17 +3108,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow63 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn63 = firstRow63.locator('button.pure__table-menu-trigger');
-    await actionBtn63.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn63.click();
-
-    const editItem63 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem63.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem63.click();
-
-    const dialog63 = page.locator('div[role="dialog"]').first();
-    await expect(dialog63).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog63, promoName: promoName63 } = await openEditOnInactivePromo(page);
 
     // Update Minimum Required Wager Total
     const wagerInput63 = dialog63.locator('#minimumWagerInput input');
@@ -3201,15 +3125,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog63).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify value is persisted
-    const firstRow63b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow63b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow63b.locator('button.pure__table-menu-trigger').click();
-    const editItem63b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem63b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem63b.click();
-
-    const dialog63b = page.locator('div[role="dialog"]').first();
-    await expect(dialog63b).toBeVisible({ timeout: 15000 });
+    const dialog63b = await reopenEditForPromo(page, promoName63);
     const savedWager63 = await dialog63b.locator('#minimumWagerInput input').inputValue();
     expect(savedWager63.trim().length).toBeGreaterThan(0);
 
@@ -3221,17 +3137,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow64 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn64 = firstRow64.locator('button.pure__table-menu-trigger');
-    await actionBtn64.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn64.click();
-
-    const editItem64 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem64.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem64.click();
-
-    const dialog64 = page.locator('div[role="dialog"]').first();
-    await expect(dialog64).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog64, promoName: promoName64 } = await openEditOnInactivePromo(page);
 
     // Open Notification Template dropdown
     await dialog64.locator('#notificationDropdown [data-pc-section="trigger"]').click();
@@ -3258,15 +3165,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog64).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify a template label is shown
-    const firstRow64b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow64b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow64b.locator('button.pure__table-menu-trigger').click();
-    const editItem64b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem64b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem64b.click();
-
-    const dialog64b = page.locator('div[role="dialog"]').first();
-    await expect(dialog64b).toBeVisible({ timeout: 15000 });
+    const dialog64b = await reopenEditForPromo(page, promoName64);
     const notifLabel64 = await dialog64b.locator('#notificationDropdown span[data-pc-section="input"]').textContent();
     expect((notifLabel64 ?? '').trim().length).toBeGreaterThan(0);
 
@@ -3278,17 +3177,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow65 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn65 = firstRow65.locator('button.pure__table-menu-trigger');
-    await actionBtn65.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn65.click();
-
-    const editItem65 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem65.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem65.click();
-
-    const dialog65 = page.locator('div[role="dialog"]').first();
-    await expect(dialog65).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog65, promoName: promoName65 } = await openEditOnInactivePromo(page);
 
     // Read current state of Spin Again toggle, then flip it
     const spinSwitch65 = dialog65.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
@@ -3305,15 +3195,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog65).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify toggle persisted
-    const firstRow65b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow65b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow65b.locator('button.pure__table-menu-trigger').click();
-    const editItem65b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem65b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem65b.click();
-
-    const dialog65b = page.locator('div[role="dialog"]').first();
-    await expect(dialog65b).toBeVisible({ timeout: 15000 });
+    const dialog65b = await reopenEditForPromo(page, promoName65);
     const spinSwitch65b = dialog65b.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
     await spinSwitch65b.scrollIntoViewIfNeeded();
     await expect(spinSwitch65b).toHaveAttribute('aria-checked', stateAfter65);
@@ -3326,17 +3208,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow66 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn66 = firstRow66.locator('button.pure__table-menu-trigger');
-    await actionBtn66.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn66.click();
-
-    const editItem66 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem66.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem66.click();
-
-    const dialog66 = page.locator('div[role="dialog"]').first();
-    await expect(dialog66).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog66, promoName: promoName66 } = await openEditOnInactivePromo(page);
 
     // Read current state of Requires Opt In toggle, then flip it
     const optInSwitch66 = dialog66.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
@@ -3353,15 +3226,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog66).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify toggle persisted
-    const firstRow66b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow66b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow66b.locator('button.pure__table-menu-trigger').click();
-    const editItem66b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem66b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem66b.click();
-
-    const dialog66b = page.locator('div[role="dialog"]').first();
-    await expect(dialog66b).toBeVisible({ timeout: 15000 });
+    const dialog66b = await reopenEditForPromo(page, promoName66);
     const optInSwitch66b = dialog66b.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
     await optInSwitch66b.scrollIntoViewIfNeeded();
     await expect(optInSwitch66b).toHaveAttribute('aria-checked', stateAfter66);
@@ -3374,17 +3239,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow67 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn67 = firstRow67.locator('button.pure__table-menu-trigger');
-    await actionBtn67.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn67.click();
-
-    const editItem67 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem67.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem67.click();
-
-    const dialog67 = page.locator('div[role="dialog"]').first();
-    await expect(dialog67).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog67, promoName: promoName67 } = await openEditOnInactivePromo(page);
 
     // Read current state of Allocate Ticket On All Prizes toggle, then flip it
     const allocateSwitch67 = dialog67.locator('[data-pc-name="inputswitch"]:has(#allocateTicketOnAllPrizes)');
@@ -3401,15 +3257,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog67).toBeHidden({ timeout: 15000 });
 
     // Reopen via three-dots → Edit and verify toggle persisted
-    const firstRow67b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow67b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow67b.locator('button.pure__table-menu-trigger').click();
-    const editItem67b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem67b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem67b.click();
-
-    const dialog67b = page.locator('div[role="dialog"]').first();
-    await expect(dialog67b).toBeVisible({ timeout: 15000 });
+    const dialog67b = await reopenEditForPromo(page, promoName67);
     const allocateSwitch67b = dialog67b.locator('[data-pc-name="inputswitch"]:has(#allocateTicketOnAllPrizes)');
     await allocateSwitch67b.scrollIntoViewIfNeeded();
     await expect(allocateSwitch67b).toHaveAttribute('aria-checked', stateAfter67);
@@ -3422,17 +3270,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow68 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn68 = firstRow68.locator('button.pure__table-menu-trigger');
-    await actionBtn68.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn68.click();
-
-    const editItem68 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem68.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem68.click();
-
-    const dialog68 = page.locator('div[role="dialog"]').first();
-    await expect(dialog68).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog68 } = await openEditOnInactivePromo(page);
 
     // Modify the Promotion Name field
     const nameInput68 = dialog68.locator('#promotionNameInput');
@@ -3458,17 +3297,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow69 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn69 = firstRow69.locator('button.pure__table-menu-trigger');
-    await actionBtn69.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn69.click();
-
-    const editItem69 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem69.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem69.click();
-
-    const dialog69 = page.locator('div[role="dialog"]').first();
-    await expect(dialog69).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog69 } = await openEditOnInactivePromo(page);
 
     // Do not modify any field — click Save immediately
     const saveBtn69 = dialog69.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
@@ -3791,17 +3621,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow76 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn76 = firstRow76.locator('button.pure__table-menu-trigger');
-    await actionBtn76.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn76.click();
-
-    const editItem76 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem76.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem76.click();
-
-    const dialog76 = page.locator('div[role="dialog"]').first();
-    await expect(dialog76).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog76 } = await openEditOnInactivePromo(page);
 
     // Read all original field values before modification
     const originalRedirect76 = await dialog76.locator('#redirectUrlInput').inputValue();
@@ -3821,15 +3642,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog76).toBeHidden({ timeout: 15000 });
 
     // Reopen Edit and verify only the name changed; other fields are untouched
-    const firstRow76b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow76b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow76b.locator('button.pure__table-menu-trigger').click();
-    const editItem76b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem76b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem76b.click();
-
-    const dialog76b = page.locator('div[role="dialog"]').first();
-    await expect(dialog76b).toBeVisible({ timeout: 15000 });
+    const dialog76b = await reopenEditForPromo(page, newName76);
 
     const savedName76     = await dialog76b.locator('#promotionNameInput').inputValue();
     const savedRedirect76 = await dialog76b.locator('#redirectUrlInput').inputValue();
@@ -3847,17 +3660,8 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const firstRow77 = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    const actionBtn77 = firstRow77.locator('button.pure__table-menu-trigger');
-    await actionBtn77.waitFor({ state: 'visible', timeout: 5000 });
-    await actionBtn77.click();
-
-    const editItem77 = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem77.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem77.click();
-
-    const dialog77 = page.locator('div[role="dialog"]').first();
-    await expect(dialog77).toBeVisible({ timeout: 15000 });
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog77, promoName: promoName77 } = await openEditOnInactivePromo(page);
 
     // Enable all three toggles (turn ON if currently OFF)
     const spinSwitch77     = dialog77.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
@@ -3889,15 +3693,7 @@ test.describe('Marketing - Generic Wheel', () => {
     await expect(dialog77).toBeHidden({ timeout: 15000 });
 
     // Reopen Edit and verify all three toggles are still ON
-    const firstRow77b = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow77b.waitFor({ state: 'visible', timeout: 10000 });
-    await firstRow77b.locator('button.pure__table-menu-trigger').click();
-    const editItem77b = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem77b.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem77b.click();
-
-    const dialog77b = page.locator('div[role="dialog"]').first();
-    await expect(dialog77b).toBeVisible({ timeout: 15000 });
+    const dialog77b = await reopenEditForPromo(page, promoName77);
 
     const spinSwitch77b     = dialog77b.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
     const optInSwitch77b    = dialog77b.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
@@ -4195,21 +3991,17 @@ test.describe('Marketing - Generic Wheel', () => {
     const container = page.locator('generic-wheel');
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Read promotion start date from the first row cells (format: DD/MM/YYYY HH:mm)
-    // so the prize start date can be set AFTER the promotion start date.
-    const rowCells87 = container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('td[data-pc-section="bodycell"]');
-    let promoMonth87 = -1;
-    let promoYear87  = -1;
-    const cellCount87 = await rowCells87.count();
-    for (let ci = 0; ci < cellCount87; ci++) {
-      const txt = (await rowCells87.nth(ci).textContent() ?? '').trim();
-      const match = txt.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      if (match) {
-        promoMonth87 = parseInt(match[2]) - 1; // 0-indexed month
-        promoYear87  = parseInt(match[3]);
-        break;
-      }
-    }
+    // Read the promotion start AND end dates from the first row (DD/MM/YYYY HH:mm).
+    // The prize's availability window must fall INSIDE the promotion window —
+    // the calendars don't grey out out-of-range days; the backend rejects them
+    // on Save ("Prize end date is after promotion end date").
+    const rowText87 = await container.locator('tbody tr[data-pc-section="bodyrow"]').first().innerText();
+    const rowDates87 = (rowText87.match(/\d{2}\/\d{2}\/\d{4}/g) || []).map((s) => {
+      const parts = s.split('/').map((x) => parseInt(x));
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+    });
+    const promoStart87 = rowDates87.length > 0 ? rowDates87[0] : null;
+    const promoEnd87   = rowDates87.length > 1 ? rowDates87[1] : null;
 
     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
     const viewPrizesItem87 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
@@ -4230,7 +4022,8 @@ test.describe('Marketing - Generic Wheel', () => {
     await page.waitForTimeout(300);
 
     // 2. Enter Display Text
-    await prizeDialog87.locator('#displayTextInput').fill(`Prize_${CommonUtils.generateRandomString(5)}`);
+    const displayText87 = `Prize_${CommonUtils.generateRandomString(5)}`;
+    await prizeDialog87.locator('#displayTextInput').fill(displayText87);
     await page.waitForTimeout(200);
 
     // 3. Enter Winning Chance (numeric)
@@ -4242,56 +4035,110 @@ test.describe('Marketing - Generic Wheel', () => {
 
     const startDaySelector87 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 
-    // 4. Select Available Start Date — must be AFTER the promotion start date.
-    // Calculate how many months to navigate forward so we land in the month
-    // immediately after the promotion start date month.
+    // Signed month distance from the current month (negative = past month)
+    const monthDiff87 = (d: Date) => {
+      const now = new Date();
+      return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
+    };
+    const navForward87 = async (panel: import('@playwright/test').Locator, months: number) => {
+      for (let m = 0; m < months; m++) {
+        await panel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+        await page.waitForTimeout(100);
+      }
+    };
+    // Click the smallest enabled day within [minDay, maxDay] in the shown month;
+    // falls back to the first/last enabled day if none is in range.
+    const pickEnabledDay87 = async (panel: import('@playwright/test').Locator, minDay: number, maxDay: number, fallback: 'first' | 'last'): Promise<number> => {
+      const enabled = panel.locator(startDaySelector87);
+      const labels = await enabled.allInnerTexts();
+      if (labels.length === 0) throw new Error('No selectable days in the calendar month');
+      let idx = -1;
+      let best = 32;
+      labels.forEach((t, i) => {
+        const v = parseInt(t.trim());
+        if (v >= minDay && v <= maxDay && v < best) { best = v; idx = i; }
+      });
+      if (idx < 0) idx = fallback === 'first' ? 0 : labels.length - 1;
+      await enabled.nth(idx).click();
+      return parseInt(labels[idx].trim());
+    };
+
+    // 4. Select Available Start Date — inside the promotion window, from today onward
     await prizeDialog87.locator('#startDateCalendar input').click();
     const startPanel87 = page.locator('.p-datepicker').first();
     await expect(startPanel87).toBeVisible({ timeout: 5000 });
 
-    if (promoMonth87 >= 0 && promoYear87 >= 0) {
-      // Target month = month after promotion start date month
-      const targetMonth87 = promoMonth87 + 1 > 11 ? 0 : promoMonth87 + 1;
-      const targetYear87  = promoMonth87 + 1 > 11 ? promoYear87 + 1 : promoYear87;
-      const now87 = new Date();
-      const monthsToNav87 = Math.max(0, (targetYear87 - now87.getFullYear()) * 12 + (targetMonth87 - now87.getMonth()));
-      for (let m = 0; m < monthsToNav87; m++) {
-        await startPanel87.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-        await page.waitForTimeout(100);
-      }
-    }
+    const now87 = new Date();
+    // Latest safe prize-end day: one full day before the promotion end, so the
+    // time-of-day component can never push the prize past the promotion end
+    const endTarget87 = promoEnd87
+      ? new Date(promoEnd87.getFullYear(), promoEnd87.getMonth(), promoEnd87.getDate() - 1)
+      : null;
 
-    // If still no enabled dates (calendar enforces additional constraints), keep navigating
-    for (let m = 0; m < 12; m++) {
-      if (await startPanel87.locator(startDaySelector87).count() > 0) break;
-      await startPanel87.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-      await page.waitForTimeout(100);
+    // Land on the month of max(today, promotion start), never past the end-target month
+    let startNav87 = promoStart87 ? Math.max(0, monthDiff87(promoStart87)) : 0;
+    if (endTarget87) startNav87 = Math.min(startNav87, Math.max(0, monthDiff87(endTarget87)));
+    await navForward87(startPanel87, startNav87);
+    // Earliest pickable day: today (the calendar does NOT disable past days) and
+    // no earlier than the promotion start day when in that month
+    let startMinDay87 = startNav87 === 0 ? now87.getDate() : 1;
+    if (promoStart87 && monthDiff87(promoStart87) === startNav87) {
+      startMinDay87 = Math.max(startMinDay87, promoStart87.getDate());
     }
-    await startPanel87.locator(startDaySelector87).first().click();
-    await page.waitForTimeout(300);
-    // Click Display Text to close Start Date calendar
-    await prizeDialog87.locator('#displayTextInput').click();
+    // Leave at least one day of room for the prize end date
+    const startMaxDay87 = endTarget87 && monthDiff87(endTarget87) === startNav87
+      ? Math.max(startMinDay87, endTarget87.getDate() - 1)
+      : 31;
+    const startDay87 = await pickEnabledDay87(startPanel87, startMinDay87, startMaxDay87, 'first');
     await page.waitForTimeout(300);
 
-    // 5. Select Available End Date — one month forward from the prize start date month
-    await prizeDialog87.locator('#endDateCalendar input').click();
-    const endPanel87 = page.locator('.p-datepicker').first();
+    // 5. With the start date selected, click on Available End Date — this closes
+    // the still-open start calendar and opens the end calendar — then pick a day
+    // after the start but BEFORE the promotion end date
+    const endInput87 = prizeDialog87.locator('#endDateCalendar input');
+    await endInput87.click();
+    await page.waitForTimeout(300);
+    const endPanel87 = page.locator('.p-datepicker:visible').first();
+    if (!(await endPanel87.isVisible().catch(() => false))) {
+      // The first click only dismissed the start-date overlay — click again to open
+      await endInput87.click();
+    }
     await expect(endPanel87).toBeVisible({ timeout: 5000 });
-    await endPanel87.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-    await page.waitForTimeout(100);
-    await endPanel87.locator(startDaySelector87).first().click();
+    const endNav87 = endTarget87 ? Math.max(startNav87, Math.max(0, monthDiff87(endTarget87))) : startNav87;
+    await navForward87(endPanel87, endNav87);
+    const endMinDay87 = endNav87 === startNav87 ? startDay87 + 1 : 1;
+    const endMaxDay87 = endTarget87 && monthDiff87(endTarget87) === endNav87
+      ? Math.max(endMinDay87, endTarget87.getDate())
+      : 31;
+    await pickEnabledDay87(endPanel87, endMinDay87, endMaxDay87, 'first');
     await page.waitForTimeout(300);
-    // Click Display Text to close End Date calendar
+    // Click Display Text to close the End Date calendar before clicking Save
     await prizeDialog87.locator('#displayTextInput').click();
     await page.waitForTimeout(300);
 
-    // Click Save
+    // Click Save, then observe the outcome: dialog closing = saved; an error
+    // toast = the backend rejected the prize (capture its text before it fades)
     const saveBtn87 = prizeDialog87.locator('button[aria-label="Save"], button:has-text("Save")').first();
     await saveBtn87.click();
-    await expect(prizeDialog87).toBeHidden({ timeout: 15000 });
+    const errorToast87 = page.locator('.p-toast-message-error').first();
+    let outcome87: 'saved' | 'error' | 'timeout' = 'timeout';
+    for (let t = 0; t < 30; t++) {
+      if (!(await prizeDialog87.isVisible().catch(() => true))) { outcome87 = 'saved'; break; }
+      if (await errorToast87.isVisible().catch(() => false)) { outcome87 = 'error'; break; }
+      await page.waitForTimeout(500);
+    }
+    if (outcome87 === 'error') {
+      throw new Error(`Prize creation rejected — error toast: ${(await errorToast87.innerText().catch(() => '')).trim()}`);
+    }
+    if (outcome87 === 'timeout') {
+      throw new Error('Save did not close the Add Prize dialog and no error toast appeared');
+    }
 
-    // New prize must appear in the list
-    await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 10000 });
+    // Saved: a success toast or the new prize appearing in the list confirms creation
+    const successToast87 = page.locator('.p-toast-message-success').first();
+    if (!(await successToast87.isVisible().catch(() => false))) {
+      await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').filter({ hasText: displayText87 }).first().waitFor({ state: 'visible', timeout: 10000 });
+    }
 
     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_87-GenericWheel-PrizeCreated_success');
   });
