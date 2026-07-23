@@ -6,6 +6,11 @@ test.describe('Marketing - Ladder Promotions', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to home to bootstrap the SPA
     await page.goto('/main/home');
+    // Deep-link navigation doesn't always fully hydrate the Angular/Stencil
+    // component before the sidebar click fires — a reload reliably forces it
+    // to initialize from scratch (same fix proven across this project's other
+    // spec files).
+    await page.reload();
     await page.waitForLoadState('networkidle');
 
     // Expand Marketing menu node

@@ -62,6 +62,13 @@ export const cashbackLocators = {
     confirmAcceptBtn: '.p-confirm-dialog-accept',
     confirmRejectBtn: '.p-confirm-dialog-reject',
 
+    // The Approve confirmation is NOT a PrimeVue dialog — it's a custom
+    // component (<div class="action-modal">...</div>) with its own header/body
+    // text classes and plain "Yes"/"No" buttons (aria-label matches those still
+    // work via getByRole). Confirmed via live outerHTML from the app.
+    actionModal: '.action-modal',
+    actionModalMessage: '.action-modal .body-text',
+
     // ── Validation errors ──────────────────────────────────────────────────
     validationError: '.p-error',
     invalidField: '.p-invalid',

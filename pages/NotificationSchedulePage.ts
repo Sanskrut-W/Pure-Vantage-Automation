@@ -58,6 +58,18 @@ export class NotificationSchedulePage extends BasePage {
         return await this.dataTable.locator('tbody tr:not(.p-datatable-emptymessage)').count();
     }
 
+    // Schedule data loads noticeably after the communication type is selected —
+    // wait for a real data row instead of sampling the (still empty) table.
+    async waitForRows(timeoutMs = 30000): Promise<boolean> {
+        const firstRow = this.dataTable.locator('tbody tr:not(.p-datatable-emptymessage)').first();
+        try {
+            await firstRow.waitFor({ state: 'visible', timeout: timeoutMs });
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     async getSortableColumnTitles(): Promise<string[]> {
         const titles = await this.page.locator('th.p-sortable-column .p-column-title').allInnerTexts();
         return titles.map(t => t.trim());

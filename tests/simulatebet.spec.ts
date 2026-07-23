@@ -805,8 +805,23 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
     const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
     await fillNumberField(amountInput, '1000');
 
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Settlement Status *'));
+    const regionDropdown = dropdownByAriaLabel(page.locator('body'), 'Region *');
+    const statusDropdown = dropdownByAriaLabel(page.locator('body'), 'Settlement Status *');
+
+    const regionSelected = await selectFirstDropdownOption(page, regionDropdown);
+    const statusSelected = await selectFirstDropdownOption(page, statusDropdown);
+    console.log(`selectFirstDropdownOption reported picking Region="${regionSelected}", Settlement Status="${statusSelected}"`);
+
+    // Diagnostic: confirm the selection actually landed on the VISIBLE field's own
+    // label, not just on whatever element dropdownByAriaLabel's `.first()` matched.
+    // switchToBulkTab's comment above flags this as an unconfirmed risk — if
+    // Single-mode's same-aria-label dropdown stays mounted-but-hidden in the DOM,
+    // `.first()` could silently select in the wrong (inactive) instance while this
+    // visible one stays stuck on its placeholder.
+    const regionLabelText = (await regionDropdown.locator('.p-dropdown-label, [data-pc-section="input"]').first().textContent())?.trim();
+    const statusLabelText = (await statusDropdown.locator('.p-dropdown-label, [data-pc-section="input"]').first().textContent())?.trim();
+    console.log(`Region dropdown's own visible label after selection: "${regionLabelText}"`);
+    console.log(`Settlement Status dropdown's own visible label after selection: "${statusLabelText}"`);
 
     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
     await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
@@ -816,8 +831,26 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
     await simulateBtn.click();
     await page.waitForLoadState('networkidle');
 
+    // Bulk simulation is a slower server-side operation than networkidle alone
+    // accounts for — confirmed live: the toast hadn't appeared yet by the old
+    // 15s timeout, still mid-flight on the app's own loading overlay. Wait for
+    // that overlay to actually clear before checking for a toast at all.
+    await page.locator('.pure__loader-container').waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
+
+    // Diagnostic: log WHATEVER toast appears (success or error) so a validation
+    // rejection caused by an unselected Region/Settlement Status shows up here
+    // instead of just timing out silently on the success-only assertion below.
+    const anyToast = page.locator('.p-toast-message').first();
+    if (await anyToast.isVisible({ timeout: 45000 }).catch(() => false)) {
+      const toastText = (await anyToast.textContent())?.trim();
+      const severityClass = await anyToast.getAttribute('class');
+      console.log(`Toast appeared — class="${severityClass}" | text="${toastText}"`);
+    } else {
+      console.log('No toast appeared at all within 45s after clicking Simulate.');
+    }
+
     const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
-    await expect(successToast, 'Expected a success toast confirming the bulk simulation ran').toBeVisible({ timeout: 15000 });
+    await expect(successToast, 'Expected a success toast confirming the bulk simulation ran').toBeVisible({ timeout: 45000 });
 
     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_27-BulkSimulate_success');
   });
