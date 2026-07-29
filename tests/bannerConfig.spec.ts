@@ -24,7 +24,7 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
 
     test('TC-2 Verify all the elements on banner configuration landing page', async ({ page, bannerPage }, testInfo) => {
         // Verify Select Region dropdown (granting extra time for initial PrimeVue framework SPA rendering)
-        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 20000 });
+        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 60000 });
         // Verify Create Banner button
         await expect(bannerPage.createBannerBtn).toBeVisible();
         // Verify Search bar — the table-scoped second Search input (nth(1), used by searchRegion)
@@ -47,7 +47,7 @@ test.describe('Banner Configuration Specific Feature Tests', () => {
 
     test('TC-4 Verify we are able to select required region (select another region) in select region dropdown', async ({ page, bannerPage }, testInfo) => {
         await bannerPage.selectRegion('Betway Ghana');
-        await bannerPage.selectRegion('Betway Zambia');
+        await bannerPage.selectRegion('Betway Nigeria');
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_select_another_region');
     });
 

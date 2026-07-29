@@ -1,4 +1,20 @@
 export const compConfigLocators = {
     payoutReportBtn: 'button[aria-label="Payout Report"]',
-    createCompBtn: 'button[aria-label="Create Comp"]'
+    createCompBtn: 'button[aria-label="Create Comp"]',
+
+    dialog: '.p-dialog, [role="dialog"]',
+    titleInput: '#title',
+    multiCompBlockDaysInput: '#multi-comp-block-period-days input',
+    startDateInput: '#startDate input',
+    startDatePanel: '#startDate_panel',
+    endDateInput: '#endDate input',
+    endDatePanel: '#endDate_panel',
+    compCodeInput: '#comp-code',
+    campaignDropdown: '#campaign',
+    tagDropdown: '#tag',
+    alertEmailsInput: '#alert-emails',
+    isActiveCheckbox: '#isActive',
+    isActiveCheckboxInput: '#isActive input[type="checkbox"]',
+    closeIconBtn: '.p-dialog-header-close',
+    toastMessage: '.p-toast-message-text',
 };

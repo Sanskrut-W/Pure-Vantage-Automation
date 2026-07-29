@@ -51,6 +51,18 @@ export class BasePage {
         }
 
         if (await panel.isVisible().catch(() => false)) {
+            // Long option lists (e.g. all Betway regions) are virtualized — only the items
+            // currently in the scroll viewport exist in the DOM. Alphabetically-early options
+            // (like "Betway Ghana") render immediately, but later ones (like "Betway Zambia")
+            // don't, so waiting for them times out even though the panel is open. Typing into
+            // the panel's own filter box (what a human does to search instead of scrolling)
+            // narrows the list so the target option actually renders.
+            const filterInput = panel.locator('input[type="text"]').first();
+            if (await filterInput.isVisible().catch(() => false)) {
+                await filterInput.fill(optionText);
+                await this.page.waitForTimeout(300);
+            }
+
             // Preferred path: click the option within the scoped panel
             const optionLocator = panel.locator('.p-dropdown-item', { hasText: optionText }).first();
             await this.clickElement(optionLocator);

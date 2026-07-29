@@ -26,8 +26,11 @@ test.describe('Banner Ordering Tests', () => {
 
     test('TC-2 Verify Search bar and Region Filter are available', async ({ bannerPage, page }, testInfo) => {
         try {
-            await expect(bannerPage.orderingSearchInput).toBeVisible();
-            await expect(bannerPage.orderingRegionDropdown).toBeVisible();
+            // Banner Ordering's content is rendered by a separate cross-origin micro-frontend
+            // widget (widgets.osiristrading.net) that can take well over the default 20s to
+            // finish bootstrapping — granting extra time so we don't fail while it's still loading.
+            await expect(bannerPage.orderingSearchInput).toBeVisible({ timeout: 90000 });
+            await expect(bannerPage.orderingRegionDropdown).toBeVisible({ timeout: 90000 });
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_banner_ordering_page');
         } catch (e) {
             console.log('Timeout hit. Dumping HTML and taking emergency screenshot for debugging...');

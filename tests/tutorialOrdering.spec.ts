@@ -25,8 +25,10 @@ test.describe('Tutorial Ordering Tests', () => {
     // });
 
     test('TC-2 Verify Search bar and Region Filter are available', async ({ page, tutorialOrderingPage }, testInfo) => {
-        await expect(tutorialOrderingPage.searchInput).toBeVisible();
-        await expect(tutorialOrderingPage.regionDropdown).toBeVisible();
+        // Same cross-origin micro-frontend loading delay as Banner Ordering's TC-2 — the
+        // default 20s timeout can fire while the widget is still bootstrapping.
+        await expect(tutorialOrderingPage.searchInput).toBeVisible({ timeout: 90000 });
+        await expect(tutorialOrderingPage.regionDropdown).toBeVisible({ timeout: 90000 });
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_tutorial_ordering_controls');
     });
 

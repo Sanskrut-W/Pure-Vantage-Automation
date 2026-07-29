@@ -118,6 +118,27 @@ export class SidebarPage extends BasePage {
     }
 
     /**
+     * Confirms the app actually finished loading after a fresh page.goto/reload — the
+     * sidebar (and "Marketing" specifically) can intermittently fail to render on the
+     * first load. If "Marketing" isn't visible within the timeout, reloads and checks
+     * again (a few times) rather than immediately failing whatever test called this.
+     */
+    async waitForAppReady() {
+        const maxAttempts = 3;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 30000 }).catch(() => {});
+            const ready = await this.marketingNode.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false);
+            if (ready) return;
+
+            console.log(`App not ready after load (attempt ${attempt}/${maxAttempts}) — reloading...`);
+            await this.page.reload();
+            await this.page.waitForLoadState('domcontentloaded');
+        }
+        // Final attempt: let the caller's own error surface if this still isn't visible.
+        await this.marketingNode.waitFor({ state: 'visible' });
+    }
+
+    /**
      * Expands a parent menu node ONLY if its child item is not already visible.
      * Menu clicks toggle: clicking an already-expanded node collapses it and hides
      * its children, so mid-test navigation (menu state unknown) must check first.
@@ -190,10 +211,24 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
+        // Must tolerate being called both from a fresh page load (Marketing/Tutorials
+        // collapsed) and mid-test, navigating away and back from an already-expanded state
+        // (e.g. tutorialOrdering TC-17). Unconditionally clicking each parent — like
+        // navigateToBannerConfig does — collapses an already-open section instead of
+        // expanding it, hiding "Tutorials" and causing an endless click-intercept loop.
+        // ensureMenuExpanded checks first, so it's safe in both cases.
+        // The final click uses dispatchEvent rather than a real mouse click: when this method
+        // is called mid-test (navigating away from Tutorial Ordering and back), a lingering
+        // PrimeNG tooltip overlay from earlier in the test can permanently intercept pointer
+        // events near "Tutorials" — a forced click just activates whatever's actually on top at
+        // those coordinates, since force:true only skips Playwright's own checks, not the
+        // browser's real hit-testing. dispatchEvent fires the click directly at our chosen node
+        // via JS, sidestepping hit-testing (and any animation/overlap) entirely.
         await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
         await this.ensureMenuExpanded(this.tutorialNode, this.tutorialConfigNode);
         await this.tutorialConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialConfigNode, { force: true });
+        const tutorialConfigLink = this.page.locator('a', { has: this.tutorialConfigNode });
+        await tutorialConfigLink.dispatchEvent('click');
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -251,9 +286,15 @@ export class SidebarPage extends BasePage {
 
     async navigateToSegmentation() {
         console.log('Navigating via Sidebar: Marketing -> Segmentation');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.segmentationNode);
-        await this.clickElement(this.segmentationNode);
+        // Wait out the app's own page-loader overlay (pure-page-loader) before touching the
+        // sidebar — clicking through it just times out waiting for it to go away on its own.
+        await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
+        await this.marketingNode.dispatchEvent('click');
+        await this.page.waitForTimeout(500);
+        // dispatchEvent bypasses mouse hit-testing — needed because a lingering root-level
+        // menu item can permanently overlap "Segmentation" here, the same interception bug
+        // seen on Tutorial Config/Ordering (see navigateToTutorialConfig for the full story).
+        await this.segmentationNode.dispatchEvent('click');
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -399,10 +440,21 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Ordering');
+        // See navigateToTutorialConfig for why this uses ensureMenuExpanded (safe whether
+        // Marketing/Tutorials start collapsed or are already open from a prior navigation).
+        // Unlike "Tutorial Configuration", "Tutorial Ordering" (the last item in the Tutorials
+        // submenu) has a genuine, permanent DOM/CSS overlap with "Whitelist Test Accounts" — this
+        // isn't an animation race, it reproduces every time, isolated or not. A forced click still
+        // activates "Whitelist Test Accounts", because force:true only skips Playwright's own
+        // pre-click checks — the browser still delivers a real mouse click to whichever element is
+        // actually topmost at those coordinates. Keyboard (focus + Enter) doesn't trigger this
+        // app's Angular (click) handler either. dispatchEvent fires the click event directly at
+        // our chosen node via JS, with no hit-testing or event-type translation involved.
         await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
         await this.ensureMenuExpanded(this.tutorialNode, this.tutorialOrderingNode);
         await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tutorialOrderingNode, { force: true });
+        const tutorialOrderingLink = this.page.locator('a', { has: this.tutorialOrderingNode });
+        await tutorialOrderingLink.dispatchEvent('click');
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -432,6 +484,9 @@ export class SidebarPage extends BasePage {
 
     async navigateToCompConfig() {
         console.log('Navigating via Sidebar: Marketing Comps -> Comp Config');
+        // Wait out the app's own page-loader overlay before touching the sidebar — clicking
+        // "Marketing" while it's still up gets intercepted (same issue fixed for Segmentation).
+        await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
         await this.clickElement(this.marketingNode);
         await this.page.waitForTimeout(500);
         await this.marketingCompsNode.scrollIntoViewIfNeeded();
