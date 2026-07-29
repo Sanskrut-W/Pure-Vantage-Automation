@@ -8,7 +8,11 @@ export class CompConfigPage extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.payoutReportBtn = this.page.locator(compConfigLocators.payoutReportBtn);
+        // Payout Report's outerHTML only shows the inner label span, not a
+        // confirmed aria-label on the button itself (unlike Create Comp) — a
+        // role-based accessible-name match is resilient either way, since
+        // Playwright falls back to visible text content when aria-label is absent.
+        this.payoutReportBtn = this.page.getByRole('button', { name: 'Payout Report' });
         this.createCompBtn = this.page.locator(compConfigLocators.createCompBtn);
     }
 

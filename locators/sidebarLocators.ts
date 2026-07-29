@@ -38,9 +38,9 @@ export const sidebarLocators = {
     menuMarketingComps: 'Marketing Comps',
     menuCompAlerts: 'Comp Alerts',
     menuCompsBulk: 'Comp Bulk',
-    // Note: "Managament" is the app's own typo in the sidebar — must match exactly.
-    // There is no menu item literally named "Comp Config".
-    menuCompConfig: 'Comp Managament',
+    // The app used to render this as "Comp Managament" (its own typo) — since
+    // fixed on their end, the sidebar now genuinely reads "Comp Config".
+    menuCompConfig: 'Comp Config',
     menuManualComps: 'Manual Comps',
     menuTransactionTypes: 'Transaction Types',
     menuWhitelistTestAccounts: 'Whitelist Test Accounts',

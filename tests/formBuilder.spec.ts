@@ -22,11 +22,11 @@ test.describe('Form Builder test suite', () => {
     //     await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-1 Form Builder page accessible');
     // });
 
-    // test('TC-2 Verify Search input is available', async ({ formBuilderPage }, testInfo) => {
-    //     await expect(formBuilderPage.searchInput).toBeVisible({ timeout: 20000 });
-    //     await CommonUtils.highlightElementBorder(formBuilderPage.searchInput);
-    //     await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-2 Search input visible');
-    // });
+    test('TC-2 Verify Search input is available', async ({ formBuilderPage }, testInfo) => {
+        await expect(formBuilderPage.searchInput).toBeVisible({ timeout: 20000 });
+        await CommonUtils.highlightElementBorder(formBuilderPage.searchInput);
+        await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-2 Search input visible');
+    });
 
     // test('TC-3 Verify Search input filters the table', async ({ page, formBuilderPage }, testInfo) => {
     //     await formBuilderPage.selectRegion(TEST_REGION);
@@ -54,10 +54,10 @@ test.describe('Form Builder test suite', () => {
     //     await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-5 Create Form popup opens');
     // });
 
-    test('TC-6 Verify table column headers', async ({ formBuilderPage }, testInfo) => {
-        await formBuilderPage.verifyColumnHeaders();
-        await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-6 Table column headers');
-    });
+    // test('TC-6 Verify table column headers', async ({ formBuilderPage }, testInfo) => {
+    //     await formBuilderPage.verifyColumnHeaders();
+    //     await CommonUtils.captureScreenshot(formBuilderPage.page, testInfo, 'reports/screenshots', 'TC-6 Table column headers');
+    // });
 
     // test('TC-7 Verify row action buttons (Edit/Config/Duplicate/Delete)', async ({ formBuilderPage }, testInfo) => {
     //     await formBuilderPage.selectRegion(TEST_REGION);

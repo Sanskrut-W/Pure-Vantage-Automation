@@ -28,6 +28,7 @@ import { TutorialConfigPage } from '../pages/TutorialConfigPage';
 import { TutorialOrderingPage } from '../pages/TutorialOrderingPage';
 import { CompAlertsPage } from '../pages/CompAlertsPage';
 import { CompsBulkPage } from '../pages/CompsBulkPage';
+import { CompBulkConfigurationsPage } from '../pages/CompBulkConfigurationsPage';
 import { CompConfigPage } from '../pages/CompConfigPage';
 import { ManualCompsPage } from '../pages/ManualCompsPage';
 import { TransactionTypesPage } from '../pages/TransactionTypesPage';
@@ -74,6 +75,7 @@ type MyFixtures = {
     tutorialOrderingPage: TutorialOrderingPage;
     compAlertsPage: CompAlertsPage;
     compsBulkPage: CompsBulkPage;
+    compBulkConfigurationsPage: CompBulkConfigurationsPage;
     compConfigPage: CompConfigPage;
     manualCompsPage: ManualCompsPage;
     transactionTypesPage: TransactionTypesPage;
@@ -284,6 +286,12 @@ export const test = base.extend<MyFixtures>({
     compsBulkPage: async ({ page, authenticatedSession }, use) => {
         const compsBulkPage = new CompsBulkPage(page);
         await use(compsBulkPage);
+    },
+
+    // Instantiate and provide CompBulkConfigurationsPage
+    compBulkConfigurationsPage: async ({ page, authenticatedSession }, use) => {
+        const compBulkConfigurationsPage = new CompBulkConfigurationsPage(page);
+        await use(compBulkConfigurationsPage);
     },
 
     // Instantiate and provide CompConfigPage
