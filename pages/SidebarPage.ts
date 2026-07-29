@@ -118,7 +118,6 @@ export class SidebarPage extends BasePage {
     }
 
     /**
-<<<<<<< HEAD
      * Confirms the app actually finished loading after a fresh page.goto/reload — the
      * sidebar (and "Marketing" specifically) can intermittently fail to render on the
      * first load. If "Marketing" isn't visible within the timeout, reloads and checks
@@ -140,19 +139,6 @@ export class SidebarPage extends BasePage {
     }
 
     /**
-     * Runs a sidebar click sequence and verifies the URL actually changed to the expected
-     * route, retrying up to 3 times if it didn't. On every retry (not the first attempt) it
-     * reloads the page first — this app can silently go into a "stuck buffering" state (a
-     * loading overlay that never clears, or a click that quietly no-ops) where re-clicking the
-     * exact same elements just repeats the same failure. Reloading forces the SPA to
-     * re-initialize from scratch before the next attempt, matching the fix already proven
-     * throughout this project's beforeEach hooks.
-=======
-     * Expands a parent menu node ONLY if its child item is not already visible.
-     * Menu clicks toggle: clicking an already-expanded node collapses it and hides
-     * its children, so mid-test navigation (menu state unknown) must check first.
->>>>>>> origin/setup-fixes
-     */
     /**
      * Clicks the parent menu levels UNCONDITIONALLY, then the leaf item, and VERIFIES the URL
      * actually changed to the expected route — retrying the whole sequence if it didn't.
@@ -313,7 +299,6 @@ export class SidebarPage extends BasePage {
 
     async navigateToSegmentation() {
         console.log('Navigating via Sidebar: Marketing -> Segmentation');
-<<<<<<< HEAD
         // Wait out the app's own page-loader overlay (pure-page-loader) before touching the
         // sidebar — clicking through it just times out waiting for it to go away on its own.
         await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
@@ -323,11 +308,6 @@ export class SidebarPage extends BasePage {
         // menu item can permanently overlap "Segmentation" here, the same interception bug
         // seen on Tutorial Config/Ordering (see navigateToTutorialConfig for the full story).
         await this.segmentationNode.dispatchEvent('click');
-=======
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.segmentationNode);
-        await this.clickElement(this.segmentationNode);
->>>>>>> origin/setup-fixes
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -482,17 +462,15 @@ export class SidebarPage extends BasePage {
         // whichever element is actually topmost at those coordinates. Keyboard (focus + Enter)
         // doesn't trigger this app's Angular (click) handler either. dispatchEvent fires the click
         // event directly at our chosen node via JS, with no hit-testing or event-type translation
-        // involved — the only approach that reliably bypasses this specific overlap. Still
-        // wrapped in navigateAndVerify for the retry/URL-verification safety net.
-        await this.navigateAndVerify(async () => {
-            await this.marketingNode.click({ timeout: 8000 }).catch(() => {});
-            await this.page.waitForTimeout(600);
-            await this.tutorialNode.click({ timeout: 8000 }).catch(() => {});
-            await this.page.waitForTimeout(600);
-            await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
-            const tutorialOrderingLink = this.page.locator('a', { has: this.tutorialOrderingNode });
-            await tutorialOrderingLink.dispatchEvent('click');
-        }, /tutorial-ordering/);
+        // involved — the only approach that reliably bypasses this specific overlap.
+        await this.marketingNode.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(600);
+        await this.tutorialNode.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(600);
+        await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
+        const tutorialOrderingLink = this.page.locator('a', { has: this.tutorialOrderingNode });
+        await tutorialOrderingLink.dispatchEvent('click');
+        await this.page.waitForLoadState('domcontentloaded');
     }
 
     async navigateToCompAlerts() {
@@ -520,11 +498,7 @@ export class SidebarPage extends BasePage {
     }
 
     async navigateToCompConfig() {
-<<<<<<< HEAD
         console.log('Navigating via Sidebar: Marketing Comps -> Comp Config');
-=======
-        console.log('Navigating via Sidebar: Marketing -> Marketing Comps -> Comp Config');
->>>>>>> origin/setup-fixes
         // Probe-confirmed route: /main/component-display/stencil-comps/comp-management
         // Wait out the app's own page-loader overlay before touching the sidebar — clicking
         // "Marketing" while it's still up gets intercepted (same issue fixed for Segmentation).
