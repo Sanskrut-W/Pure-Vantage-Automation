@@ -135,40 +135,40 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_05-GenericWheel-RegionDropdown_success');
   // });
 
-  // // TC_06: Verify region filtering
-  // test('TC_06 - Verify region filtering', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+  // TC_06: Verify region filtering
+  test('TC_06 - Verify region filtering', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
 
-  //   // Scope to the dropdown root (div.dropdown-input.w-20r), then click its trigger
-  //   const regionDropdown = container.locator('div.dropdown-input.w-20r[data-pc-section="root"]');
-  //   const regionTrigger = regionDropdown.locator('[data-pc-section="trigger"]');
-  //   await regionTrigger.waitFor({ state: 'visible', timeout: 10000 });
-  //   await regionTrigger.click();
+    // Scope to the dropdown root (div.dropdown-input.w-20r), then click its trigger
+    const regionDropdown = container.locator('div.dropdown-input.w-20r[data-pc-section="root"]');
+    const regionTrigger = regionDropdown.locator('[data-pc-section="trigger"]');
+    await regionTrigger.waitFor({ state: 'visible', timeout: 10000 });
+    await regionTrigger.click();
 
-  //   const panel = page.locator('.p-dropdown-panel');
-  //   await expect(panel).toBeVisible({ timeout: 5000 });
+    const panel = page.locator('.p-dropdown-panel');
+    await expect(panel).toBeVisible({ timeout: 5000 });
 
-  //   const options = panel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]');
-  //   await options.first().waitFor({ state: 'visible', timeout: 5000 });
-  //   await options.first().click();
+    const options = panel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]');
+    await options.first().waitFor({ state: 'visible', timeout: 5000 });
+    await options.first().click();
 
-  //   // Give the table time to re-render with the filter applied
-  //   await page.waitForTimeout(800);
+    // Give the table time to re-render with the filter applied
+    await page.waitForTimeout(800);
 
-  //   // The visible label span should no longer show the placeholder — a region is now selected
-  //   // Use span[data-pc-section="input"] to avoid strict-mode conflict with the hidden <input>
-  //   await expect(regionDropdown.locator('span[data-pc-section="input"]')).not.toHaveText('Select a region');
+    // The visible label span should no longer show the placeholder — a region is now selected
+    // Use span[data-pc-section="input"] to avoid strict-mode conflict with the hidden <input>
+    await expect(regionDropdown.locator('span[data-pc-section="input"]')).not.toHaveText('Select a region');
 
-  //   // Table rows are present (filtered or empty, both are valid outcomes)
-  //   const filteredRows = container.locator('tbody tr[data-pc-section="bodyrow"]');
-  //   const totalAfter = await filteredRows.count();
-  //   if (totalAfter > 0) {
-  //     await expect(filteredRows.first()).toBeVisible({ timeout: 5000 });
-  //   }
+    // Table rows are present (filtered or empty, both are valid outcomes)
+    const filteredRows = container.locator('tbody tr[data-pc-section="bodyrow"]');
+    const totalAfter = await filteredRows.count();
+    if (totalAfter > 0) {
+      await expect(filteredRows.first()).toBeVisible({ timeout: 5000 });
+    }
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_06-GenericWheel-RegionFiltering_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_06-GenericWheel-RegionFiltering_success');
+  });
 
   // // TC_07: Verify "Include inactive" toggle OFF — only active records displayed
   // test('TC_07 - Verify Include inactive toggle OFF', async ({ page }, testInfo) => {
@@ -712,105 +712,105 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-GenericWheel-NumberOfSlicesNumericOnly_success');
   // });
 
-  // // TC_22: Verify minimum value validation
-  // // Fill ALL mandatory fields, enter 1 in Number of Slices, click Save → error toast expected
-  // test('TC_22 - Verify Number of Slices minimum value validation', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+  // TC_22: Verify minimum value validation
+  // Fill ALL mandatory fields, enter 1 in Number of Slices, click Save → error toast expected
+  test('TC_22 - Verify Number of Slices minimum value validation', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
 
-  //   const createBtn = container.locator('button[aria-label="Create Promotion"]');
-  //   await createBtn.waitFor({ state: 'visible', timeout: 10000 });
-  //   await createBtn.scrollIntoViewIfNeeded();
-  //   await createBtn.click();
+    const createBtn = container.locator('button[aria-label="Create Promotion"]');
+    await createBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await createBtn.scrollIntoViewIfNeeded();
+    await createBtn.click();
 
-  //   const dialog = page.locator('div[role="dialog"]').first();
-  //   await expect(dialog).toBeVisible({ timeout: 15000 });
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
 
-  //   // 1. Promotion Name
-  //   const name22 = dialog.locator('#promotionNameInput');
-  //   await name22.waitFor({ state: 'visible', timeout: 10000 });
-  //   await name22.click();
-  //   await name22.fill(`WheelPromo_TC22_${CommonUtils.generateRandomString(5)}`);
+    // 1. Promotion Name
+    const name22 = dialog.locator('#promotionNameInput');
+    await name22.waitFor({ state: 'visible', timeout: 10000 });
+    await name22.click();
+    await name22.fill(`WheelPromo_TC22_${CommonUtils.generateRandomString(5)}`);
 
-  //   // 2. Allocation Strategy
-  //   await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
-  //   const strategyPanel22 = page.locator('.p-dropdown-panel');
-  //   await expect(strategyPanel22).toBeVisible({ timeout: 5000 });
-  //   await strategyPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
-  //   await page.waitForTimeout(300);
+    // 2. Allocation Strategy
+    await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
+    const strategyPanel22 = page.locator('.p-dropdown-panel');
+    await expect(strategyPanel22).toBeVisible({ timeout: 5000 });
+    await strategyPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
+    await page.waitForTimeout(300);
 
-  //   // 3. Start Date — first enabled day in current month
-  //   await dialog.locator('#startDateCalendar input').click();
-  //   const startPanel22 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel22).toBeVisible({ timeout: 5000 });
-  //   await startPanel22.locator(
-  //     'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
-  //   ).first().click();
-  //   await page.waitForTimeout(200);
+    // 3. Start Date — first enabled day in current month
+    await dialog.locator('#startDateCalendar input').click();
+    const startPanel22 = page.locator('.p-datepicker').first();
+    await expect(startPanel22).toBeVisible({ timeout: 5000 });
+    await startPanel22.locator(
+      'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
+    ).first().click();
+    await page.waitForTimeout(200);
 
-  //   // 4. End Date — navigate to next month, pick first enabled day
-  //   await dialog.locator('#endDateCalendar input').click();
-  //   const endPanel22 = page.locator('.p-datepicker').first();
-  //   await expect(endPanel22).toBeVisible({ timeout: 5000 });
-  //   await endPanel22.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //   await page.waitForTimeout(200);
-  //   await endPanel22.locator(
-  //     'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
-  //   ).first().click();
-  //   await name22.click({ force: true }).catch(() => {});
-  //   await page.waitForTimeout(200);
+    // 4. End Date — navigate to next month, pick first enabled day
+    await dialog.locator('#endDateCalendar input').click();
+    const endPanel22 = page.locator('.p-datepicker').first();
+    await expect(endPanel22).toBeVisible({ timeout: 5000 });
+    await endPanel22.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+    await page.waitForTimeout(200);
+    await endPanel22.locator(
+      'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
+    ).first().click();
+    await name22.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(200);
 
-  //   // 5. Spins Per User
-  //   const spins22 = dialog.locator('#spinsPerUserInput input');
-  //   await spins22.click({ clickCount: 3 });
-  //   await spins22.pressSequentially('5');
-  //   await spins22.press('Tab');
+    // 5. Spins Per User
+    const spins22 = dialog.locator('#spinsPerUserInput input');
+    await spins22.click({ clickCount: 3 });
+    await spins22.pressSequentially('5');
+    await spins22.press('Tab');
 
-  //   // 6. Daily Spin Limit
-  //   const daily22 = dialog.locator('#dailySpinLimitInput input');
-  //   await daily22.click({ clickCount: 3 });
-  //   await daily22.pressSequentially('3');
-  //   await daily22.press('Tab');
+    // 6. Daily Spin Limit
+    const daily22 = dialog.locator('#dailySpinLimitInput input');
+    await daily22.click({ clickCount: 3 });
+    await daily22.pressSequentially('3');
+    await daily22.press('Tab');
 
-  //   // 7. Spin Validity Days
-  //   const validity22 = dialog.locator('#spinValidityDaysInput input');
-  //   await validity22.click({ clickCount: 3 });
-  //   await validity22.pressSequentially('7');
-  //   await validity22.press('Tab');
+    // 7. Spin Validity Days
+    const validity22 = dialog.locator('#spinValidityDaysInput input');
+    await validity22.click({ clickCount: 3 });
+    await validity22.pressSequentially('7');
+    await validity22.press('Tab');
 
-  //   // 8. Number of Slices = 1 (below the allowed minimum)
-  //   const slices22 = dialog.locator('#numberOfSlicesInput input');
-  //   await slices22.click({ clickCount: 3 });
-  //   await slices22.pressSequentially('1');
-  //   await slices22.press('Tab');
-  //   await page.waitForTimeout(200);
+    // 8. Number of Slices = 1 (below the allowed minimum)
+    const slices22 = dialog.locator('#numberOfSlicesInput input');
+    await slices22.click({ clickCount: 3 });
+    await slices22.pressSequentially('1');
+    await slices22.press('Tab');
+    await page.waitForTimeout(200);
 
-  //   // 9. Region — select Betway Botswana or Betway Ghana (avoid Betway Agents)
-  //   await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
-  //   const regionPanel22 = page.locator('.p-dropdown-panel');
-  //   await expect(regionPanel22).toBeVisible({ timeout: 5000 });
-  //   await regionPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]')
-  //     .filter({ hasText: /Betway Botswana|Betway Ghana/ }).first().click();
-  //   await page.waitForTimeout(300);
+    // 9. Region — select Betway Botswana or Betway Ghana (avoid Betway Agents)
+    await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
+    const regionPanel22 = page.locator('.p-dropdown-panel');
+    await expect(regionPanel22).toBeVisible({ timeout: 5000 });
+    await regionPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]')
+      .filter({ hasText: /Betway Botswana|Betway Ghana/ }).first().click();
+    await page.waitForTimeout(300);
 
-  //   // 10. Redirect URL
-  //   await dialog.locator('#redirectUrlInput').click();
-  //   await dialog.locator('#redirectUrlInput').fill('https://example.com');
-  //   await page.waitForTimeout(200);
+    // 10. Redirect URL
+    await dialog.locator('#redirectUrlInput').click();
+    await dialog.locator('#redirectUrlInput').fill('https://example.com');
+    await page.waitForTimeout(200);
 
-  //   // Click Save
-  //   const saveBtn22 = dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
-  //   await saveBtn22.waitFor({ state: 'visible', timeout: 5000 });
-  //   await saveBtn22.click();
+    // Click Save
+    const saveBtn22 = dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
+    await saveBtn22.waitFor({ state: 'visible', timeout: 5000 });
+    await saveBtn22.click();
 
-  //   // Error toast must appear — Number of Slices is below the allowed minimum
-  //   const errorToast22 = page.locator(
-  //     '.p-toast-message-error, [data-p-severity="error"], .p-toast-message[class*="error"]'
-  //   ).first();
-  //   await expect(errorToast22).toBeVisible({ timeout: 10000 });
+    // Error toast must appear — Number of Slices is below the allowed minimum
+    const errorToast22 = page.locator(
+      '.p-toast-message-error, [data-p-severity="error"], .p-toast-message[class*="error"]'
+    ).first();
+    await expect(errorToast22).toBeVisible({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_22-GenericWheel-SlicesMinValidation_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_22-GenericWheel-SlicesMinValidation_success');
+  });
 
   // // TC_23: Verify maximum value validation
   // // Fill ALL mandatory fields, enter 9 in Number of Slices, click Save → error toast expected
@@ -2649,62 +2649,62 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_50-GenericWheel-ExistingDataPopulated_success');
   // });
 
-  // ─── Edit-popup helpers (TC_51 – TC_69, TC_76, TC_77) ───────────────────────
-  // Business rule: a promotion can only be edited while it is INACTIVE — for
-  // active promotions the Save button stays disabled. So: switch ON the
-  // "Include inactive" toolbar toggle, then open Edit on an inactive row.
-  async function openEditOnInactivePromo(page: Page): Promise<{ dialog: Locator; promoName: string }> {
-    const container = page.locator('generic-wheel');
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // // ─── Edit-popup helpers (TC_51 – TC_69, TC_76, TC_77) ───────────────────────
+  // // Business rule: a promotion can only be edited while it is INACTIVE — for
+  // // active promotions the Save button stays disabled. So: switch ON the
+  // // "Include inactive" toolbar toggle, then open Edit on an inactive row.
+  // async function openEditOnInactivePromo(page: Page): Promise<{ dialog: Locator; promoName: string }> {
+  //   const container = page.locator('generic-wheel');
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Toolbar "Include inactive" toggle has data-p-disabled="false"; the
-    // per-row status switches are disabled (data-p-disabled="true")
-    const inactiveToggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
-    await inactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
-    if (await inactiveToggle.getAttribute('aria-checked') === 'false') {
-      await inactiveToggle.click();
-      await page.waitForTimeout(800);
-      await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
-    }
+  //   // Toolbar "Include inactive" toggle has data-p-disabled="false"; the
+  //   // per-row status switches are disabled (data-p-disabled="true")
+  //   const inactiveToggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
+  //   await inactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
+  //   if (await inactiveToggle.getAttribute('aria-checked') === 'false') {
+  //     await inactiveToggle.click();
+  //     await page.waitForTimeout(800);
+  //     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+  //   }
 
-    // Prefer a row whose status switch is OFF (inactive promotion — editable);
-    // fall back to the first row if no inactive one is listed
-    const rows = container.locator('tbody tr[data-pc-section="bodyrow"]');
-    const inactiveRow = rows.filter({ has: page.locator('[data-pc-name="inputswitch"][aria-checked="false"]') }).first();
-    const targetRow = (await inactiveRow.count()) > 0 ? inactiveRow : rows.first();
+  //   // Prefer a row whose status switch is OFF (inactive promotion — editable);
+  //   // fall back to the first row if no inactive one is listed
+  //   const rows = container.locator('tbody tr[data-pc-section="bodyrow"]');
+  //   const inactiveRow = rows.filter({ has: page.locator('[data-pc-name="inputswitch"][aria-checked="false"]') }).first();
+  //   const targetRow = (await inactiveRow.count()) > 0 ? inactiveRow : rows.first();
 
-    await targetRow.locator('button.pure__table-menu-trigger').click();
-    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem.click();
+  //   await targetRow.locator('button.pure__table-menu-trigger').click();
+  //   const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+  //   await editItem.waitFor({ state: 'visible', timeout: 5000 });
+  //   await editItem.click();
 
-    const dialog = page.locator('div[role="dialog"]').first();
-    await expect(dialog).toBeVisible({ timeout: 15000 });
-    const promoName = (await dialog.locator('#promotionNameInput').inputValue()).trim();
-    return { dialog, promoName };
-  }
+  //   const dialog = page.locator('div[role="dialog"]').first();
+  //   await expect(dialog).toBeVisible({ timeout: 15000 });
+  //   const promoName = (await dialog.locator('#promotionNameInput').inputValue()).trim();
+  //   return { dialog, promoName };
+  // }
 
-  // Re-find the same promotion by name (row order can change after Save) and
-  // reopen its Edit popup. "Include inactive" is still ON from the first open.
-  async function reopenEditForPromo(page: Page, promoName: string): Promise<Locator> {
-    const container = page.locator('generic-wheel');
-    const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
-    await searchInput.waitFor({ state: 'visible', timeout: 10000 });
-    await searchInput.click({ clickCount: 3 });
-    await searchInput.fill(promoName);
-    await page.waitForTimeout(800);
+  // // Re-find the same promotion by name (row order can change after Save) and
+  // // reopen its Edit popup. "Include inactive" is still ON from the first open.
+  // async function reopenEditForPromo(page: Page, promoName: string): Promise<Locator> {
+  //   const container = page.locator('generic-wheel');
+  //   const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
+  //   await searchInput.waitFor({ state: 'visible', timeout: 10000 });
+  //   await searchInput.click({ clickCount: 3 });
+  //   await searchInput.fill(promoName);
+  //   await page.waitForTimeout(800);
 
-    const row = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await row.waitFor({ state: 'visible', timeout: 20000 });
-    await row.locator('button.pure__table-menu-trigger').click();
-    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
-    await editItem.waitFor({ state: 'visible', timeout: 5000 });
-    await editItem.click();
+  //   const row = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
+  //   await row.waitFor({ state: 'visible', timeout: 20000 });
+  //   await row.locator('button.pure__table-menu-trigger').click();
+  //   const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+  //   await editItem.waitFor({ state: 'visible', timeout: 5000 });
+  //   await editItem.click();
 
-    const dialog = page.locator('div[role="dialog"]').first();
-    await expect(dialog).toBeVisible({ timeout: 15000 });
-    return dialog;
-  }
+  //   const dialog = page.locator('div[role="dialog"]').first();
+  //   await expect(dialog).toBeVisible({ timeout: 15000 });
+  //   return dialog;
+  // }
 
   // // TC_51: Verify Promotion Name update in Edit popup
   // test('TC_51 - Verify Promotion Name update in Edit popup', async ({ page }, testInfo) => {
@@ -3202,36 +3202,36 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_65-GenericWheel-SpinAgainTogglePersisted_success');
   // });
 
-  // TC_66: Verify toggle "Requires Opt In" update persists after Save
-  test('TC_66 - Verify Requires Opt In toggle update persists after Save', async ({ page }, testInfo) => {
-    const container = page.locator('generic-wheel');
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // // TC_66: Verify toggle "Requires Opt In" update persists after Save
+  // test('TC_66 - Verify Requires Opt In toggle update persists after Save', async ({ page }, testInfo) => {
+  //   const container = page.locator('generic-wheel');
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Active promotions can't be edited (Save stays disabled) — open an inactive one
-    const { dialog: dialog66, promoName: promoName66 } = await openEditOnInactivePromo(page);
+  //   // Active promotions can't be edited (Save stays disabled) — open an inactive one
+  //   const { dialog: dialog66, promoName: promoName66 } = await openEditOnInactivePromo(page);
 
-    // Read current state of Requires Opt In toggle, then flip it
-    const optInSwitch66 = dialog66.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
-    await optInSwitch66.scrollIntoViewIfNeeded();
-    const stateBefore66 = await optInSwitch66.getAttribute('aria-checked');
-    await dialog66.locator('label[for="requiresOptIn"]').click();
-    await page.waitForTimeout(200);
-    const stateAfter66 = stateBefore66 === 'true' ? 'false' : 'true';
-    await expect(optInSwitch66).toHaveAttribute('aria-checked', stateAfter66);
+  //   // Read current state of Requires Opt In toggle, then flip it
+  //   const optInSwitch66 = dialog66.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
+  //   await optInSwitch66.scrollIntoViewIfNeeded();
+  //   const stateBefore66 = await optInSwitch66.getAttribute('aria-checked');
+  //   await dialog66.locator('label[for="requiresOptIn"]').click();
+  //   await page.waitForTimeout(200);
+  //   const stateAfter66 = stateBefore66 === 'true' ? 'false' : 'true';
+  //   await expect(optInSwitch66).toHaveAttribute('aria-checked', stateAfter66);
 
-    // Click Save
-    const saveBtn66 = dialog66.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
-    await saveBtn66.click();
-    await expect(dialog66).toBeHidden({ timeout: 15000 });
+  //   // Click Save
+  //   const saveBtn66 = dialog66.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
+  //   await saveBtn66.click();
+  //   await expect(dialog66).toBeHidden({ timeout: 15000 });
 
-    // Reopen via three-dots → Edit and verify toggle persisted
-    const dialog66b = await reopenEditForPromo(page, promoName66);
-    const optInSwitch66b = dialog66b.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
-    await optInSwitch66b.scrollIntoViewIfNeeded();
-    await expect(optInSwitch66b).toHaveAttribute('aria-checked', stateAfter66);
+  //   // Reopen via three-dots → Edit and verify toggle persisted
+  //   const dialog66b = await reopenEditForPromo(page, promoName66);
+  //   const optInSwitch66b = dialog66b.locator('[data-pc-name="inputswitch"]:has(#requiresOptIn)');
+  //   await optInSwitch66b.scrollIntoViewIfNeeded();
+  //   await expect(optInSwitch66b).toHaveAttribute('aria-checked', stateAfter66);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_66-GenericWheel-RequiresOptInTogglePersisted_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_66-GenericWheel-RequiresOptInTogglePersisted_success');
+  // });
 
   // // TC_67: Verify toggle "Allocate Ticket On All Prizes" update persists after Save
   // test('TC_67 - Verify Allocate Ticket On All Prizes toggle update persists after Save', async ({ page }, testInfo) => {
@@ -3744,8 +3744,8 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_78-GenericWheel-ScrollBehavior_success');
   // });
 
-  // ─── Shared helper: navigate to View Promotion Prizes page for the first row ───
-  // (inline in each test — beforeEach stays unchanged)
+  // // ─── Shared helper: navigate to View Promotion Prizes page for the first row ───
+  // // (inline in each test — beforeEach stays unchanged)
 
   // // TC_79: Verify View Promotion Prizes page opens successfully
   // test('TC_79 - Verify View Promotion Prizes page opens successfully', async ({ page }, testInfo) => {
@@ -3978,162 +3978,162 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_86-GenericWheel-BackButton_success');
   // });
 
-  // TC_87: Verify creation of a Promotion Prize
-  test('TC_87 - Verify creation of Promotion Prize', async ({ page }, testInfo) => {
-    const container = page.locator('generic-wheel');
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // // TC_87: Verify creation of a Promotion Prize
+  // test('TC_87 - Verify creation of Promotion Prize', async ({ page }, testInfo) => {
+  //   const container = page.locator('generic-wheel');
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Read the promotion start AND end dates from the first row (DD/MM/YYYY HH:mm).
-    // The prize's availability window must fall INSIDE the promotion window —
-    // the calendars don't grey out out-of-range days; the backend rejects them
-    // on Save ("Prize end date is after promotion end date").
-    const rowText87 = await container.locator('tbody tr[data-pc-section="bodyrow"]').first().innerText();
-    const rowDates87 = (rowText87.match(/\d{2}\/\d{2}\/\d{4}/g) || []).map((s) => {
-      const parts = s.split('/').map((x) => parseInt(x));
-      return new Date(parts[2], parts[1] - 1, parts[0]);
-    });
-    const promoStart87 = rowDates87.length > 0 ? rowDates87[0] : null;
-    const promoEnd87   = rowDates87.length > 1 ? rowDates87[1] : null;
+  //   // Read the promotion start AND end dates from the first row (DD/MM/YYYY HH:mm).
+  //   // The prize's availability window must fall INSIDE the promotion window —
+  //   // the calendars don't grey out out-of-range days; the backend rejects them
+  //   // on Save ("Prize end date is after promotion end date").
+  //   const rowText87 = await container.locator('tbody tr[data-pc-section="bodyrow"]').first().innerText();
+  //   const rowDates87 = (rowText87.match(/\d{2}\/\d{2}\/\d{4}/g) || []).map((s) => {
+  //     const parts = s.split('/').map((x) => parseInt(x));
+  //     return new Date(parts[2], parts[1] - 1, parts[0]);
+  //   });
+  //   const promoStart87 = rowDates87.length > 0 ? rowDates87[0] : null;
+  //   const promoEnd87   = rowDates87.length > 1 ? rowDates87[1] : null;
 
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-    const viewPrizesItem87 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
-    await viewPrizesItem87.waitFor({ state: 'visible', timeout: 5000 });
-    await viewPrizesItem87.click();
-    const prizeContainer87 = page.locator('generic-wheel-promotion-prizes');
-    await prizeContainer87.waitFor({ state: 'visible', timeout: 20000 });
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+  //   const viewPrizesItem87 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
+  //   await viewPrizesItem87.waitFor({ state: 'visible', timeout: 5000 });
+  //   await viewPrizesItem87.click();
+  //   const prizeContainer87 = page.locator('generic-wheel-promotion-prizes');
+  //   await prizeContainer87.waitFor({ state: 'visible', timeout: 20000 });
 
-    await page.locator('button[aria-label="Create Prize"]').click();
-    const prizeDialog87 = page.locator('div[role="dialog"]').first();
-    await expect(prizeDialog87).toBeVisible({ timeout: 10000 });
+  //   await page.locator('button[aria-label="Create Prize"]').click();
+  //   const prizeDialog87 = page.locator('div[role="dialog"]').first();
+  //   await expect(prizeDialog87).toBeVisible({ timeout: 10000 });
 
-    // 1. Select Prize Type
-    await prizeDialog87.locator('#prizeTypeDropdown [data-pc-section="trigger"]').click();
-    const prizeTypePanel87 = page.locator('.p-dropdown-panel');
-    await expect(prizeTypePanel87).toBeVisible({ timeout: 5000 });
-    await prizeTypePanel87.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
-    await page.waitForTimeout(300);
+  //   // 1. Select Prize Type
+  //   await prizeDialog87.locator('#prizeTypeDropdown [data-pc-section="trigger"]').click();
+  //   const prizeTypePanel87 = page.locator('.p-dropdown-panel');
+  //   await expect(prizeTypePanel87).toBeVisible({ timeout: 5000 });
+  //   await prizeTypePanel87.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
+  //   await page.waitForTimeout(300);
 
-    // 2. Enter Display Text
-    const displayText87 = `Prize_${CommonUtils.generateRandomString(5)}`;
-    await prizeDialog87.locator('#displayTextInput').fill(displayText87);
-    await page.waitForTimeout(200);
+  //   // 2. Enter Display Text
+  //   const displayText87 = `Prize_${CommonUtils.generateRandomString(5)}`;
+  //   await prizeDialog87.locator('#displayTextInput').fill(displayText87);
+  //   await page.waitForTimeout(200);
 
-    // 3. Enter Winning Chance (numeric)
-    const winningInput87 = prizeDialog87.locator('#winningChanceInput input');
-    await winningInput87.click({ clickCount: 3 });
-    await winningInput87.pressSequentially('10');
-    await winningInput87.press('Tab');
-    await page.waitForTimeout(200);
+  //   // 3. Enter Winning Chance (numeric)
+  //   const winningInput87 = prizeDialog87.locator('#winningChanceInput input');
+  //   await winningInput87.click({ clickCount: 3 });
+  //   await winningInput87.pressSequentially('10');
+  //   await winningInput87.press('Tab');
+  //   await page.waitForTimeout(200);
 
-    const startDaySelector87 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
+  //   const startDaySelector87 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 
-    // Signed month distance from the current month (negative = past month)
-    const monthDiff87 = (d: Date) => {
-      const now = new Date();
-      return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
-    };
-    const navForward87 = async (panel: import('@playwright/test').Locator, months: number) => {
-      for (let m = 0; m < months; m++) {
-        await panel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-        await page.waitForTimeout(100);
-      }
-    };
-    // Click the smallest enabled day within [minDay, maxDay] in the shown month;
-    // falls back to the first/last enabled day if none is in range.
-    const pickEnabledDay87 = async (panel: import('@playwright/test').Locator, minDay: number, maxDay: number, fallback: 'first' | 'last'): Promise<number> => {
-      const enabled = panel.locator(startDaySelector87);
-      const labels = await enabled.allInnerTexts();
-      if (labels.length === 0) throw new Error('No selectable days in the calendar month');
-      let idx = -1;
-      let best = 32;
-      labels.forEach((t, i) => {
-        const v = parseInt(t.trim());
-        if (v >= minDay && v <= maxDay && v < best) { best = v; idx = i; }
-      });
-      if (idx < 0) idx = fallback === 'first' ? 0 : labels.length - 1;
-      await enabled.nth(idx).click();
-      return parseInt(labels[idx].trim());
-    };
+  //   // Signed month distance from the current month (negative = past month)
+  //   const monthDiff87 = (d: Date) => {
+  //     const now = new Date();
+  //     return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
+  //   };
+  //   const navForward87 = async (panel: import('@playwright/test').Locator, months: number) => {
+  //     for (let m = 0; m < months; m++) {
+  //       await panel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+  //       await page.waitForTimeout(100);
+  //     }
+  //   };
+  //   // Click the smallest enabled day within [minDay, maxDay] in the shown month;
+  //   // falls back to the first/last enabled day if none is in range.
+  //   const pickEnabledDay87 = async (panel: import('@playwright/test').Locator, minDay: number, maxDay: number, fallback: 'first' | 'last'): Promise<number> => {
+  //     const enabled = panel.locator(startDaySelector87);
+  //     const labels = await enabled.allInnerTexts();
+  //     if (labels.length === 0) throw new Error('No selectable days in the calendar month');
+  //     let idx = -1;
+  //     let best = 32;
+  //     labels.forEach((t, i) => {
+  //       const v = parseInt(t.trim());
+  //       if (v >= minDay && v <= maxDay && v < best) { best = v; idx = i; }
+  //     });
+  //     if (idx < 0) idx = fallback === 'first' ? 0 : labels.length - 1;
+  //     await enabled.nth(idx).click();
+  //     return parseInt(labels[idx].trim());
+  //   };
 
-    // 4. Select Available Start Date — inside the promotion window, from today onward
-    await prizeDialog87.locator('#startDateCalendar input').click();
-    const startPanel87 = page.locator('.p-datepicker').first();
-    await expect(startPanel87).toBeVisible({ timeout: 5000 });
+  //   // 4. Select Available Start Date — inside the promotion window, from today onward
+  //   await prizeDialog87.locator('#startDateCalendar input').click();
+  //   const startPanel87 = page.locator('.p-datepicker').first();
+  //   await expect(startPanel87).toBeVisible({ timeout: 5000 });
 
-    const now87 = new Date();
-    // Latest safe prize-end day: one full day before the promotion end, so the
-    // time-of-day component can never push the prize past the promotion end
-    const endTarget87 = promoEnd87
-      ? new Date(promoEnd87.getFullYear(), promoEnd87.getMonth(), promoEnd87.getDate() - 1)
-      : null;
+  //   const now87 = new Date();
+  //   // Latest safe prize-end day: one full day before the promotion end, so the
+  //   // time-of-day component can never push the prize past the promotion end
+  //   const endTarget87 = promoEnd87
+  //     ? new Date(promoEnd87.getFullYear(), promoEnd87.getMonth(), promoEnd87.getDate() - 1)
+  //     : null;
 
-    // Land on the month of max(today, promotion start), never past the end-target month
-    let startNav87 = promoStart87 ? Math.max(0, monthDiff87(promoStart87)) : 0;
-    if (endTarget87) startNav87 = Math.min(startNav87, Math.max(0, monthDiff87(endTarget87)));
-    await navForward87(startPanel87, startNav87);
-    // Earliest pickable day: today (the calendar does NOT disable past days) and
-    // no earlier than the promotion start day when in that month
-    let startMinDay87 = startNav87 === 0 ? now87.getDate() : 1;
-    if (promoStart87 && monthDiff87(promoStart87) === startNav87) {
-      startMinDay87 = Math.max(startMinDay87, promoStart87.getDate());
-    }
-    // Leave at least one day of room for the prize end date
-    const startMaxDay87 = endTarget87 && monthDiff87(endTarget87) === startNav87
-      ? Math.max(startMinDay87, endTarget87.getDate() - 1)
-      : 31;
-    const startDay87 = await pickEnabledDay87(startPanel87, startMinDay87, startMaxDay87, 'first');
-    await page.waitForTimeout(300);
+  //   // Land on the month of max(today, promotion start), never past the end-target month
+  //   let startNav87 = promoStart87 ? Math.max(0, monthDiff87(promoStart87)) : 0;
+  //   if (endTarget87) startNav87 = Math.min(startNav87, Math.max(0, monthDiff87(endTarget87)));
+  //   await navForward87(startPanel87, startNav87);
+  //   // Earliest pickable day: today (the calendar does NOT disable past days) and
+  //   // no earlier than the promotion start day when in that month
+  //   let startMinDay87 = startNav87 === 0 ? now87.getDate() : 1;
+  //   if (promoStart87 && monthDiff87(promoStart87) === startNav87) {
+  //     startMinDay87 = Math.max(startMinDay87, promoStart87.getDate());
+  //   }
+  //   // Leave at least one day of room for the prize end date
+  //   const startMaxDay87 = endTarget87 && monthDiff87(endTarget87) === startNav87
+  //     ? Math.max(startMinDay87, endTarget87.getDate() - 1)
+  //     : 31;
+  //   const startDay87 = await pickEnabledDay87(startPanel87, startMinDay87, startMaxDay87, 'first');
+  //   await page.waitForTimeout(300);
 
-    // 5. With the start date selected, click on Available End Date — this closes
-    // the still-open start calendar and opens the end calendar — then pick a day
-    // after the start but BEFORE the promotion end date
-    const endInput87 = prizeDialog87.locator('#endDateCalendar input');
-    await endInput87.click();
-    await page.waitForTimeout(300);
-    const endPanel87 = page.locator('.p-datepicker:visible').first();
-    if (!(await endPanel87.isVisible().catch(() => false))) {
-      // The first click only dismissed the start-date overlay — click again to open
-      await endInput87.click();
-    }
-    await expect(endPanel87).toBeVisible({ timeout: 5000 });
-    const endNav87 = endTarget87 ? Math.max(startNav87, Math.max(0, monthDiff87(endTarget87))) : startNav87;
-    await navForward87(endPanel87, endNav87);
-    const endMinDay87 = endNav87 === startNav87 ? startDay87 + 1 : 1;
-    const endMaxDay87 = endTarget87 && monthDiff87(endTarget87) === endNav87
-      ? Math.max(endMinDay87, endTarget87.getDate())
-      : 31;
-    await pickEnabledDay87(endPanel87, endMinDay87, endMaxDay87, 'first');
-    await page.waitForTimeout(300);
-    // Click Display Text to close the End Date calendar before clicking Save
-    await prizeDialog87.locator('#displayTextInput').click();
-    await page.waitForTimeout(300);
+  //   // 5. With the start date selected, click on Available End Date — this closes
+  //   // the still-open start calendar and opens the end calendar — then pick a day
+  //   // after the start but BEFORE the promotion end date
+  //   const endInput87 = prizeDialog87.locator('#endDateCalendar input');
+  //   await endInput87.click();
+  //   await page.waitForTimeout(300);
+  //   const endPanel87 = page.locator('.p-datepicker:visible').first();
+  //   if (!(await endPanel87.isVisible().catch(() => false))) {
+  //     // The first click only dismissed the start-date overlay — click again to open
+  //     await endInput87.click();
+  //   }
+  //   await expect(endPanel87).toBeVisible({ timeout: 5000 });
+  //   const endNav87 = endTarget87 ? Math.max(startNav87, Math.max(0, monthDiff87(endTarget87))) : startNav87;
+  //   await navForward87(endPanel87, endNav87);
+  //   const endMinDay87 = endNav87 === startNav87 ? startDay87 + 1 : 1;
+  //   const endMaxDay87 = endTarget87 && monthDiff87(endTarget87) === endNav87
+  //     ? Math.max(endMinDay87, endTarget87.getDate())
+  //     : 31;
+  //   await pickEnabledDay87(endPanel87, endMinDay87, endMaxDay87, 'first');
+  //   await page.waitForTimeout(300);
+  //   // Click Display Text to close the End Date calendar before clicking Save
+  //   await prizeDialog87.locator('#displayTextInput').click();
+  //   await page.waitForTimeout(300);
 
-    // Click Save, then observe the outcome: dialog closing = saved; an error
-    // toast = the backend rejected the prize (capture its text before it fades)
-    const saveBtn87 = prizeDialog87.locator('button[aria-label="Save"], button:has-text("Save")').first();
-    await saveBtn87.click();
-    const errorToast87 = page.locator('.p-toast-message-error').first();
-    let outcome87: 'saved' | 'error' | 'timeout' = 'timeout';
-    for (let t = 0; t < 30; t++) {
-      if (!(await prizeDialog87.isVisible().catch(() => true))) { outcome87 = 'saved'; break; }
-      if (await errorToast87.isVisible().catch(() => false)) { outcome87 = 'error'; break; }
-      await page.waitForTimeout(500);
-    }
-    if (outcome87 === 'error') {
-      throw new Error(`Prize creation rejected — error toast: ${(await errorToast87.innerText().catch(() => '')).trim()}`);
-    }
-    if (outcome87 === 'timeout') {
-      throw new Error('Save did not close the Add Prize dialog and no error toast appeared');
-    }
+  //   // Click Save, then observe the outcome: dialog closing = saved; an error
+  //   // toast = the backend rejected the prize (capture its text before it fades)
+  //   const saveBtn87 = prizeDialog87.locator('button[aria-label="Save"], button:has-text("Save")').first();
+  //   await saveBtn87.click();
+  //   const errorToast87 = page.locator('.p-toast-message-error').first();
+  //   let outcome87: 'saved' | 'error' | 'timeout' = 'timeout';
+  //   for (let t = 0; t < 30; t++) {
+  //     if (!(await prizeDialog87.isVisible().catch(() => true))) { outcome87 = 'saved'; break; }
+  //     if (await errorToast87.isVisible().catch(() => false)) { outcome87 = 'error'; break; }
+  //     await page.waitForTimeout(500);
+  //   }
+  //   if (outcome87 === 'error') {
+  //     throw new Error(`Prize creation rejected — error toast: ${(await errorToast87.innerText().catch(() => '')).trim()}`);
+  //   }
+  //   if (outcome87 === 'timeout') {
+  //     throw new Error('Save did not close the Add Prize dialog and no error toast appeared');
+  //   }
 
-    // Saved: a success toast or the new prize appearing in the list confirms creation
-    const successToast87 = page.locator('.p-toast-message-success').first();
-    if (!(await successToast87.isVisible().catch(() => false))) {
-      await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').filter({ hasText: displayText87 }).first().waitFor({ state: 'visible', timeout: 10000 });
-    }
+  //   // Saved: a success toast or the new prize appearing in the list confirms creation
+  //   const successToast87 = page.locator('.p-toast-message-success').first();
+  //   if (!(await successToast87.isVisible().catch(() => false))) {
+  //     await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').filter({ hasText: displayText87 }).first().waitFor({ state: 'visible', timeout: 10000 });
+  //   }
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_87-GenericWheel-PrizeCreated_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_87-GenericWheel-PrizeCreated_success');
+  // });
 
   // // ─── TC_88 ───────────────────────────────────────────────────────────────────
   // test('TC_88 - Verify mandatory field validation on Duplicate Promotion popup', async ({ page }, testInfo) => {
@@ -4399,134 +4399,134 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_91-GenericWheel-DupXIconClose_success');
   // });
 
-  // ─── shared helpers (inline) ────────────────────────────────────────────────
-  // createPromoForTest: creates a brand-new promotion and returns its unique name
-  // Used by TC_92–TC_95 so we never touch pre-existing promotions.
+  // // ─── shared helpers (inline) ────────────────────────────────────────────────
+  // // createPromoForTest: creates a brand-new promotion and returns its unique name
+  // // Used by TC_92–TC_95 so we never touch pre-existing promotions.
 
-  async function createPromoForTest(page: Page, prefix: string, hoursBack = 0): Promise<string> {
-    const container = page.locator('generic-wheel');
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // async function createPromoForTest(page: Page, prefix: string, hoursBack = 0): Promise<string> {
+  //   const container = page.locator('generic-wheel');
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    const createBtn = container.locator('button[aria-label="Create Promotion"]');
-    await createBtn.waitFor({ state: 'visible', timeout: 10000 });
-    await createBtn.scrollIntoViewIfNeeded();
-    await createBtn.click();
+  //   const createBtn = container.locator('button[aria-label="Create Promotion"]');
+  //   await createBtn.waitFor({ state: 'visible', timeout: 10000 });
+  //   await createBtn.scrollIntoViewIfNeeded();
+  //   await createBtn.click();
 
-    const dialog = page.locator('div[role="dialog"]').first();
-    await expect(dialog).toBeVisible({ timeout: 15000 });
+  //   const dialog = page.locator('div[role="dialog"]').first();
+  //   await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    const promoName = `${prefix}_${CommonUtils.generateRandomString(5)}`;
-    const daySelector = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
-    const nameInput = dialog.locator('#promotionNameInput');
-    await nameInput.waitFor({ state: 'visible', timeout: 10000 });
-    await nameInput.fill(promoName);
+  //   const promoName = `${prefix}_${CommonUtils.generateRandomString(5)}`;
+  //   const daySelector = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
+  //   const nameInput = dialog.locator('#promotionNameInput');
+  //   await nameInput.waitFor({ state: 'visible', timeout: 10000 });
+  //   await nameInput.fill(promoName);
 
-    // Allocation Strategy
-    await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
-    const stratPanel = page.locator('.p-dropdown-panel');
-    await expect(stratPanel).toBeVisible({ timeout: 5000 });
-    await stratPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().waitFor({ state: 'visible', timeout: 5000 });
-    await stratPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
-    await page.waitForTimeout(300);
+  //   // Allocation Strategy
+  //   await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
+  //   const stratPanel = page.locator('.p-dropdown-panel');
+  //   await expect(stratPanel).toBeVisible({ timeout: 5000 });
+  //   await stratPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().waitFor({ state: 'visible', timeout: 5000 });
+  //   await stratPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
+  //   await page.waitForTimeout(300);
 
-    // Start Date
-    await dialog.locator('#startDateCalendar input').click();
-    const sPanel = page.locator('.p-datepicker').first();
-    await expect(sPanel).toBeVisible({ timeout: 5000 });
-    for (let m = 0; m < 12; m++) {
-      if (await sPanel.locator(daySelector).count() > 0) break;
-      await sPanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-      await page.waitForTimeout(100);
-    }
-    await sPanel.locator(daySelector).first().click();
-    await page.waitForTimeout(300);
+  //   // Start Date
+  //   await dialog.locator('#startDateCalendar input').click();
+  //   const sPanel = page.locator('.p-datepicker').first();
+  //   await expect(sPanel).toBeVisible({ timeout: 5000 });
+  //   for (let m = 0; m < 12; m++) {
+  //     if (await sPanel.locator(daySelector).count() > 0) break;
+  //     await sPanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+  //     await page.waitForTimeout(100);
+  //   }
+  //   await sPanel.locator(daySelector).first().click();
+  //   await page.waitForTimeout(300);
 
-    // If requested, go back N hours using the timepicker Previous Hour arrow
-    if (hoursBack > 0) {
-      const prevHourBtn = sPanel.locator('.p-hour-picker [data-pc-section="decrementbutton"]');
-      if (await prevHourBtn.isVisible().catch(() => false)) {
-        for (let h = 0; h < hoursBack; h++) {
-          await prevHourBtn.click();
-          await page.waitForTimeout(80);
-        }
-      }
-      await page.waitForTimeout(200);
-    }
+  //   // If requested, go back N hours using the timepicker Previous Hour arrow
+  //   if (hoursBack > 0) {
+  //     const prevHourBtn = sPanel.locator('.p-hour-picker [data-pc-section="decrementbutton"]');
+  //     if (await prevHourBtn.isVisible().catch(() => false)) {
+  //       for (let h = 0; h < hoursBack; h++) {
+  //         await prevHourBtn.click();
+  //         await page.waitForTimeout(80);
+  //       }
+  //     }
+  //     await page.waitForTimeout(200);
+  //   }
 
-    await nameInput.click({ force: true });
-    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-    await page.waitForTimeout(300);
+  //   await nameInput.click({ force: true });
+  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+  //   await page.waitForTimeout(300);
 
-    // End Date — 1 month forward
-    await dialog.locator('#endDateCalendar input').click();
-    const ePanel = page.locator('.p-datepicker').first();
-    await expect(ePanel).toBeVisible({ timeout: 5000 });
-    await ePanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-    await page.waitForTimeout(100);
-    for (let m = 0; m < 12; m++) {
-      if (await ePanel.locator(daySelector).count() > 0) break;
-      await ePanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-      await page.waitForTimeout(100);
-    }
-    await ePanel.locator(daySelector).first().click();
-    await page.waitForTimeout(300);
-    await nameInput.click({ force: true });
-    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-    await page.waitForTimeout(300);
+  //   // End Date — 1 month forward
+  //   await dialog.locator('#endDateCalendar input').click();
+  //   const ePanel = page.locator('.p-datepicker').first();
+  //   await expect(ePanel).toBeVisible({ timeout: 5000 });
+  //   await ePanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+  //   await page.waitForTimeout(100);
+  //   for (let m = 0; m < 12; m++) {
+  //     if (await ePanel.locator(daySelector).count() > 0) break;
+  //     await ePanel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+  //     await page.waitForTimeout(100);
+  //   }
+  //   await ePanel.locator(daySelector).first().click();
+  //   await page.waitForTimeout(300);
+  //   await nameInput.click({ force: true });
+  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+  //   await page.waitForTimeout(300);
 
-    // Numeric fields
-    for (const [selector, value] of [
-      ['#spinsPerUserInput input', '5'],
-      ['#dailySpinLimitInput input', '3'],
-      ['#spinValidityDaysInput input', '7'],
-      ['#numberOfSlicesInput input', '4'],
-    ] as [string, string][]) {
-      const inp = dialog.locator(selector);
-      await inp.click({ clickCount: 3 });
-      await inp.pressSequentially(value);
-      await inp.press('Tab');
-      await page.waitForTimeout(200);
-    }
+  //   // Numeric fields
+  //   for (const [selector, value] of [
+  //     ['#spinsPerUserInput input', '5'],
+  //     ['#dailySpinLimitInput input', '3'],
+  //     ['#spinValidityDaysInput input', '7'],
+  //     ['#numberOfSlicesInput input', '4'],
+  //   ] as [string, string][]) {
+  //     const inp = dialog.locator(selector);
+  //     await inp.click({ clickCount: 3 });
+  //     await inp.pressSequentially(value);
+  //     await inp.press('Tab');
+  //     await page.waitForTimeout(200);
+  //   }
 
-    // Region
-    await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
-    const regPanel = page.locator('.p-dropdown-panel');
-    await expect(regPanel).toBeVisible({ timeout: 5000 });
-    const regOpt = regPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').filter({ hasText: /Betway Botswana|Betway Ghana/ }).first();
-    await regOpt.waitFor({ state: 'visible', timeout: 5000 });
-    await regOpt.click();
-    await page.waitForTimeout(300);
+  //   // Region
+  //   await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
+  //   const regPanel = page.locator('.p-dropdown-panel');
+  //   await expect(regPanel).toBeVisible({ timeout: 5000 });
+  //   const regOpt = regPanel.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').filter({ hasText: /Betway Botswana|Betway Ghana/ }).first();
+  //   await regOpt.waitFor({ state: 'visible', timeout: 5000 });
+  //   await regOpt.click();
+  //   await page.waitForTimeout(300);
 
-    // Redirect URL + Save
-    await dialog.locator('#redirectUrlInput').fill('https://example.com');
-    await page.waitForTimeout(200);
-    await dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first().click();
-    await expect(dialog).toBeHidden({ timeout: 15000 });
+  //   // Redirect URL + Save
+  //   await dialog.locator('#redirectUrlInput').fill('https://example.com');
+  //   await page.waitForTimeout(200);
+  //   await dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first().click();
+  //   await expect(dialog).toBeHidden({ timeout: 15000 });
 
-    return promoName;
-  }
+  //   return promoName;
+  // }
 
-  async function findCreatedPromo(page: Page, promoName: string) {
-    const container = page.locator('generic-wheel');
+  // async function findCreatedPromo(page: Page, promoName: string) {
+  //   const container = page.locator('generic-wheel');
 
-    // Enable Include inactive toggle so the newly created promotion is visible
-    const toggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
-    await toggle.waitFor({ state: 'visible', timeout: 10000 });
-    if (await toggle.getAttribute('aria-checked') === 'false') {
-      await toggle.click();
-      await page.waitForTimeout(600);
-    }
+  //   // Enable Include inactive toggle so the newly created promotion is visible
+  //   const toggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
+  //   await toggle.waitFor({ state: 'visible', timeout: 10000 });
+  //   if (await toggle.getAttribute('aria-checked') === 'false') {
+  //     await toggle.click();
+  //     await page.waitForTimeout(600);
+  //   }
 
-    // Search by name
-    const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
-    await searchInput.waitFor({ state: 'visible', timeout: 10000 });
-    await searchInput.click({ clickCount: 3 });
-    await searchInput.fill(promoName);
-    await page.waitForTimeout(800);
-    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+  //   // Search by name
+  //   const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
+  //   await searchInput.waitFor({ state: 'visible', timeout: 10000 });
+  //   await searchInput.click({ clickCount: 3 });
+  //   await searchInput.fill(promoName);
+  //   await page.waitForTimeout(800);
+  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
 
-    return container;
-  }
+  //   return container;
+  // }
 
   // // ─── TC_92 ───────────────────────────────────────────────────────────────────
   // test('TC_92 - Verify Delete promotion - Click Yes on confirmation', async ({ page }, testInfo) => {
@@ -4579,36 +4579,36 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_93-GenericWheel-DeleteNo_success');
   // });
 
-  // ─── TC_94 ───────────────────────────────────────────────────────────────────
-  // Simple flow per exact user steps: no created promotion, no prizes, no prior
-  // activation — just open the three-dot menu on whatever promotion is already
-  // there (beforeEach already lands on the Generic Wheel page), Deactivate, Yes.
-  test('TC_94 - Verify Deactivate promotion - Click Yes on confirmation', async ({ page }, testInfo) => {
-    const container94 = page.locator('generic-wheel');
-    const firstRow94 = container94.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstRow94.waitFor({ state: 'visible', timeout: 20000 });
+  // // ─── TC_94 ───────────────────────────────────────────────────────────────────
+  // // Simple flow per exact user steps: no created promotion, no prizes, no prior
+  // // activation — just open the three-dot menu on whatever promotion is already
+  // // there (beforeEach already lands on the Generic Wheel page), Deactivate, Yes.
+  // test('TC_94 - Verify Deactivate promotion - Click Yes on confirmation', async ({ page }, testInfo) => {
+  //   const container94 = page.locator('generic-wheel');
+  //   const firstRow94 = container94.locator('tbody tr[data-pc-section="bodyrow"]').first();
+  //   await firstRow94.waitFor({ state: 'visible', timeout: 20000 });
 
-    // Click the three dots of the (any) first promotion to open its menu
-    await firstRow94.locator('button.pure__table-menu-trigger').click();
+  //   // Click the three dots of the (any) first promotion to open its menu
+  //   await firstRow94.locator('button.pure__table-menu-trigger').click();
 
-    // "Deactivate" carries no aria-label — it's plain text inside a child
-    // <span class="p-menuitem-text"> (confirmed via outerHTML) — match by text.
-    const deactivateItem94 = page.locator('a.p-menuitem-link').filter({ hasText: 'Deactivate' }).first();
-    await deactivateItem94.waitFor({ state: 'visible', timeout: 5000 });
-    await deactivateItem94.click();
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_94-GenericWheel-DeactivateConfirmDialog');
+  //   // "Deactivate" carries no aria-label — it's plain text inside a child
+  //   // <span class="p-menuitem-text"> (confirmed via outerHTML) — match by text.
+  //   const deactivateItem94 = page.locator('a.p-menuitem-link').filter({ hasText: 'Deactivate' }).first();
+  //   await deactivateItem94.waitFor({ state: 'visible', timeout: 5000 });
+  //   await deactivateItem94.click();
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_94-GenericWheel-DeactivateConfirmDialog');
 
-    // Confirmation dialog — click Yes
-    const yesBtn94 = page.locator('button[aria-label="Yes"]').first();
-    await yesBtn94.waitFor({ state: 'visible', timeout: 10000 });
-    await yesBtn94.click();
-    await page.waitForTimeout(1000);
+  //   // Confirmation dialog — click Yes
+  //   const yesBtn94 = page.locator('button[aria-label="Yes"]').first();
+  //   await yesBtn94.waitFor({ state: 'visible', timeout: 10000 });
+  //   await yesBtn94.click();
+  //   await page.waitForTimeout(1000);
 
-    // Verify deactivation via success toast message
-    const successToast94 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
-    await expect(successToast94, 'Expected a success toast confirming deactivation').toBeVisible({ timeout: 10000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_94-GenericWheel-DeactivateYes_success');
-  });
+  //   // Verify deactivation via success toast message
+  //   const successToast94 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
+  //   await expect(successToast94, 'Expected a success toast confirming deactivation').toBeVisible({ timeout: 10000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_94-GenericWheel-DeactivateYes_success');
+  // });
 
   // // ─── TC_95 ───────────────────────────────────────────────────────────────────
   // test('TC_95 - Verify Deactivate promotion - Click No on confirmation', async ({ page }, testInfo) => {
@@ -4829,86 +4829,86 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_97-GenericWheel-AllocatePrize_success');
   // });
 
-  // ─── TC_98 ───────────────────────────────────────────────────────────────────
-  test('TC_98 - Verify Remove Participant from Promotion Summary', async ({ page }, testInfo) => {
-    const container98 = page.locator('generic-wheel');
-    await container98.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // // ─── TC_98 ───────────────────────────────────────────────────────────────────
+  // test('TC_98 - Verify Remove Participant from Promotion Summary', async ({ page }, testInfo) => {
+  //   const container98 = page.locator('generic-wheel');
+  //   await container98.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Click three dots → Promotion Summary
-    await container98.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-    const summaryItem98 = page.locator('a.p-menuitem-link[aria-label="Promotion Summary"]').first();
-    await summaryItem98.waitFor({ state: 'visible', timeout: 5000 });
-    await summaryItem98.click();
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-PromotionSummaryPage');
+  //   // Click three dots → Promotion Summary
+  //   await container98.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+  //   const summaryItem98 = page.locator('a.p-menuitem-link[aria-label="Promotion Summary"]').first();
+  //   await summaryItem98.waitFor({ state: 'visible', timeout: 5000 });
+  //   await summaryItem98.click();
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-PromotionSummaryPage');
 
-    // Read Account ID from the first row of the promotion summary list
-    const summaryTable98 = page.locator('table, p-table, generic-wheel-promotion-summary').first();
-    await summaryTable98.waitFor({ state: 'visible', timeout: 20000 });
-    const firstSummaryRow98 = summaryTable98.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstSummaryRow98.waitFor({ state: 'visible', timeout: 10000 });
-    // Account ID is typically the first cell in the row
-    const accountId98 = (await firstSummaryRow98.locator('td').first().innerText()).trim();
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-SummaryListLoaded');
+  //   // Read Account ID from the first row of the promotion summary list
+  //   const summaryTable98 = page.locator('table, p-table, generic-wheel-promotion-summary').first();
+  //   await summaryTable98.waitFor({ state: 'visible', timeout: 20000 });
+  //   const firstSummaryRow98 = summaryTable98.locator('tbody tr[data-pc-section="bodyrow"]').first();
+  //   await firstSummaryRow98.waitFor({ state: 'visible', timeout: 10000 });
+  //   // Account ID is typically the first cell in the row
+  //   const accountId98 = (await firstSummaryRow98.locator('td').first().innerText()).trim();
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-SummaryListLoaded');
 
-    // Click Remove participant button
-    const deleteParticipantBtn98 = page.locator('button[aria-label="Remove participant"]').first();
-    await deleteParticipantBtn98.waitFor({ state: 'visible', timeout: 10000 });
-    await deleteParticipantBtn98.click();
+  //   // Click Remove participant button
+  //   const deleteParticipantBtn98 = page.locator('button[aria-label="Remove participant"]').first();
+  //   await deleteParticipantBtn98.waitFor({ state: 'visible', timeout: 10000 });
+  //   await deleteParticipantBtn98.click();
 
-    // Remove participant popup opens
-    const deleteDialog98 = page.locator('div[role="dialog"]').first();
-    await expect(deleteDialog98).toBeVisible({ timeout: 10000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-RemoveParticipantPopup');
+  //   // Remove participant popup opens
+  //   const deleteDialog98 = page.locator('div[role="dialog"]').first();
+  //   await expect(deleteDialog98).toBeVisible({ timeout: 10000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-RemoveParticipantPopup');
 
-    // Enter Account ID (input#accountId)
-    const accountIdInput98 = deleteDialog98.locator('input#accountId');
-    await accountIdInput98.waitFor({ state: 'visible', timeout: 10000 });
-    await accountIdInput98.click({ clickCount: 3 });
-    await accountIdInput98.fill(accountId98);
-    await page.waitForTimeout(300);
+  //   // Enter Account ID (input#accountId)
+  //   const accountIdInput98 = deleteDialog98.locator('input#accountId');
+  //   await accountIdInput98.waitFor({ state: 'visible', timeout: 10000 });
+  //   await accountIdInput98.click({ clickCount: 3 });
+  //   await accountIdInput98.fill(accountId98);
+  //   await page.waitForTimeout(300);
 
-    // Click Save (becomes enabled after valid UUID is entered)
-    const saveBtn98 = deleteDialog98.locator('button[aria-label="Save"]').first();
-    await expect(saveBtn98).toBeEnabled({ timeout: 5000 });
-    await saveBtn98.click();
+  //   // Click Save (becomes enabled after valid UUID is entered)
+  //   const saveBtn98 = deleteDialog98.locator('button[aria-label="Save"]').first();
+  //   await expect(saveBtn98).toBeEnabled({ timeout: 5000 });
+  //   await saveBtn98.click();
 
-    // Verify success via toast message
-    const successToast98 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
-    await expect(successToast98).toBeVisible({ timeout: 10000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-RemoveParticipant_success');
-  });
+  //   // Verify success via toast message
+  //   const successToast98 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
+  //   await expect(successToast98).toBeVisible({ timeout: 10000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_98-GenericWheel-RemoveParticipant_success');
+  // });
 
-  // ─── TC_99 ───────────────────────────────────────────────────────────────────
-  test('TC_99 - Verify Remove Single Participant from Promotion Summary', async ({ page }, testInfo) => {
-    const container99 = page.locator('generic-wheel');
-    await container99.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // // ─── TC_99 ───────────────────────────────────────────────────────────────────
+  // test('TC_99 - Verify Remove Single Participant from Promotion Summary', async ({ page }, testInfo) => {
+  //   const container99 = page.locator('generic-wheel');
+  //   await container99.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-    // Click three dots → Promotion Summary
-    await container99.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-    const summaryItem99 = page.locator('a.p-menuitem-link[aria-label="Promotion Summary"]').first();
-    await summaryItem99.waitFor({ state: 'visible', timeout: 5000 });
-    await summaryItem99.click();
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-PromotionSummaryPage');
+  //   // Click three dots → Promotion Summary
+  //   await container99.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+  //   const summaryItem99 = page.locator('a.p-menuitem-link[aria-label="Promotion Summary"]').first();
+  //   await summaryItem99.waitFor({ state: 'visible', timeout: 5000 });
+  //   await summaryItem99.click();
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-PromotionSummaryPage');
 
-    // Wait for summary list to load and click Remove on the first row
-    const firstSummaryRow99 = page.locator('tbody tr[data-pc-section="bodyrow"]').first();
-    await firstSummaryRow99.waitFor({ state: 'visible', timeout: 20000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-SummaryListLoaded');
+  //   // Wait for summary list to load and click Remove on the first row
+  //   const firstSummaryRow99 = page.locator('tbody tr[data-pc-section="bodyrow"]').first();
+  //   await firstSummaryRow99.waitFor({ state: 'visible', timeout: 20000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-SummaryListLoaded');
 
-    const removeBtn99 = firstSummaryRow99.locator('button[aria-label="Remove"]').first();
-    await removeBtn99.waitFor({ state: 'visible', timeout: 5000 });
-    await removeBtn99.click();
+  //   const removeBtn99 = firstSummaryRow99.locator('button[aria-label="Remove"]').first();
+  //   await removeBtn99.waitFor({ state: 'visible', timeout: 5000 });
+  //   await removeBtn99.click();
 
-    // Confirmation dialog — click Yes
-    const yesBtn99 = page.locator('button[aria-label="Yes"]').first();
-    await yesBtn99.waitFor({ state: 'visible', timeout: 10000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-RemoveConfirmDialog');
-    await yesBtn99.click();
+  //   // Confirmation dialog — click Yes
+  //   const yesBtn99 = page.locator('button[aria-label="Yes"]').first();
+  //   await yesBtn99.waitFor({ state: 'visible', timeout: 10000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-RemoveConfirmDialog');
+  //   await yesBtn99.click();
 
-    // Verify success via toast message
-    const successToast99 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
-    await expect(successToast99).toBeVisible({ timeout: 10000 });
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-RemoveSingleParticipant_success');
-  });
+  //   // Verify success via toast message
+  //   const successToast99 = page.locator('.p-toast-message-success, .p-toast .p-toast-message, [data-p-severity="success"]').first();
+  //   await expect(successToast99).toBeVisible({ timeout: 10000 });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_99-GenericWheel-RemoveSingleParticipant_success');
+  // });
 
 });

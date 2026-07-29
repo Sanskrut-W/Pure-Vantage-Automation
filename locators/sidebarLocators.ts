@@ -38,6 +38,8 @@ export const sidebarLocators = {
     menuMarketingComps: 'Marketing Comps',
     menuCompAlerts: 'Comp Alerts',
     menuCompsBulk: 'Comp Bulk',
+    // The app used to render this as "Comp Managament" (its own typo) — since
+    // fixed on their end, the sidebar now genuinely reads "Comp Config".
     menuCompConfig: 'Comp Config',
     menuManualComps: 'Manual Comps',
     menuTransactionTypes: 'Transaction Types',
