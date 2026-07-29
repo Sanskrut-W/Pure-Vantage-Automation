@@ -26,11 +26,19 @@ test.describe('Notification Schedule Tests', () => {
     test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectFirstCommunicationType();
 
+        // Email data takes a while to load after selecting the type — wait for
+        // rows to appear before searching
+        const hasRows = await notificationSchedulePage.waitForRows(30000);
+        expect(hasRows, 'Schedule rows must load after selecting the communication type').toBe(true);
+
         await notificationSchedulePage.searchFor('Test Email 6 Offer');
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_results');
 
-        const filteredRows = await notificationSchedulePage.getRowCount();
-        expect(filteredRows).toBe(1);
+        // The table refresh can lag behind the typed search term — poll until
+        // the filter is applied
+        await expect
+            .poll(async () => notificationSchedulePage.getRowCount(), { timeout: 15000 })
+            .toBe(1);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_exact');
     });
@@ -75,18 +83,34 @@ test.describe('Notification Schedule Tests', () => {
         expect(columnTitles).toContain('Campaign');
         expect(columnTitles).toContain('Dry Run');
         expect(columnTitles).toContain('Processed');
-        expect(columnTitles).toContain('Sent to Region');
         expect(columnTitles).toContain('Scheduled Date');
         expect(columnTitles).toContain('Created Date');
+        expect(columnTitles).toContain('Actions');
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_notif_schedule_columns');
     });
 
     test('TC-7 Verify Processing Complete (Processed) status is available in the table', async ({ page, notificationSchedulePage }, testInfo) => {
-        await notificationSchedulePage.selectFirstCommunicationType();
+        // Some communication types have no scheduled rows and data loads slowly —
+        // walk through the types until one shows data
+        const dropdown = notificationSchedulePage.communicationTypeDropdown;
+        const panel = page.locator('.p-dropdown-panel');
+        await dropdown.click();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        const typeCount = await panel.locator('.p-dropdown-item').count();
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(300);
 
-        const rowCount = await notificationSchedulePage.getRowCount();
-        expect(rowCount, 'Must have at least 1 row to verify Processed column').toBeGreaterThan(0);
+        let hasRows = false;
+        for (let i = 0; i < typeCount && !hasRows; i++) {
+            await dropdown.click();
+            await panel.waitFor({ state: 'visible', timeout: 5000 });
+            await panel.locator('.p-dropdown-item').nth(i).click();
+            await page.waitForLoadState('networkidle');
+            // First type gets the longest wait; later ones a shorter one
+            hasRows = await notificationSchedulePage.waitForRows(i === 0 ? 30000 : 15000);
+        }
+        expect(hasRows, 'No communication type shows any scheduled rows').toBe(true);
 
         // Processed column header must be visible
         const processedHeader = page.locator('th .p-column-title:text-is("Processed")');
@@ -104,17 +128,17 @@ test.describe('Notification Schedule Tests', () => {
 
         const sortableCols = await notificationSchedulePage.getSortableColumnTitles();
 
-        // Sortable columns per HTML
+        // Sortable columns per current HTML (sort icon present)
         expect(sortableCols).toContain('Template Name');
         expect(sortableCols).toContain('Region');
         expect(sortableCols).toContain('Campaign');
-        expect(sortableCols).toContain('Sent to Region');
         expect(sortableCols).toContain('Scheduled Date');
         expect(sortableCols).toContain('Created Date');
 
-        // NOT sortable per HTML
+        // NOT sortable per current HTML
         expect(sortableCols).not.toContain('Dry Run');
         expect(sortableCols).not.toContain('Processed');
+        expect(sortableCols).not.toContain('Actions');
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_notif_schedule_sort_buttons');
     });

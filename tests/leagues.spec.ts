@@ -9,6 +9,11 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/main/home');
+    // Deep-link navigation doesn't always fully hydrate the Angular/Stencil
+    // component before the sidebar click fires — a reload reliably forces it
+    // to initialize from scratch (same fix proven across this project's other
+    // spec files).
+    await page.reload();
     await page.waitForLoadState('networkidle');
 
     const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
@@ -351,6 +356,11 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/main/home');
+    // Deep-link navigation doesn't always fully hydrate the Angular/Stencil
+    // component before the sidebar click fires — a reload reliably forces it
+    // to initialize from scratch (same fix proven across this project's other
+    // spec files).
+    await page.reload();
     await page.waitForLoadState('networkidle');
 
     const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();

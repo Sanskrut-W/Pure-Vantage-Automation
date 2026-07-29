@@ -20,6 +20,12 @@ export class BasePage {
      */
     async clickElement(locator: Locator, options?: { force?: boolean }) {
         await locator.waitFor({ state: 'visible' });
+        // A global loading overlay (pure-page-loader) can linger after a page
+        // transition and intercept pointer events for the content underneath —
+        // confirmed live: it blocked clicks on both a page's Edit button and
+        // the sidebar nav, burning the full action timeout on retries instead
+        // of just clicking through once the overlay clears.
+        await this.page.locator('.pure__loader-container').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
         await locator.click(options);
     }
 

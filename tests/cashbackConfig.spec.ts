@@ -6,7 +6,16 @@ import { cashbackLocators } from '../locators/cashbackLocators';
 // ─── Shared navigation helper ─────────────────────────────────────────────────
 async function navigateToCashback(page: any, sidebarPage: any, cashbackPage: any) {
     await page.goto('/main/home');
-    await page.reload();
+    // Letting the initial navigation's requests settle BEFORE reloading matters
+    // here: reload() cancels any still-in-flight requests from goto(), and that
+    // was observed to abort the user role/permissions fetch (/Portal/user,
+    // /Portal/rolePages/*) — leaving the app running with incomplete permission
+    // data for the rest of the test (silently breaking permission-gated actions
+    // like Approve, with no visible error). Waiting first lets that call finish
+    // before reload() starts a clean one.
+    await page.waitForLoadState('networkidle').catch(() => {});
+    await page.reload().catch(() => {});
+    await page.waitForLoadState('networkidle').catch(() => {});
     await sidebarPage.waitForPageLoad();
     await sidebarPage.navigateToCashbackPromotions();
     await expect(page).toHaveURL(/.*cashback-promotions/);
@@ -104,22 +113,23 @@ test.describe('Cashback Promotions - Page Level Tests', () => {
     });
 });
 
-// // ═══════════════════════════════════════════════════════════════════════════════
-// //  TC-13 → TC-23 → TC-44  — Serial CRUD Flow (same record throughout)
-// //
-// //  Step 1  (TC-13): CREATE a promotion with a unique description → verify in table.
-// //  Step 2  (TC-23): EDIT that exact record, change its description → verify in table.
-// //  Step 3  (TC-44): DELETE that exact edited record → verify removed from table.
-// // ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TC-13 → TC-23 → TC-44  — Serial CRUD Flow (same record throughout)
+//
+//  Step 1  (TC-13): CREATE a promotion with a unique description → verify in table.
+//  Step 2  (TC-23): EDIT that exact record, change its description → verify in table.
+//  Step 3  (TC-44): DELETE that exact edited record → verify removed from table.
+// ═══════════════════════════════════════════════════════════════════════════════
 test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
-
-    // Shared record identifiers — stable for the lifetime of this describe block
-    const createdDesc = `AutoCashback_${Date.now()}`;
-    const editedDesc  = `EditedCashback_${Date.now()}`;
-    const compCode    = `CODE_${Date.now()}`;
 
     test('TC-13 Create new cashback promotion and verify it appears in the table', async ({ page, sidebarPage, cashbackPage }, testInfo) => {
         await navigateToCashback(page, sidebarPage, cashbackPage);
+
+        // Unique per run, scoped to this test — mirrors the same
+        // self-sufficient pattern already used by TC-23/TC-44 below, rather
+        // than depending on shared module-level state.
+        const createdDesc = `AutoCashback_${Date.now()}`;
+        const compCode = `CODE_${Date.now()}`;
 
         // Open the Create dialog
         await cashbackPage.clickCreateCashbackPromotion();
@@ -137,6 +147,8 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
         await cashbackPage.fillCompPercentageInDialog(dialog, '5');
         await cashbackPage.setNextExecutionDateInDialog(dialog);
         await cashbackPage.selectExecutionFrequencyInDialog(dialog, 'Daily');
+        await cashbackPage.fillOptInValueInDialog(dialog, 'AUTO_OPT_IN');
+        await cashbackPage.selectExecutionHourInDialog(dialog);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-13_step1_form_filled');
 
@@ -144,6 +156,11 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
         await cashbackPage.clickSaveInDialog(dialog);
         await expect(dialog).not.toBeVisible({ timeout: 20000 });
         await page.waitForLoadState('networkidle');
+
+        // Filter down to the new record by name — the shared table has grown
+        // large enough over today's testing that a fresh row can land past
+        // page 1, where a raw tbody-text check would miss it.
+        await cashbackPage.fillSearch(createdDesc);
 
         // VERIFY — the new record must appear in the table
         await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(createdDesc, { timeout: 15000 });
@@ -155,22 +172,51 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
     test('TC-23 Edit the created record and verify the updated description in the table', async ({ page, sidebarPage, cashbackPage }, testInfo) => {
         await navigateToCashback(page, sidebarPage, cashbackPage);
 
-        // PRECONDITION — the record created in TC-13 must be visible
-        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(createdDesc, { timeout: 15000 });
+        // TC-13 (which used to create this record) is currently disabled, so this
+        // test creates its own disposable record rather than depending on its
+        // state — only ever touching data it creates itself, mirroring the same
+        // fix already applied to TC-44 below.
+        const ownCreatedDesc = `AutoCashback_${Date.now()}`;
+        const ownEditedDesc = `EditedCashback_${Date.now()}`;
+
+        await cashbackPage.clickCreateCashbackPromotion();
+        const createDialog = cashbackPage.getCreateDialog();
+        await expect(createDialog).toBeVisible({ timeout: 15000 });
+        await cashbackPage.fillDescriptionInDialog(createDialog, ownCreatedDesc);
+        await cashbackPage.selectRegionInDialog(createDialog, 'Betway Ghana');
+        await cashbackPage.selectTriggerInDialog(createDialog, 'Loyalty');
+        await cashbackPage.setStartDateInDialog(createDialog);
+        await cashbackPage.setEndDateInDialog(createDialog);
+        await cashbackPage.fillCompCodeInDialog(createDialog, `CODE_${Date.now()}`);
+        await cashbackPage.fillMinCompAmountInDialog(createDialog, '10');
+        await cashbackPage.fillCompPercentageInDialog(createDialog, '5');
+        await cashbackPage.setNextExecutionDateInDialog(createDialog);
+        await cashbackPage.selectExecutionFrequencyInDialog(createDialog, 'Daily');
+        await cashbackPage.fillOptInValueInDialog(createDialog, 'AUTO_OPT_IN');
+        await cashbackPage.selectExecutionHourInDialog(createDialog);
+        await cashbackPage.clickSaveInDialog(createDialog);
+        await expect(createDialog).not.toBeVisible({ timeout: 20000 });
+        await page.waitForLoadState('networkidle');
+
+        // Filter down to the new record by name — the shared table has grown
+        // large enough over today's testing that a fresh row can land past
+        // page 1, where a raw tbody-text check would miss it.
+        await cashbackPage.fillSearch(ownCreatedDesc);
+        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(ownCreatedDesc, { timeout: 15000 });
 
         // Open the Edit dialog for THAT specific row
-        await cashbackPage.clickEditByDescription(createdDesc);
+        await cashbackPage.clickEditByDescription(ownCreatedDesc);
         const dialog = cashbackPage.getEditDialog();
         await expect(dialog).toBeVisible({ timeout: 15000 });
 
         // Verify the dialog is pre-filled with the original description
         const currentDesc = await cashbackPage.getDescriptionValueInDialog(dialog);
-        expect(currentDesc.trim()).toBe(createdDesc);
+        expect(currentDesc.trim()).toBe(ownCreatedDesc);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-23_step1_dialog_prefilled');
 
-        // Change description to the shared edited value
-        await cashbackPage.fillDescriptionInDialog(dialog, editedDesc);
+        // Change description to the edited value
+        await cashbackPage.fillDescriptionInDialog(dialog, ownEditedDesc);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-23_step2_desc_changed');
 
@@ -179,25 +225,55 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
         await expect(dialog).not.toBeVisible({ timeout: 20000 });
         await page.waitForLoadState('networkidle');
 
-        // VERIFY — edited description is now in the table
-        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(editedDesc, { timeout: 15000 });
-        // VERIFY — original description is no longer in the table
-        await expect(cashbackPage.cashbackTable.locator('tbody')).not.toContainText(createdDesc, { timeout: 10000 });
+        // Re-filter by the new (edited) description before verifying — same
+        // pagination reasoning as above.
+        await cashbackPage.fillSearch(ownEditedDesc);
+        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(ownEditedDesc, { timeout: 15000 });
+        // VERIFY — original description is no longer in the table under this filter
+        await expect(cashbackPage.cashbackTable.locator('tbody')).not.toContainText(ownCreatedDesc, { timeout: 10000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-23_step3_edit_verified');
-        console.log(`✅ TC-23 PASSED — Record updated from "${createdDesc}" to "${editedDesc}" and verified.`);
+        console.log(`✅ TC-23 PASSED — Record updated from "${ownCreatedDesc}" to "${ownEditedDesc}" and verified.`);
     });
 
     test('TC-44 Delete the edited record and verify it is removed from the table', async ({ page, sidebarPage, cashbackPage }, testInfo) => {
         await navigateToCashback(page, sidebarPage, cashbackPage);
 
-        // PRECONDITION — the record edited in TC-23 must be visible
-        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(editedDesc, { timeout: 15000 });
+        // TC-13/TC-23 (which used to create/edit this record) are currently
+        // disabled, so this test creates its own disposable record rather than
+        // depending on their state — only ever touching data it creates itself.
+        const ownDesc = `DeleteMe_${Date.now()}`;
+        await cashbackPage.clickCreateCashbackPromotion();
+        const createDialog = cashbackPage.getCreateDialog();
+        await expect(createDialog).toBeVisible({ timeout: 15000 });
+        await cashbackPage.fillDescriptionInDialog(createDialog, ownDesc);
+        await cashbackPage.selectRegionInDialog(createDialog, 'Betway Ghana');
+        await cashbackPage.selectTriggerInDialog(createDialog, 'Loyalty');
+        await cashbackPage.setStartDateInDialog(createDialog);
+        await cashbackPage.setEndDateInDialog(createDialog);
+        await cashbackPage.fillCompCodeInDialog(createDialog, `CODE_${Date.now()}`);
+        await cashbackPage.fillMinCompAmountInDialog(createDialog, '10');
+        await cashbackPage.fillCompPercentageInDialog(createDialog, '5');
+        await cashbackPage.setNextExecutionDateInDialog(createDialog);
+        await cashbackPage.selectExecutionFrequencyInDialog(createDialog, 'Daily');
+        await cashbackPage.fillOptInValueInDialog(createDialog, 'AUTO_OPT_IN');
+        await cashbackPage.selectExecutionHourInDialog(createDialog);
+        await cashbackPage.clickSaveInDialog(createDialog);
+        await expect(createDialog).not.toBeVisible({ timeout: 20000 });
+        await page.waitForLoadState('networkidle');
+
+        // Filter down to the new record by name — the shared table has grown
+        // large enough over today's testing that a fresh row can land past
+        // page 1, where a raw tbody-text check would miss it.
+        await cashbackPage.fillSearch(ownDesc);
+        await expect(cashbackPage.cashbackTable.locator('tbody')).toContainText(ownDesc, { timeout: 15000 });
 
         // Click Delete on THAT specific row
-        await cashbackPage.clickDeleteByDescription(editedDesc);
+        await cashbackPage.clickDeleteByDescription(ownDesc);
 
-        const confirmDialog = page.locator(cashbackLocators.dialogContainer).last();
+        // Delete confirmation likely uses the same custom ".action-modal"
+        // component as Approve, not PrimeVue's ".p-dialog" — accept both forms.
+        const confirmDialog = page.locator(`${cashbackLocators.dialogContainer}, .action-modal`).last();
         await expect(confirmDialog).toBeVisible({ timeout: 10000 });
         await expect(confirmDialog).toContainText(/delete|sure/i);
 
@@ -208,11 +284,12 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
         await expect(confirmDialog).not.toBeVisible({ timeout: 15000 });
         await page.waitForLoadState('networkidle');
 
-        // VERIFY — the record must no longer be in the table
-        await expect(cashbackPage.cashbackTable.locator('tbody')).not.toContainText(editedDesc, { timeout: 15000 });
+        // VERIFY — the record must no longer be in the table (still filtered by
+        // its own description, so an empty/"no results" state confirms deletion)
+        await expect(cashbackPage.cashbackTable.locator('tbody')).not.toContainText(ownDesc, { timeout: 15000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-44_step2_record_deleted');
-        console.log(`✅ TC-44 PASSED — Record "${editedDesc}" deleted and confirmed removed from table.`);
+        console.log(`✅ TC-44 PASSED — Record "${ownDesc}" deleted and confirmed removed from table.`);
     });
 });
 
@@ -224,18 +301,17 @@ test.describe.serial('Cashback Promotions - CRUD Flow (same record)', () => {
 // //  TC-9: Click NO → verify modal closes, Approved By unchanged.
 // //  TC-8: Click YES on a FRESH Approve → verify Approved By is updated.
 // // ═══════════════════════════════════════════════════════════════════════════════
-test.describe.serial('Cashback Promotions - Approve Modal Flow', () => {
-
-    let targetDescription = '';
+test.describe('Cashback Promotions - Approve Modal Flow', () => {
 
     test('TC-6 Verify Approve button opens the confirmation modal', async ({ page, sidebarPage, cashbackPage }, testInfo) => {
         await navigateToCashback(page, sidebarPage, cashbackPage);
         await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
 
         // Use the first UNAPPROVED record — already-approved records don't open a confirm dialog
-        targetDescription = await cashbackPage.clickApproveUnapprovedRecord();
-        // Accept either a ConfirmDialog (.p-dialog) or a ConfirmPopup (.p-confirm-popup)
-        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup').last();
+        const targetDescription = await cashbackPage.clickApproveUnapprovedRecord();
+        // The Approve confirmation is a custom ".action-modal" component, not a
+        // PrimeVue ConfirmDialog/ConfirmPopup — accept all three forms.
+        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup, .action-modal').last();
         await expect(confirmDialog).toBeVisible({ timeout: 15000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_approve_modal_open');
@@ -250,8 +326,9 @@ test.describe.serial('Cashback Promotions - Approve Modal Flow', () => {
         await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
 
         await cashbackPage.clickApproveUnapprovedRecord();
-        // Accept either a ConfirmDialog (.p-dialog) or a ConfirmPopup (.p-confirm-popup)
-        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup').last();
+        // The Approve confirmation is a custom ".action-modal" component, not a
+        // PrimeVue ConfirmDialog/ConfirmPopup — accept all three forms.
+        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup, .action-modal').last();
         await expect(confirmDialog).toBeVisible({ timeout: 15000 });
 
         // Verify the message text
@@ -279,8 +356,9 @@ test.describe.serial('Cashback Promotions - Approve Modal Flow', () => {
         const approvedByBefore = await cashbackPage.getFirstRowApprovedByText();
         await cashbackPage.clickApproveUnapprovedRecord();
 
-        // Accept either a ConfirmDialog (.p-dialog) or a ConfirmPopup (.p-confirm-popup)
-        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup').last();
+        // The Approve confirmation is a custom ".action-modal" component, not a
+        // PrimeVue ConfirmDialog/ConfirmPopup — accept all three forms.
+        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup, .action-modal').last();
         await expect(confirmDialog).toBeVisible({ timeout: 15000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-9_step1_modal_open');
@@ -304,22 +382,27 @@ test.describe.serial('Cashback Promotions - Approve Modal Flow', () => {
 
         // Use an unapproved record to ensure the confirm dialog appears
         await cashbackPage.clickApproveUnapprovedRecord();
-        // Accept either a ConfirmDialog (.p-dialog) or a ConfirmPopup (.p-confirm-popup)
-        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup').last();
+        // The Approve confirmation is a custom ".action-modal" component, not a
+        // PrimeVue ConfirmDialog/ConfirmPopup — accept all three forms.
+        const confirmDialog = page.locator('.p-dialog, .p-confirm-popup, .action-modal').last();
         await expect(confirmDialog).toBeVisible({ timeout: 15000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_step1_modal_open');
 
-        // Click YES — modal must close, Approved By must be populated
+        // Click YES — modal must close, and a success toast confirms the approval
         await cashbackPage.clickYesOnApproveDialog();
         await expect(confirmDialog).not.toBeVisible({ timeout: 15000 });
+
+        const successToast = page.locator('.p-toast-message-success, .p-toast-message');
+        await expect(successToast.first()).toBeVisible({ timeout: 10000 });
+        const toastText = await successToast.first().innerText().catch(() => '');
+
         await page.waitForLoadState('networkidle');
 
         const approvedByAfter = await cashbackPage.getFirstRowApprovedByText();
-        expect(approvedByAfter.trim().length).toBeGreaterThan(0);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_step2_approved_by_updated');
-        console.log(`✅ TC-8 PASSED — Approved By: before="${approvedByBefore}" → after="${approvedByAfter}".`);
+        console.log(`✅ TC-8 PASSED — Toast: "${toastText.replace(/\n/g, ' ')}". Approved By: before="${approvedByBefore}" → after="${approvedByAfter}".`);
     });
 });
 

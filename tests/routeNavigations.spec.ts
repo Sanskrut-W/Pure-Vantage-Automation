@@ -41,8 +41,10 @@ test.describe('Banner Config - Route Persistence', () => {
 
         await sidebarPage.browserForward();
         expect(page.url()).toBe(bannerConfigUrl);
-        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 5000 });
-        await expect(bannerPage.createBannerBtn).toBeVisible();
+        // Stencil components re-hydrate slowly after history Forward — 20s matches the
+        // budget the (passing) tutorial-page equivalents of this assertion already use.
+        await expect(bannerPage.regionDropdown).toBeVisible({ timeout: 20000 });
+        await expect(bannerPage.createBannerBtn).toBeVisible({ timeout: 20000 });
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1b_step3_after_forward_on_banner_config');
     });
 
@@ -144,7 +146,9 @@ test.describe('Banner Ordering - Route Persistence', () => {
 
         await sidebarPage.browserForward();
         expect(page.url()).toBe(bannerOrderingUrl);
-        await expect(bannerPage.orderingRegionDropdown).toBeVisible({ timeout: 10000 });
+        // Stencil components re-hydrate slowly after history Forward — 20s matches the
+        // budget the (passing) tutorial-page equivalents of this assertion already use.
+        await expect(bannerPage.orderingRegionDropdown).toBeVisible({ timeout: 20000 });
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4b_step3_after_forward_on_banner_ordering');
     });
 
@@ -187,6 +191,13 @@ test.describe('Campaign Management - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCampaign();
         await expect(page).toHaveURL(/campaign-management/);
@@ -360,6 +371,13 @@ test.describe('Cashback Promotions - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCashbackPromotions();
         await expect(page).toHaveURL(/cashback-promotions/);
@@ -426,6 +444,13 @@ test.describe('Coupon Management - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCouponManagement();
         await expect(page).toHaveURL(/coupon-management/);
@@ -533,6 +558,13 @@ test.describe('Event Calendar - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToEventCalendar();
         await expect(page).toHaveURL(/event-calender/);
@@ -656,6 +688,13 @@ test.describe('Fan Exclusive - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToFanExclusive();
         await expect(page).toHaveURL(/fan-exclusive/);
@@ -776,6 +815,13 @@ test.describe('Leaderboard - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToLeaderboard();
         await expect(page).toHaveURL(/leaderboard/);
@@ -896,6 +942,13 @@ test.describe('Loyalty Promotions - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToLoyaltyPromotions();
         await expect(page).toHaveURL(/loyalty-promotions/);
@@ -1021,6 +1074,13 @@ test.describe('Segment Schedule - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToSegmentSchedule();
         await expect(page).toHaveURL(/segment-schedule/);
@@ -1146,6 +1206,13 @@ test.describe('Segmentation - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToSegmentation();
         await expect(page).toHaveURL(/segmentation/);
@@ -1299,6 +1366,13 @@ test.describe('Telegram Leaderboard - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTelegramLeaderboard();
         await expect(page).toHaveURL(/telegram-leaderboard/);
@@ -1399,6 +1473,13 @@ test.describe('Toast Configuration - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToToastConfig();
         await expect(page).toHaveURL(/toast-config/);
@@ -1557,6 +1638,13 @@ test.describe('Generic Wheel - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToGenericWheel();
         await expect(page).toHaveURL(/generic-wheel/);
@@ -1651,6 +1739,13 @@ test.describe('Promotion Config - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToPromotionConfig();
         await expect(page).toHaveURL(/promotion-config/);
@@ -1822,6 +1917,13 @@ test.describe('Promotion Ordering - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToPromotionOrdering();
         await page.waitForLoadState('networkidle');
@@ -1951,6 +2053,13 @@ test.describe('Scratch And Win Management - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToScratchAndWin();
         await page.waitForLoadState('networkidle');
@@ -2048,6 +2157,13 @@ test.describe('Timed Promotions - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTimedPromotions();
         await page.waitForLoadState('networkidle');
@@ -2115,6 +2231,13 @@ test.describe('Player Tagging - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToPlayerTagging();
         await page.waitForLoadState('networkidle');
@@ -2208,6 +2331,13 @@ test.describe('Player Tagging Logs - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToPlayerTaggingLogs();
         await page.waitForLoadState('networkidle');
@@ -2248,6 +2378,13 @@ test.describe('Segment Tagging - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToSegmentTagging();
         await page.waitForLoadState('networkidle');
@@ -2315,6 +2452,13 @@ test.describe('Tag Configuration - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTagConfig();
         await page.waitForLoadState('networkidle');
@@ -2408,6 +2552,13 @@ test.describe('Tutorial Configuration - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTutorialConfig();
         await page.waitForLoadState('networkidle');
@@ -2477,6 +2628,13 @@ test.describe('Tutorial Ordering - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTutorialOrdering();
         await page.waitForLoadState('networkidle');
@@ -2544,6 +2702,13 @@ test.describe('Comp Alerts - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompAlerts();
         await page.waitForLoadState('networkidle');
@@ -2611,6 +2776,13 @@ test.describe('Comps Bulk - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompsBulk();
         await page.waitForLoadState('networkidle');
@@ -2678,6 +2850,13 @@ test.describe('Comp Config - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToCompConfig();
         await page.waitForLoadState('networkidle');
@@ -2771,6 +2950,13 @@ test.describe('Manual Comps - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToManualComps();
         await page.waitForLoadState('networkidle');
@@ -2838,6 +3024,13 @@ test.describe('Transaction Types - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToTransactionTypes();
         await page.waitForLoadState('networkidle');
@@ -2938,6 +3131,13 @@ test.describe('Admin Accounts - Route Persistence', () => {
 
     test.beforeEach(async ({ page, sidebarPage }) => {
         await page.goto('/main/home');
+        // Deep-link navigation via sidebar click doesn't always fully hydrate
+        // the Angular/Stencil component before the click fires — a reload here
+        // reliably forces it to initialize from scratch, matching the fix
+        // already proven in the Banner Config/Ordering blocks above (confirmed
+        // live: without it, the sidebar click silently no-ops and the URL gets
+        // stuck on /main/home while a loading overlay lingers on screen).
+        await page.reload();
         await sidebarPage.waitForPageLoad();
         await sidebarPage.navigateToAdminAccounts();
         await page.waitForLoadState('networkidle');
@@ -3000,8 +3200,8 @@ test.describe('Admin Accounts - Route Persistence', () => {
 
     test('TC-98 Click Delete, then verify URL persists after reload', async ({ page, sidebarPage, adminAccountsPage }, testInfo) => {
         // Checking if Delete is visible, might need data to be present
-        if (await adminAccountsPage.deleteBtn.isVisible()) {
-            await adminAccountsPage.clickDelete();
+        if (await adminAccountsPage.deleteBtn.first().isVisible()) {
+            await adminAccountsPage.clickDeleteFirst();
 
             const urlBeforeRefresh = page.url();
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-98_step1_before_refresh');

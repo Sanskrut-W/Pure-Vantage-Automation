@@ -139,20 +139,66 @@ export class SidebarPage extends BasePage {
     }
 
     /**
-     * Expands a parent menu node ONLY if its child item is not already visible.
-     * Menu clicks toggle: clicking an already-expanded node collapses it and hides
-     * its children, so mid-test navigation (menu state unknown) must check first.
+     * Runs a sidebar click sequence and verifies the URL actually changed to the expected
+     * route, retrying up to 3 times if it didn't. On every retry (not the first attempt) it
+     * reloads the page first — this app can silently go into a "stuck buffering" state (a
+     * loading overlay that never clears, or a click that quietly no-ops) where re-clicking the
+     * exact same elements just repeats the same failure. Reloading forces the SPA to
+     * re-initialize from scratch before the next attempt, matching the fix already proven
+     * throughout this project's beforeEach hooks.
      */
-    private async ensureMenuExpanded(parentNode: Locator, childNode: Locator) {
-        const alreadyExpanded = await childNode
-            .waitFor({ state: 'visible', timeout: 1500 })
-            .then(() => true).catch(() => false);
-        if (alreadyExpanded) return;
+    private async navigateAndVerify(clickSequence: () => Promise<void>, urlPattern: RegExp, urlTimeout = 10000) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if (attempt > 0) {
+                console.warn(`Navigation attempt ${attempt} did not reach ${urlPattern} (at ${this.page.url()}) — reloading and retrying`);
+                await this.page.reload().catch(() => {});
+                await this.page.waitForLoadState('networkidle').catch(() => {});
+            }
+            await clickSequence();
 
-        await parentNode.scrollIntoViewIfNeeded();
-        await this.clickElement(parentNode);
-        await this.page.waitForTimeout(500); // allow expand animation
-        await childNode.waitFor({ state: 'visible', timeout: 10000 });
+            const arrived = await this.page
+                .waitForURL(urlPattern, { timeout: urlTimeout })
+                .then(() => true).catch(() => false);
+            if (arrived) {
+                await this.page.waitForLoadState('domcontentloaded');
+                return;
+            }
+        }
+        throw new Error(`Sidebar navigation failed: URL never matched ${urlPattern}, ended at ${this.page.url()}`);
+    }
+
+    /**
+     * Clicks the parent menu levels UNCONDITIONALLY, then the leaf item, and VERIFIES the URL
+     * actually changed to the expected route — retrying the whole sequence (with a reload
+     * first, from attempt 2 onward) if it didn't.
+     *
+     * Two hard-won facts about this app's sidebar (confirmed by a live probe):
+     * 1. Every menu item reports isVisible()=true with a real bounding box even while its
+     *    submenu is collapsed — so "is it already expanded?" visibility checks CANNOT work
+     *    and silently skip the expansion, leaving clicks to fire into a collapsed menu.
+     *    Parents must simply be clicked every time; the retry loop absorbs any toggle
+     *    mismatch when a menu was already open.
+     * 2. The leaf must be clicked WITHOUT force — a non-force click waits for the expand
+     *    animation to settle; force-clicks land on whichever item is sliding through the
+     *    stale coordinates mid-animation (observed hitting "Whitelist Test Accounts").
+     */
+    private async clickMenuLeafAndVerifyUrl(
+        expandPath: Array<[Locator, Locator]>,
+        leafNode: Locator,
+        urlPattern: RegExp,
+    ) {
+        await this.navigateAndVerify(async () => {
+            for (const [parent] of expandPath) {
+                await parent.scrollIntoViewIfNeeded().catch(() => {});
+                await parent.click({ timeout: 8000 }).catch(() => {});
+                await this.page.waitForTimeout(600); // allow expand/collapse animation
+            }
+            await leafNode.scrollIntoViewIfNeeded().catch(() => {});
+            // Non-force — waits for the node to stop moving before clicking. Force only as a
+            // last-resort fallback (the URL check afterward still guards the result either way).
+            await leafNode.click({ timeout: 10000 })
+                .catch(() => leafNode.click({ force: true, timeout: 5000 }).catch(() => {}));
+        }, urlPattern);
     }
 
     /**
@@ -160,128 +206,111 @@ export class SidebarPage extends BasePage {
      */
     async navigateToBannerConfig() {
         console.log('Navigating via Sidebar: Marketing -> Banner Management -> Banner Config');
-
-        // Utilize the parent BasePage generic click functionality
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.clickElement(this.bannerManagementNode);
-        await this.page.waitForTimeout(500);
-
-        await this.clickElement(this.bannerConfigNode);
-        await this.clickElement(this.bannerConfigNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.clickElement(this.bannerManagementNode);
+            await this.page.waitForTimeout(500);
+            await this.clickElement(this.bannerConfigNode);
+            await this.clickElement(this.bannerConfigNode);
+        }, /stencil-marketing\/banner-config/);
     }
 
     async navigateToCampaign() {
         console.log('Navigating via Sidebar: Marketing -> Campaign Management');
-        // Utilize the parent BasePage generic click functionality
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.campaignNode);
-        await this.clickElement(this.campaignNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.campaignNode);
+            await this.clickElement(this.campaignNode);
+        }, /stencil-marketing\/campaign-management/);
     }
 
     async navigateToCashbackPromotions() {
         console.log('Navigating via Sidebar: Marketing -> Cashback Promotions');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.cashbackPromotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.cashbackPromotionsNode, { force: true });
-        await this.page.waitForTimeout(300);
-        await this.clickElement(this.cashbackPromotionsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.cashbackPromotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.cashbackPromotionsNode, { force: true });
+            await this.page.waitForTimeout(300);
+            await this.clickElement(this.cashbackPromotionsNode, { force: true });
+        }, /stencil-marketing\/cashback-promotions/);
     }
 
     async navigateToBannerOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Banner Management -> Banner Ordering');
-
-        // Utilize the parent BasePage generic click functionality
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Allow animation to expand
-
-        await this.clickElement(this.bannerManagementNode);
-        await this.page.waitForTimeout(500); // Allow animation to expand
-
-        await this.clickElement(this.bannerOrderingNode);
-        // Double-clicking just in case it was explicitly needed by the app
-        await this.clickElement(this.bannerOrderingNode);
-
-        await this.waitForPageLoad();
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Allow animation to expand
+            await this.clickElement(this.bannerManagementNode);
+            await this.page.waitForTimeout(500); // Allow animation to expand
+            await this.clickElement(this.bannerOrderingNode);
+            // Double-clicking just in case it was explicitly needed by the app
+            await this.clickElement(this.bannerOrderingNode);
+        }, /stencil-marketing\/banner-ordering/);
     }
 
     async navigateToTutorialConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
-        // Must tolerate being called both from a fresh page load (Marketing/Tutorials
-        // collapsed) and mid-test, navigating away and back from an already-expanded state
-        // (e.g. tutorialOrdering TC-17). Unconditionally clicking each parent — like
-        // navigateToBannerConfig does — collapses an already-open section instead of
-        // expanding it, hiding "Tutorials" and causing an endless click-intercept loop.
-        // ensureMenuExpanded checks first, so it's safe in both cases.
-        // The final click uses dispatchEvent rather than a real mouse click: when this method
-        // is called mid-test (navigating away from Tutorial Ordering and back), a lingering
-        // PrimeNG tooltip overlay from earlier in the test can permanently intercept pointer
-        // events near "Tutorials" — a forced click just activates whatever's actually on top at
-        // those coordinates, since force:true only skips Playwright's own checks, not the
-        // browser's real hit-testing. dispatchEvent fires the click directly at our chosen node
-        // via JS, sidestepping hit-testing (and any animation/overlap) entirely.
-        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
-        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialConfigNode);
-        await this.tutorialConfigNode.scrollIntoViewIfNeeded();
-        const tutorialConfigLink = this.page.locator('a', { has: this.tutorialConfigNode });
-        await tutorialConfigLink.dispatchEvent('click');
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.clickMenuLeafAndVerifyUrl(
+            [[this.marketingNode, this.tutorialNode], [this.tutorialNode, this.tutorialConfigNode]],
+            this.tutorialConfigNode,
+            /tutorial-config/,
+        );
     }
 
     async navigateToCouponManagement() {
         console.log('Navigating via Sidebar: Compensation -> Coupon Management');
-        await this.clickElement(this.marketingNode);
-        // Utilize the parent BasePage generic click functionality
-        // await this.clickElement(this.compensationNode);
-        // await this.page.waitForTimeout(2000); // Allow animation to expand
-
-        await this.clickElement(this.couponManagementNode);
-        await this.clickElement(this.couponManagementNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.couponManagementNode);
+            await this.clickElement(this.couponManagementNode);
+        }, /stencil-marketing\/coupon-management/);
     }
 
     async navigateToEventCalendar() {
         console.log('Navigating via Sidebar: Marketing -> Event Calendar');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.eventCalendarNode);
-        await this.clickElement(this.eventCalendarNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.eventCalendarNode);
+            await this.clickElement(this.eventCalendarNode);
+        }, /stencil-marketing\/event-calender/);
     }
 
     async navigateToFanExclusive() {
         console.log('Navigating via Sidebar: Marketing -> Fan Exclusive');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.fanExclusiveNode);
-        await this.clickElement(this.fanExclusiveNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.fanExclusiveNode);
+            await this.clickElement(this.fanExclusiveNode);
+        }, /stencil-marketing\/fan-exclusive/);
     }
 
     async navigateToLeaderboard() {
         console.log('Navigating via Sidebar: Marketing -> Leaderboard');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.leaderboardNode);
-        await this.clickElement(this.leaderboardNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.leaderboardNode);
+            await this.clickElement(this.leaderboardNode);
+        }, /stencil-marketing\/leaderboard/);
     }
 
     async navigateToLoyaltyPromotions() {
         console.log('Navigating via Sidebar: Marketing -> Loyalty Promotions');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.loyaltyPromotionsNode);
-        await this.clickElement(this.loyaltyPromotionsNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.loyaltyPromotionsNode);
+            await this.clickElement(this.loyaltyPromotionsNode);
+        }, /stencil-marketing\/loyalty-promotions/);
     }
 
     async navigateToSegmentSchedule() {
         console.log('Navigating via Sidebar: Marketing -> Segment Schedule');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.segmentScheduleNode);
-        await this.clickElement(this.segmentScheduleNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.segmentScheduleNode);
+            await this.clickElement(this.segmentScheduleNode);
+        }, /stencil-marketing\/segment-schedule/);
     }
 
     async navigateToSegmentation() {
@@ -300,190 +329,209 @@ export class SidebarPage extends BasePage {
 
     async navigateToTelegramLeaderboard() {
         console.log('Navigating via Sidebar: Marketing -> Telegram Leaderboard');
-        await this.clickElement(this.marketingNode);
-        await this.clickElement(this.telegramLeaderboardNode);
-        await this.clickElement(this.telegramLeaderboardNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.clickElement(this.telegramLeaderboardNode);
+            await this.clickElement(this.telegramLeaderboardNode);
+        }, /stencil-marketing\/telegram-leaderboard/);
     }
 
     async navigateToToastConfig() {
         console.log('Navigating via Sidebar: Marketing -> Toast Configuration');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for the menu to fully expand
-        await this.toastConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.toastConfigNode, { force: true });
-        await this.page.waitForTimeout(300);
-        await this.clickElement(this.toastConfigNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for the menu to fully expand
+            await this.toastConfigNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.toastConfigNode, { force: true });
+            await this.page.waitForTimeout(300);
+            await this.clickElement(this.toastConfigNode, { force: true });
+        }, /stencil-marketing\/toast-configuration/);
     }
 
     async navigateToInternalNotifications() {
         console.log('Navigating via Sidebar: System Admin -> Internal Notification');
-        await this.clickElement(this.systemAdminNode);
-        await this.page.waitForTimeout(1000);
-        await this.clickElement(this.internalNotificationNode);
-        await this.clickElement(this.internalNotificationNode);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.systemAdminNode);
+            await this.page.waitForTimeout(1000);
+            await this.clickElement(this.internalNotificationNode);
+            await this.clickElement(this.internalNotificationNode);
+        }, /internal-notification/);
     }
 
     async navigateToGenericWheel() {
         console.log('Navigating via Sidebar: Marketing -> Promotions -> Generic Wheel');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.promotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionsNode);
-        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
-        await this.genericWheelNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.genericWheelNode, { force: true });
-        await this.page.waitForTimeout(500);
-        await this.clickElement(this.genericWheelNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.promotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionsNode);
+            await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+            await this.genericWheelNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.genericWheelNode, { force: true });
+            await this.page.waitForTimeout(500);
+            await this.clickElement(this.genericWheelNode, { force: true });
+        }, /stencil-marketing\/generic-wheel/);
     }
 
     async navigateToPromotionConfig() {
         console.log('Navigating via Sidebar: Marketing -> Promotions -> Promotion Config');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.promotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionsNode);
-        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
-        await this.promotionConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionConfigNode, { force: true });
-        await this.page.waitForTimeout(500);
-        await this.clickElement(this.promotionConfigNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.promotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionsNode);
+            await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+            await this.promotionConfigNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionConfigNode, { force: true });
+            await this.page.waitForTimeout(500);
+            await this.clickElement(this.promotionConfigNode, { force: true });
+        }, /stencil-marketing\/promotion-config/);
     }
 
     async navigateToPromotionOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Promotions -> Promotion Ordering');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.promotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionsNode);
-        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
-        await this.promotionOrderingNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionOrderingNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.promotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionsNode);
+            await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+            await this.promotionOrderingNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionOrderingNode, { force: true });
+        }, /stencil-marketing\/promotion-ordering/);
     }
 
     async navigateToScratchAndWin() {
         console.log('Navigating via Sidebar: Marketing -> Promotions -> Scratch And Win Management');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.promotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionsNode);
-        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
-        await this.scratchAndWinNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.scratchAndWinNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.promotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionsNode);
+            await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+            await this.scratchAndWinNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.scratchAndWinNode, { force: true });
+        }, /stencil-marketing\/scratch-and-win-management/);
     }
 
     async navigateToTimedPromotions() {
         console.log('Navigating via Sidebar: Marketing -> Promotions -> Timed Promotions');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.promotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.promotionsNode);
-        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
-        await this.timedPromotionsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.timedPromotionsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.promotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.promotionsNode);
+            await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+            await this.timedPromotionsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.timedPromotionsNode, { force: true });
+        }, /stencil-marketing\/timed-promotions/);
     }
 
     async navigateToPlayerTagging() {
         console.log('Navigating via Sidebar: Marketing -> Tag Management -> Player Tagging');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.tagManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tagManagementNode);
-        await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
-        await this.playerTaggingNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.playerTaggingNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.tagManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.tagManagementNode);
+            await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
+            await this.playerTaggingNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.playerTaggingNode, { force: true });
+        }, /stencil-marketing\/tag-player/);
     }
 
     async navigateToPlayerTaggingLogs() {
         console.log('Navigating via Sidebar: Marketing -> Tag Management -> Player Tagging Logs');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.tagManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tagManagementNode);
-        await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
-        await this.playerTaggingLogsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.playerTaggingLogsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.tagManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.tagManagementNode);
+            await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
+            await this.playerTaggingLogsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.playerTaggingLogsNode, { force: true });
+        }, /stencil-marketing\/player-tagging-logs/);
     }
 
     async navigateToSegmentTagging() {
         console.log('Navigating via Sidebar: Marketing -> Tag Management -> Segment Tagging');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.tagManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tagManagementNode);
-        await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
-        await this.segmentTaggingNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.segmentTaggingNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.tagManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.tagManagementNode);
+            await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
+            await this.segmentTaggingNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.segmentTaggingNode, { force: true });
+        }, /stencil-marketing\/segment-tagging/);
     }
 
     async navigateToTagConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tag Management -> Tag Configuration');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
-        await this.tagManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tagManagementNode);
-        await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
-        await this.tagConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.tagConfigNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+            await this.tagManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.tagManagementNode);
+            await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
+            await this.tagConfigNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.tagConfigNode, { force: true });
+        }, /stencil-marketing\/tag-config/);
     }
 
     async navigateToTutorialOrdering() {
         console.log('Navigating via Sidebar: Marketing -> Tutorial -> Tutorial Ordering');
-        // See navigateToTutorialConfig for why this uses ensureMenuExpanded (safe whether
-        // Marketing/Tutorials start collapsed or are already open from a prior navigation).
         // Unlike "Tutorial Configuration", "Tutorial Ordering" (the last item in the Tutorials
         // submenu) has a genuine, permanent DOM/CSS overlap with "Whitelist Test Accounts" — this
-        // isn't an animation race, it reproduces every time, isolated or not. A forced click still
-        // activates "Whitelist Test Accounts", because force:true only skips Playwright's own
-        // pre-click checks — the browser still delivers a real mouse click to whichever element is
-        // actually topmost at those coordinates. Keyboard (focus + Enter) doesn't trigger this
-        // app's Angular (click) handler either. dispatchEvent fires the click event directly at
-        // our chosen node via JS, with no hit-testing or event-type translation involved.
-        await this.ensureMenuExpanded(this.marketingNode, this.tutorialNode);
-        await this.ensureMenuExpanded(this.tutorialNode, this.tutorialOrderingNode);
-        await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
-        const tutorialOrderingLink = this.page.locator('a', { has: this.tutorialOrderingNode });
-        await tutorialOrderingLink.dispatchEvent('click');
-        await this.page.waitForLoadState('domcontentloaded');
+        // isn't an animation race, it reproduces every time, isolated or not, so a reload-and-retry
+        // strategy alone won't help (the overlap is structural, not transient JS state). A forced
+        // click still activates "Whitelist Test Accounts", because force:true only skips
+        // Playwright's own pre-click checks — the browser still delivers a real mouse click to
+        // whichever element is actually topmost at those coordinates. Keyboard (focus + Enter)
+        // doesn't trigger this app's Angular (click) handler either. dispatchEvent fires the click
+        // event directly at our chosen node via JS, with no hit-testing or event-type translation
+        // involved — the only approach that reliably bypasses this specific overlap. Still
+        // wrapped in navigateAndVerify for the retry/URL-verification safety net.
+        await this.navigateAndVerify(async () => {
+            await this.marketingNode.click({ timeout: 8000 }).catch(() => {});
+            await this.page.waitForTimeout(600);
+            await this.tutorialNode.click({ timeout: 8000 }).catch(() => {});
+            await this.page.waitForTimeout(600);
+            await this.tutorialOrderingNode.scrollIntoViewIfNeeded();
+            const tutorialOrderingLink = this.page.locator('a', { has: this.tutorialOrderingNode });
+            await tutorialOrderingLink.dispatchEvent('click');
+        }, /tutorial-ordering/);
     }
 
     async navigateToCompAlerts() {
         console.log('Navigating via Sidebar: Marketing Comps -> Comp Alerts');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.marketingCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.marketingCompsNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
-        await this.compAlertsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.compAlertsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.marketingCompsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.marketingCompsNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+            await this.compAlertsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.compAlertsNode, { force: true });
+        }, /stencil-comps\/alerts-management/);
     }
 
     async navigateToCompsBulk() {
         console.log('Navigating via Sidebar: Marketing Comps -> Comps Bulk');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.marketingCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.marketingCompsNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
-        await this.compsBulkNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.compsBulkNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.marketingCompsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.marketingCompsNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+            await this.compsBulkNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.compsBulkNode, { force: true });
+        }, /stencil-comps\/comp-bulk/);
     }
 
     async navigateToCompConfig() {
         console.log('Navigating via Sidebar: Marketing Comps -> Comp Config');
+        // Probe-confirmed route: /main/component-display/stencil-comps/comp-management
         // Wait out the app's own page-loader overlay before touching the sidebar — clicking
         // "Marketing" while it's still up gets intercepted (same issue fixed for Segmentation).
         await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
@@ -499,123 +547,133 @@ export class SidebarPage extends BasePage {
 
     async navigateToManualComps() {
         console.log('Navigating via Sidebar: Marketing Comps -> Manual Comps');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.marketingCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.marketingCompsNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
-        await this.manualCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.manualCompsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.marketingCompsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.marketingCompsNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+            await this.manualCompsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.manualCompsNode, { force: true });
+        }, /stencil-comps\/manual-comps/);
     }
 
     async navigateToTransactionTypes() {
         console.log('Navigating via Sidebar: Marketing Comps -> Transaction Types');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.marketingCompsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.marketingCompsNode);
-        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
-        await this.transactionTypesNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.transactionTypesNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.marketingCompsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.marketingCompsNode);
+            await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+            await this.transactionTypesNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.transactionTypesNode, { force: true });
+        }, /stencil-comps\/transaction-types/);
     }
 
     async navigateToAdminAccounts() {
         console.log('Navigating via Sidebar: Notification Management -> Admin Accounts');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500); // Wait for menu to expand
-        await this.adminAccountsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.adminAccountsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationManagementNode);
+            await this.page.waitForTimeout(500); // Wait for menu to expand
+            await this.adminAccountsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.adminAccountsNode, { force: true });
+        }, /notifications-management\/admin-accounts/);
     }
 
     async navigateToMessageCategories() {
         console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message Categories');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500);
-        await this.messageCategoriesNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.messageCategoriesNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationManagementNode);
+            await this.page.waitForTimeout(500);
+            await this.messageCategoriesNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.messageCategoriesNode, { force: true });
+        }, /notifications-management\/message-categories/);
     }
 
     async navigateToMessageTemplates() {
         console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message Templates');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500);
-        await this.messageTemplatesNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.messageTemplatesNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationManagementNode);
+            await this.page.waitForTimeout(500);
+            await this.messageTemplatesNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.messageTemplatesNode, { force: true });
+        }, /message-templates/);
     }
 
     async navigateToMessageCTA() {
         console.log('Navigating via Sidebar: Marketing -> Notification Management -> Message CTA');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500);
-        await this.messageCTANode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.messageCTANode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationManagementNode);
+            await this.page.waitForTimeout(500);
+            await this.messageCTANode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.messageCTANode, { force: true });
+        }, /notifications-management\/message-cta/);
     }
 
     async navigateToWhitelistTestAccounts() {
         console.log('Navigating via Sidebar: Marketing -> Whitelist Test Accounts');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.whitelistTestAccountsNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.whitelistTestAccountsNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.whitelistTestAccountsNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.whitelistTestAccountsNode, { force: true });
+        }, /whitelist-test-accounts/, 30000);
     }
 
     async navigateToNotificationSchedule() {
         console.log('Navigating via Sidebar: Marketing -> Notification Management -> Notification Schedule');
-        await this.clickElement(this.marketingNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationManagementNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationManagementNode);
-        await this.page.waitForTimeout(500);
-        await this.notificationScheduleNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.notificationScheduleNode, { force: true });
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.marketingNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationManagementNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationManagementNode);
+            await this.page.waitForTimeout(500);
+            await this.notificationScheduleNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.notificationScheduleNode, { force: true });
+        }, /notification-schedule/);
     }
 
     async navigateToFormBuilder() {
         console.log('Navigating via Sidebar: Platform -> Form Builder Configuration -> Form Builder');
-        await this.clickElement(this.platformNode);
-        await this.page.waitForTimeout(1000);
-        await this.formBuilderConfigNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.formBuilderConfigNode);
-        await this.page.waitForTimeout(1000);
-        await this.formBuilderNode.scrollIntoViewIfNeeded();
-        await this.clickElement(this.formBuilderNode, { force: true });
-        await this.page.waitForURL(/.*form-builder/, { timeout: 30000 });
+        await this.navigateAndVerify(async () => {
+            await this.clickElement(this.platformNode);
+            await this.page.waitForTimeout(1000);
+            await this.formBuilderConfigNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.formBuilderConfigNode);
+            await this.page.waitForTimeout(1000);
+            await this.formBuilderNode.scrollIntoViewIfNeeded();
+            await this.clickElement(this.formBuilderNode, { force: true });
+        }, /form-builder/, 30000);
         await this.page.waitForLoadState('networkidle');
         await this.page.waitForTimeout(3000);
     }
 
     async navigateToStencilConfig() {
         console.log('Navigating via Sidebar: System Admin -> Stencil Configuration');
-        // System Admin is at the bottom of the sidebar — must scroll to it before clicking
-        await this.systemAdminNode.scrollIntoViewIfNeeded();
-        await this.systemAdminNode.waitFor({ state: 'visible', timeout: 10000 });
-        await this.clickElement(this.systemAdminNode, { force: true });
-        await this.page.waitForTimeout(1000);
-        await this.stencilConfigNode.scrollIntoViewIfNeeded();
-        await this.stencilConfigNode.waitFor({ state: 'visible', timeout: 10000 });
-        await this.clickElement(this.stencilConfigNode, { force: true });
-        await this.clickElement(this.stencilConfigNode, { force: true });
-        await this.page.waitForURL(/.*stencil/, { timeout: 30000 });
+        await this.navigateAndVerify(async () => {
+            // System Admin is at the bottom of the sidebar — must scroll to it before clicking
+            await this.systemAdminNode.scrollIntoViewIfNeeded();
+            await this.systemAdminNode.waitFor({ state: 'visible', timeout: 10000 });
+            await this.clickElement(this.systemAdminNode, { force: true });
+            await this.page.waitForTimeout(1000);
+            await this.stencilConfigNode.scrollIntoViewIfNeeded();
+            await this.stencilConfigNode.waitFor({ state: 'visible', timeout: 10000 });
+            await this.clickElement(this.stencilConfigNode, { force: true });
+            await this.clickElement(this.stencilConfigNode, { force: true });
+        }, /stencil/, 30000);
         await this.page.waitForLoadState('networkidle');
         await this.page.waitForTimeout(1000);
     }

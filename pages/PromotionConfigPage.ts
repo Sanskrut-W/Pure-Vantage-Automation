@@ -126,9 +126,23 @@ export class PromotionConfigPage extends BasePage {
 
     async selectDropdown(dropdownLocator: Locator, optionText: string) {
         await this.clickElement(dropdownLocator);
-        // Assumes options are rendered in the DOM either by role="option" or generic text
-        const optionLocator = this.page.getByText(optionText, { exact: true });
-        await this.clickElement(optionLocator);
+        // Only match items inside the open overlay list. On the EDIT form the
+        // same text also exists in the dropdown's own label and the hidden
+        // native <option>, so a bare getByText is a strict-mode violation.
+        const option = this.page.locator('li[role="option"]').filter({ hasText: optionText }).first();
+        await option.waitFor({ state: 'visible', timeout: 10000 });
+        // Multiselect items toggle on click — if the option is already selected
+        // (pre-populated edit form), clicking again would DESELECT it
+        if ((await option.getAttribute('aria-selected')) !== 'true') {
+            await option.click();
+            await this.page.waitForTimeout(300);
+        }
+        // Multiselect overlays stay open after selecting. Do NOT press Escape —
+        // that also closes the parent p-dialog. Toggle the trigger instead.
+        if (await option.isVisible().catch(() => false)) {
+            await dropdownLocator.click();
+            await this.page.waitForTimeout(300);
+        }
     }
 
     async setDateRange(startDate?: string, endDate?: string) {
@@ -205,7 +219,10 @@ export class PromotionConfigPage extends BasePage {
         await row.locator('..').locator(promotionConfigLocators.editBtn).click();
         await this.page.waitForLoadState('domcontentloaded');
         await this.page.waitForTimeout(5000);
-        await this.editName.fill('test-automation');
+        // Unique name — a fixed 'test-automation' collides with rows renamed by
+        // earlier runs (strict-mode violation when verifying in the list)
+        const editedName = 'test-automation-' + CommonUtils.generateRandomString(5);
+        await this.editName.fill(editedName);
         await this.selectDropdown(this.editpromotionType, 'Top Up Tuesday')
         await this.selectDropdown(this.editVertical, 'Casino')
         await this.editVerticalCategory.fill('test')
@@ -217,7 +234,7 @@ export class PromotionConfigPage extends BasePage {
         await this.page.getByRole('button', { name: 'Update Promotion Details' }).click();
         await this.page.getByText('Promotion details updated successfully').waitFor({ state: 'visible', timeout: 10000 });
         await CommonUtils.highlightElement(this.page.getByText('Promotion details updated successfully'));
-        return 'test-automation';
+        return editedName;
     }
 
 

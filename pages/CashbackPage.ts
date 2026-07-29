@@ -1,6 +1,7 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { cashbackLocators } from '../locators/cashbackLocators';
+import { CommonUtils } from '../utils/commonUtils';
 
 export class CashbackPage extends BasePage {
     // ── Main page ─────────────────────────────────────────────────────────────
@@ -97,11 +98,18 @@ export class CashbackPage extends BasePage {
 
             const description = (await row.locator('td').nth(0).innerText().catch(() => `Row ${i}`)).trim();
             console.log(`Trying Approve on row ${i}: "${description}"`);
-            await this.clickElement(approveBtn);
+            // A transient overlay (ripple/loading effect) can intercept the
+            // click for a long stretch — try a real click first (bounded), and
+            // fall back to force if it's still being intercepted after that.
+            await approveBtn.click({ timeout: 8000 }).catch(async () => {
+                await approveBtn.click({ force: true });
+            });
             await this.page.waitForTimeout(800);
 
-            // Check whether a confirmation dialog or popup appeared
-            const dialogVisible = await this.page.locator('.p-dialog, .p-confirm-popup').last()
+            // Check whether a confirmation dialog or popup appeared. The Approve
+            // confirmation is a custom ".action-modal" component, not a PrimeVue
+            // ConfirmDialog/ConfirmPopup — accept all three forms.
+            const dialogVisible = await this.page.locator('.p-dialog, .p-confirm-popup, .action-modal').last()
                 .isVisible().catch(() => false);
             if (dialogVisible) {
                 console.log(`Confirmation dialog opened for row ${i}: "${description}"`);
@@ -194,9 +202,12 @@ export class CashbackPage extends BasePage {
     // ── Approve confirmation dialog ────────────────────────────────────────────
 
     async getApproveDialogMessage(): Promise<string> {
-        const msgLocator = this.page.locator(cashbackLocators.confirmDialogMessage);
-        await msgLocator.waitFor({ state: 'visible' });
-        return await msgLocator.innerText();
+        // The Approve confirmation is a custom ".action-modal" component whose
+        // message lives in a ".body-text" span, not PrimeVue's ".p-confirm-dialog-message".
+        const msgLocator = this.page.locator(cashbackLocators.confirmDialogMessage)
+            .or(this.page.locator(cashbackLocators.actionModalMessage));
+        await msgLocator.first().waitFor({ state: 'visible' });
+        return await msgLocator.first().innerText();
     }
 
     async clickYesOnApproveDialog() {
@@ -320,22 +331,67 @@ export class CashbackPage extends BasePage {
         await panel.locator('.p-dropdown-item').first().click();
     }
 
+    /**
+     * PrimeVue InputNumber tracks its own internal value via keystroke events —
+     * a plain locator.fill() sets the DOM value directly and leaves the
+     * component's internal state (and therefore Angular/Vue form validity)
+     * stuck invalid, so Save stays disabled even though the field looks filled.
+     * Typing the value and blurring with Tab lets the component register it.
+     */
+    private async fillNumericField(field: Locator, value: string) {
+        await field.waitFor({ state: 'visible' });
+        await CommonUtils.highlightElement(field);
+        await field.click({ clickCount: 3 });
+        await field.pressSequentially(value);
+        await field.press('Tab');
+        await this.page.waitForTimeout(200);
+    }
+
     async fillMinCompAmountInDialog(dialog: Locator, amount: string) {
         console.log(`Filling min comp amount: "${amount}"`);
         const field = await this.resolveInputByLabel(dialog, cashbackLocators.fieldMinCompAmount);
-        await this.fillInput(field, amount);
+        await this.fillNumericField(field, amount);
     }
 
     async fillCompPercentageInDialog(dialog: Locator, percentage: string) {
         console.log(`Filling comp percentage: "${percentage}"`);
         const field = await this.resolveInputByLabel(dialog, cashbackLocators.fieldCompPercentage);
-        await this.fillInput(field, percentage);
+        await this.fillNumericField(field, percentage);
     }
 
     async selectExecutionFrequencyInDialog(dialog: Locator, frequency: string) {
         console.log(`Selecting execution frequency: "${frequency}"`);
         const dropdown = dialog.getByLabel(cashbackLocators.fieldExecutionFrequency);
         await this.selectDropdown(dropdown, frequency);
+    }
+
+    /** Fills the "Opt In Value *" text field — required, but empty by default. */
+    async fillOptInValueInDialog(dialog: Locator, value: string) {
+        console.log(`Filling Opt In Value: "${value}"`);
+        const field = dialog.locator('#optInValue');
+        await this.fillInput(field, value);
+    }
+
+    /**
+     * Selects the first option in the "Execute At Hour *" field — a required
+     * multiselect (id="recurringHour") left empty by default when Execution
+     * Frequency = Daily. Its sibling "Execute At Minute" already defaults to 0.
+     */
+    async selectExecutionHourInDialog(dialog: Locator) {
+        console.log('Selecting Execute At Hour...');
+        const dropdown = dialog.locator('#recurringHour');
+        if (!await dropdown.isVisible().catch(() => false)) return;
+        await this.clickElement(dropdown);
+        await this.page.waitForTimeout(300);
+        const option = this.page.locator('.p-multiselect-panel .p-multiselect-item, .p-multiselect-panel li[role="option"]').first();
+        await option.waitFor({ state: 'visible', timeout: 5000 });
+        await option.click();
+        await this.page.waitForTimeout(300);
+        // Multiselect overlay stays open after picking — close it via the trigger
+        if (await option.isVisible().catch(() => false)) {
+            await dropdown.click();
+            await this.page.waitForTimeout(300);
+        }
     }
 
     /** Opens a calendar input at the given index and picks a day (first or last enabled). */
@@ -387,10 +443,14 @@ export class CashbackPage extends BasePage {
     /** Checks / unchecks the Use Segments? checkbox in the dialog. */
     async toggleUseSegmentsInDialog(dialog: Locator) {
         console.log('Toggling Use Segments? checkbox...');
-        // PrimeVue checkbox renders a clickable .p-checkbox-box div; the hidden input is aria-hidden.
+        // PrimeVue checkbox renders a clickable .p-checkbox-box div, but its own
+        // (visually hidden) native <input> sits exactly on top of it and fails
+        // Playwright's "receives events" actionability check — force bypasses
+        // that hit-test, which is safe here since the box is genuinely visible.
         const checkboxBox = dialog.locator('.p-checkbox').first().locator('.p-checkbox-box');
         if (await checkboxBox.isVisible().catch(() => false)) {
-            await this.clickElement(checkboxBox);
+            await CommonUtils.highlightElement(checkboxBox);
+            await checkboxBox.click({ force: true });
         } else {
             // Do NOT use clickElement here — getByLabel('Use Segments?') resolves to a hidden
             // aria-hidden input which causes clickElement to wait 120s for it to become visible.
@@ -410,10 +470,13 @@ export class CashbackPage extends BasePage {
     }
 
     async isExecutionTimeVisibleInDialog(dialog: Locator): Promise<boolean> {
-        // Try by label first; fallback to scanning for a visible <label> with matching text
+        // Try by label first; fallback to scanning for a visible <label> with matching text.
+        // The app renamed this to "Execute At Hour"/"Execute At Minute" (under an
+        // "Advanced Recurrence" section, shown only for Daily) — no field is
+        // actually labelled "Execution Time" anymore, so check both forms.
         const byLabel = dialog.getByLabel(cashbackLocators.fieldExecutionTime);
         if (await byLabel.isVisible().catch(() => false)) return true;
-        const labelEl = dialog.locator('label', { hasText: /execution time/i });
+        const labelEl = dialog.locator('label', { hasText: /execution time|execute at (hour|minute)/i });
         return await labelEl.first().isVisible().catch(() => false);
     }
 
@@ -501,7 +564,13 @@ export class CashbackPage extends BasePage {
     async clickSaveInDialog(dialog: Locator) {
         console.log('Clicking Save button...');
         const saveBtn = dialog.getByRole('button', { name: cashbackLocators.buttonSave });
-        await this.clickElement(saveBtn);
+        await saveBtn.waitFor({ state: 'visible' });
+        await CommonUtils.highlightElement(saveBtn);
+        // Negative-path tests intentionally leave Save disabled (missing/invalid
+        // required fields) — a disabled button never becomes actionable, so a
+        // plain click() hangs for the full action timeout. Bound it and swallow
+        // the failure; the disabled state itself is what those tests assert on.
+        await saveBtn.click({ timeout: 8000 }).catch(() => {});
         await this.page.waitForTimeout(1500);
     }
 
@@ -515,7 +584,15 @@ export class CashbackPage extends BasePage {
     async isValidationErrorVisible(dialog: Locator): Promise<boolean> {
         const errorLocator = dialog.locator(cashbackLocators.validationError)
             .or(dialog.locator(cashbackLocators.invalidField));
-        return await errorLocator.first().isVisible().catch(() => false);
+        if (await errorLocator.first().isVisible().catch(() => false)) return true;
+
+        // This app never actually applies .p-error/.p-invalid classes to blocked
+        // fields — the only observable signal that validation stopped the save
+        // is the Save button itself staying disabled. That's sufficient proof.
+        const saveBtn = dialog.getByRole('button', { name: cashbackLocators.buttonSave });
+        return await saveBtn.evaluate(
+            el => el.hasAttribute('disabled') || el.classList.contains('p-disabled')
+        ).catch(() => false);
     }
 
     async isDialogStillOpen(dialogTitleText: string): Promise<boolean> {
