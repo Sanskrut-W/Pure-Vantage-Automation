@@ -41,7 +41,10 @@ export const sidebarLocators = {
     // The app used to render this as "Comp Managament" (its own typo) — since
     // fixed on their end, the sidebar now genuinely reads "Comp Config".
     menuCompConfig: 'Comp Config',
+    menuCompPayoutDetails: 'Comp Payout Details',
+    menuCompPayoutErrorDetails: 'Comp Payout Error Details',
     menuManualComps: 'Manual Comps',
+    menuLapseCompManagement: 'Lapse Comp Management',
     menuTransactionTypes: 'Transaction Types',
     menuWhitelistTestAccounts: 'Whitelist Test Accounts',
     menuNotificationManagement: 'Notification Management',

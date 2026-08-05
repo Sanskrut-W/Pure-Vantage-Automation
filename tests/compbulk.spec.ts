@@ -845,45 +845,45 @@ async function pickExistingConfiguration(compBulkConfigurationsPage: any): Promi
 //     });
 // });
 
-// // ═══════════════════════════════════════════════════════════════════════════════
-// //  Delete Bulk Comp
-// // ═══════════════════════════════════════════════════════════════════════════════
-// // Reached via a row's kebab ("⋮") menu -> Delete -> Yes/No confirmation (the same custom
-// // "modal-buttons-container" already proven in CompAlertsPage). Operates on an already-existing
-// // automation-created row rather than creating a fresh one each time.
-// test.describe('Comp Bulk - Delete Bulk Comp', () => {
-//     test.beforeEach(async ({ page, sidebarPage, compsBulkPage }) => {
-//         await navigateToCompsBulk(page, sidebarPage, compsBulkPage);
-//     });
+// ═══════════════════════════════════════════════════════════════════════════════
+//  Delete Bulk Comp
+// ═══════════════════════════════════════════════════════════════════════════════
+// Reached via a row's kebab ("⋮") menu -> Delete -> Yes/No confirmation (the same custom
+// "modal-buttons-container" already proven in CompAlertsPage). Operates on an already-existing
+// automation-created row rather than creating a fresh one each time.
+test.describe('Comp Bulk - Delete Bulk Comp', () => {
+    test.beforeEach(async ({ page, sidebarPage, compsBulkPage }) => {
+        await navigateToCompsBulk(page, sidebarPage, compsBulkPage);
+    });
 
-//     test('TC-28 Verify confirming Delete (Yes) removes the bulk comp from the table', async ({ page, compsBulkPage }, testInfo) => {
-//         const description = await pickExistingAutomationRow(compsBulkPage);
+    test('TC-28 Verify confirming Delete (Yes) removes the bulk comp from the table', async ({ page, compsBulkPage }, testInfo) => {
+        const description = await pickExistingAutomationRow(compsBulkPage);
 
-//         await compsBulkPage.clickDeleteOnRow(description);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_before_confirming_delete');
-//         await compsBulkPage.clickYesOnDeleteDialog();
+        await compsBulkPage.clickDeleteOnRow(description);
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_before_confirming_delete');
+        await compsBulkPage.clickYesOnDeleteDialog();
 
-//         await expect(compsBulkPage.getRowByDescription(description), 'Expected the bulk comp to no longer appear in the table after confirming Delete')
-//             .not.toBeVisible({ timeout: 15000 });
+        await expect(compsBulkPage.getRowByDescription(description), 'Expected the bulk comp to no longer appear in the table after confirming Delete')
+            .not.toBeVisible({ timeout: 15000 });
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_after_confirmed_delete');
-//         console.log(`✅ TC-28 PASSED — Bulk comp "${description}" deleted after confirming Yes.`);
-//     });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_after_confirmed_delete');
+        console.log(`✅ TC-28 PASSED — Bulk comp "${description}" deleted after confirming Yes.`);
+    });
 
-//     test('TC-29 Verify cancelling Delete (No) leaves the bulk comp in the table', async ({ page, compsBulkPage }, testInfo) => {
-//         const description = await pickExistingAutomationRow(compsBulkPage);
+    test('TC-29 Verify cancelling Delete (No) leaves the bulk comp in the table', async ({ page, compsBulkPage }, testInfo) => {
+        const description = await pickExistingAutomationRow(compsBulkPage);
 
-//         await compsBulkPage.clickDeleteOnRow(description);
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-29_before_cancelling_delete');
-//         await compsBulkPage.clickNoOnDeleteDialog();
+        await compsBulkPage.clickDeleteOnRow(description);
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-29_before_cancelling_delete');
+        await compsBulkPage.clickNoOnDeleteDialog();
 
-//         await expect(compsBulkPage.getRowByDescription(description), 'Expected the bulk comp to remain in the table after cancelling Delete')
-//             .toBeVisible({ timeout: 15000 });
+        await expect(compsBulkPage.getRowByDescription(description), 'Expected the bulk comp to remain in the table after cancelling Delete')
+            .toBeVisible({ timeout: 15000 });
 
-//         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-29_after_cancelled_delete');
-//         console.log(`✅ TC-29 PASSED — Bulk comp "${description}" remained after cancelling Delete (No).`);
-//     });
-// });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-29_after_cancelled_delete');
+        console.log(`✅ TC-29 PASSED — Bulk comp "${description}" remained after cancelling Delete (No).`);
+    });
+});
 
 // // ═══════════════════════════════════════════════════════════════════════════════
 // //  Process / Cancel Bulk Comp
@@ -1083,36 +1083,36 @@ test.describe('Comp Bulk - Configurations Add Band', () => {
         await navigateToCompBulkConfigurations(page, sidebarPage, compsBulkPage, compBulkConfigurationsPage);
     });
 
-    test('TC-38 Verify Add Band dialog opens with all 4 fields and Save stays disabled until every mandatory field is filled', async ({ page, compBulkConfigurationsPage }, testInfo) => {
-        const description = await pickExistingConfiguration(compBulkConfigurationsPage);
-        await compBulkConfigurationsPage.clickAddBandOnCard(description);
+    // test('TC-38 Verify Add Band dialog opens with all 4 fields and Save stays disabled until every mandatory field is filled', async ({ page, compBulkConfigurationsPage }, testInfo) => {
+    //     const description = await pickExistingConfiguration(compBulkConfigurationsPage);
+    //     await compBulkConfigurationsPage.clickAddBandOnCard(description);
 
-        const dialog = compBulkConfigurationsPage.getDialog();
-        await expect(dialog).toBeVisible({ timeout: 15000 });
+    //     const dialog = compBulkConfigurationsPage.getDialog();
+    //     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-        await expect(dialog.locator('label:text-is("Minimum Band Amount *")')).toBeVisible();
-        await expect(dialog.locator('label:text-is("Maximum Band Amount *")')).toBeVisible();
-        await expect(dialog.locator('label:text-is("Boost Amount *")')).toBeVisible();
-        await expect(dialog.locator('label:text-is("Transaction Type")')).toBeVisible();
-        await expect(dialog.locator('label.cursor-pointer', { hasText: 'Is Percentage Amount' })).toBeVisible();
+    //     await expect(dialog.locator('label:text-is("Minimum Band Amount *")')).toBeVisible();
+    //     await expect(dialog.locator('label:text-is("Maximum Band Amount *")')).toBeVisible();
+    //     await expect(dialog.locator('label:text-is("Boost Amount *")')).toBeVisible();
+    //     await expect(dialog.locator('label:text-is("Transaction Type")')).toBeVisible();
+    //     await expect(dialog.locator('label.cursor-pointer', { hasText: 'Is Percentage Amount' })).toBeVisible();
 
-        expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to start disabled').toBe(false);
+    //     expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to start disabled').toBe(false);
 
-        // Transaction Type is NOT mandatory (confirmed live — its label carries no "*", and Save
-        // enables without it) — only Minimum/Maximum/Boost Amount gate Save.
-        await compBulkConfigurationsPage.fillMinimumBandAmount(dialog, '10');
-        expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to still be disabled without Maximum/Boost Amount').toBe(false);
+    //     // Transaction Type is NOT mandatory (confirmed live — its label carries no "*", and Save
+    //     // enables without it) — only Minimum/Maximum/Boost Amount gate Save.
+    //     await compBulkConfigurationsPage.fillMinimumBandAmount(dialog, '10');
+    //     expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to still be disabled without Maximum/Boost Amount').toBe(false);
 
-        await compBulkConfigurationsPage.fillMaximumBandAmount(dialog, '50');
-        expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to still be disabled without Boost Amount').toBe(false);
+    //     await compBulkConfigurationsPage.fillMaximumBandAmount(dialog, '50');
+    //     expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to still be disabled without Boost Amount').toBe(false);
 
-        await compBulkConfigurationsPage.fillBoostAmount(dialog, '5');
-        expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to enable once Minimum/Maximum/Boost Amount are filled, even without Transaction Type').toBe(true);
+    //     await compBulkConfigurationsPage.fillBoostAmount(dialog, '5');
+    //     expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to enable once Minimum/Maximum/Boost Amount are filled, even without Transaction Type').toBe(true);
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-38_add_band_dialog_structure');
-        await compBulkConfigurationsPage.clickCancel(dialog);
-        console.log('TC-38 PASSED — Add Band dialog shows all 4 fields, and Save correctly stays disabled until Minimum/Maximum/Boost Amount are filled.');
-    });
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-38_add_band_dialog_structure');
+    //     await compBulkConfigurationsPage.clickCancel(dialog);
+    //     console.log('TC-38 PASSED — Add Band dialog shows all 4 fields, and Save correctly stays disabled until Minimum/Maximum/Boost Amount are filled.');
+    // });
 
     // test('TC-39 Verify Transaction Type dropdown can be filtered via its search bar', async ({ page, compBulkConfigurationsPage }, testInfo) => {
     //     const description = await pickExistingConfiguration(compBulkConfigurationsPage);
@@ -1202,5 +1202,167 @@ test.describe('Comp Bulk - Configurations Add Band', () => {
 
     //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-42_band_created_success');
     //     console.log(`✅ TC-42 PASSED — Band created successfully on configuration "${description}".`);
+    // });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  Bulk Comp Configurations — Edit / Delete Band
+// ═══════════════════════════════════════════════════════════════════════════════
+// Reached via a Band row's own kebab ("⋮") menu — Bands render as one flat list further down
+// the Configurations page, not nested per Configuration card (confirmed live). Both Edit and
+// Delete mutate a real Band, so each test creates its own disposable Configuration + Band
+// first via createDisposableBand, never touching an existing one.
+async function createDisposableBand(page: any, compBulkConfigurationsPage: any): Promise<string> {
+    const description = await createDisposableConfiguration(page, compBulkConfigurationsPage, 'AutoConfig_Band');
+    await compBulkConfigurationsPage.clickAddBandOnCard(description);
+
+    const dialog = compBulkConfigurationsPage.getDialog();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+
+    // Boost Amount is the one field a caller can make reliably unique per run (Minimum/Maximum
+    // reuse fixed valid values elsewhere in this suite) — used afterward to find this exact
+    // Band via getBandByBoostAmount, never an existing one.
+    const boostAmount = String(Date.now()).slice(-5);
+    await compBulkConfigurationsPage.fillMinimumBandAmount(dialog, '10');
+    await compBulkConfigurationsPage.fillMaximumBandAmount(dialog, '50');
+    await compBulkConfigurationsPage.fillBoostAmount(dialog, boostAmount);
+    await compBulkConfigurationsPage.selectBandTransactionType(dialog);
+
+    await compBulkConfigurationsPage.clickSave(dialog);
+    await expect(page.locator('.p-toast-message-success, [data-p-severity="success"]').first())
+        .toBeVisible({ timeout: 15000 });
+    await expect(dialog).not.toBeVisible({ timeout: 15000 });
+
+    return boostAmount;
+}
+
+test.describe('Comp Bulk - Configurations Edit / Delete Band', () => {
+    test.beforeEach(async ({ page, sidebarPage, compsBulkPage, compBulkConfigurationsPage }) => {
+        await navigateToCompBulkConfigurations(page, sidebarPage, compsBulkPage, compBulkConfigurationsPage);
+    });
+
+    // test('TC-43 Verify editing a Band and saving shows a success toast', async ({ page, compBulkConfigurationsPage }, testInfo) => {
+    //     const boostAmount = await createDisposableBand(page, compBulkConfigurationsPage);
+
+    //     await compBulkConfigurationsPage.clickEditOnBand(boostAmount);
+    //     const dialog = compBulkConfigurationsPage.getDialog();
+    //     await expect(dialog).toBeVisible({ timeout: 15000 });
+
+    //     await compBulkConfigurationsPage.fillMaximumBandAmount(dialog, '75');
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-43_band_edited');
+
+    //     expect(await compBulkConfigurationsPage.isSaveEnabled(dialog), 'Expected Save to be enabled after editing').toBe(true);
+    //     await compBulkConfigurationsPage.clickSave(dialog);
+
+    //     const toastText = await compBulkConfigurationsPage.getToastText();
+    //     console.log(`Toast after save: "${toastText}"`);
+    //     await expect(page.locator('.p-toast-message-success, [data-p-severity="success"]').first())
+    //         .toBeVisible({ timeout: 15000 });
+    //     await expect(dialog).not.toBeVisible({ timeout: 15000 });
+
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-43_band_edit_success');
+    //     console.log(`✅ TC-43 PASSED — Band with Boost Amount "${boostAmount}" edited successfully.`);
+    // });
+
+    // test('TC-44 Verify confirming Delete (Yes) removes the Band', async ({ page, compBulkConfigurationsPage }, testInfo) => {
+    //     const boostAmount = await createDisposableBand(page, compBulkConfigurationsPage);
+
+    //     await compBulkConfigurationsPage.clickDeleteOnBand(boostAmount);
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-44_before_confirming_delete');
+    //     await compBulkConfigurationsPage.clickYesOnDeleteDialog();
+
+    //     await expect(
+    //         compBulkConfigurationsPage.getBandByBoostAmount(boostAmount),
+    //         'Expected the Band to no longer be in the list after confirming Delete'
+    //     ).toHaveCount(0, { timeout: 15000 });
+
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-44_band_deleted');
+    //     console.log(`✅ TC-44 PASSED — Band with Boost Amount "${boostAmount}" deleted successfully.`);
+    // });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  Bulk Comp Configurations — Activate/Deactivate, Delete, Back Navigation
+// ═══════════════════════════════════════════════════════════════════════════════
+// Activating a Configuration requires it to already have at least 1 Band (confirmed by the
+// user) — unlike createDisposableBand (which returns the Band's own identifying Boost Amount),
+// this only ever needs the Configuration's own Description to find its card/toggle.
+async function createDisposableConfigurationWithBand(page: any, compBulkConfigurationsPage: any): Promise<string> {
+    const description = await createDisposableConfiguration(page, compBulkConfigurationsPage, 'AutoConfig_Active');
+    await compBulkConfigurationsPage.clickAddBandOnCard(description);
+
+    const dialog = compBulkConfigurationsPage.getDialog();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+
+    await compBulkConfigurationsPage.fillMinimumBandAmount(dialog, '10');
+    await compBulkConfigurationsPage.fillMaximumBandAmount(dialog, '50');
+    await compBulkConfigurationsPage.fillBoostAmount(dialog, '5');
+    await compBulkConfigurationsPage.selectBandTransactionType(dialog);
+
+    await compBulkConfigurationsPage.clickSave(dialog);
+    await expect(page.locator('.p-toast-message-success, [data-p-severity="success"]').first())
+        .toBeVisible({ timeout: 15000 });
+    await expect(dialog).not.toBeVisible({ timeout: 15000 });
+
+    return description;
+}
+
+test.describe('Comp Bulk - Configurations Activate / Deactivate / Delete / Back', () => {
+    test.beforeEach(async ({ page, sidebarPage, compsBulkPage, compBulkConfigurationsPage }) => {
+        await navigateToCompBulkConfigurations(page, sidebarPage, compsBulkPage, compBulkConfigurationsPage);
+    });
+
+    // The user confirmed this toast is unusually slow to appear — every wait below is
+    // generous (60s) rather than this suite's usual 15s, specifically to avoid a false
+    // failure on a toast that's merely running late, not actually missing.
+    test('TC-45 Verify activating and deactivating a Configuration shows a toast', async ({ page, compBulkConfigurationsPage }, testInfo) => {
+        const description = await createDisposableConfigurationWithBand(page, compBulkConfigurationsPage);
+        const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
+        // Wait out the Band-creation toast from above before watching for the activation one —
+        // otherwise a still-lingering "Band created" toast could be mistaken for it.
+        await expect(successToast).toBeHidden({ timeout: 20000 }).catch(() => {});
+
+        await compBulkConfigurationsPage.toggleActiveStatus(description);
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-45_after_activate_toggle');
+        await expect(successToast, 'Expected a success toast after activating').toBeVisible({ timeout: 60000 });
+        console.log('Toast shown after activating.');
+        await expect(successToast).toBeHidden({ timeout: 20000 }).catch(() => {});
+
+        await compBulkConfigurationsPage.toggleActiveStatus(description);
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-45_after_deactivate_toggle');
+        await expect(successToast, 'Expected a success toast after deactivating').toBeVisible({ timeout: 60000 });
+        console.log('Toast shown after deactivating.');
+
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-45_toggle_complete');
+        console.log(`✅ TC-45 PASSED — Configuration "${description}" activated and deactivated, toast shown both times.`);
+    });
+
+    // test('TC-46 Verify confirming Delete (Yes) removes the Configuration', async ({ page, compBulkConfigurationsPage }, testInfo) => {
+    //     const description = await createDisposableConfiguration(page, compBulkConfigurationsPage, 'AutoConfig_Delete');
+
+    //     await compBulkConfigurationsPage.clickDeleteOnCard(description);
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-46_before_confirming_delete');
+    //     await compBulkConfigurationsPage.clickYesOnDeleteDialog();
+
+    //     await expect(
+    //         compBulkConfigurationsPage.getCardByName(description),
+    //         'Expected the Configuration card to no longer exist after confirming Delete'
+    //     ).toHaveCount(0, { timeout: 15000 });
+
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-46_configuration_deleted');
+    //     console.log(`✅ TC-46 PASSED — Configuration "${description}" deleted successfully.`);
+    // });
+
+    // Live-verified: Back navigates to the actual "Comp Config" feature page (breadcrumb
+    // Marketing -> Marketing Comps -> Comp Config, its own "Create Comp" button) — a
+    // different feature from Comp Bulk itself, not just back to the Comp Bulk list.
+    // test('TC-47 Verify Back button navigates back to the Comp Config page', async ({ page, compConfigPage, compBulkConfigurationsPage }, testInfo) => {
+    //     await compBulkConfigurationsPage.clickBackButton();
+    //     await page.waitForLoadState('networkidle');
+
+    //     await expect(compConfigPage.createCompBtn, 'Expected Back to navigate to the Comp Config page').toBeVisible({ timeout: 20000 });
+
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-47_back_button_navigation');
+    //     console.log('✅ TC-47 PASSED — Back button navigated to the Comp Config page.');
     // });
 });

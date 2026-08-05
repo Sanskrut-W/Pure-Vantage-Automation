@@ -30,6 +30,11 @@ import { CompAlertsPage } from '../pages/CompAlertsPage';
 import { CompsBulkPage } from '../pages/CompsBulkPage';
 import { CompBulkConfigurationsPage } from '../pages/CompBulkConfigurationsPage';
 import { CompConfigPage } from '../pages/CompConfigPage';
+import { CompPayoutPage } from '../pages/CompPayoutPage';
+import { CompPayoutErrorsPage } from '../pages/CompPayoutErrorsPage';
+import { LapseCompPage } from '../pages/LapseCompPage';
+import { LapseCompRegionPage } from '../pages/LapseCompRegionPage';
+import { LapseCompLogsPage } from '../pages/LapseCompLogsPage';
 import { ManualCompsPage } from '../pages/ManualCompsPage';
 import { TransactionTypesPage } from '../pages/TransactionTypesPage';
 import { AdminAccountsPage } from '../pages/AdminAccountsPage';
@@ -77,6 +82,11 @@ type MyFixtures = {
     compsBulkPage: CompsBulkPage;
     compBulkConfigurationsPage: CompBulkConfigurationsPage;
     compConfigPage: CompConfigPage;
+    compPayoutPage: CompPayoutPage;
+    compPayoutErrorsPage: CompPayoutErrorsPage;
+    lapseCompPage: LapseCompPage;
+    lapseCompRegionPage: LapseCompRegionPage;
+    lapseCompLogsPage: LapseCompLogsPage;
     manualCompsPage: ManualCompsPage;
     transactionTypesPage: TransactionTypesPage;
     adminAccountsPage: AdminAccountsPage;
@@ -298,6 +308,31 @@ export const test = base.extend<MyFixtures>({
     compConfigPage: async ({ page, authenticatedSession }, use) => {
         const compConfigPage = new CompConfigPage(page);
         await use(compConfigPage);
+    },
+
+    compPayoutPage: async ({ page, authenticatedSession }, use) => {
+        const compPayoutPage = new CompPayoutPage(page);
+        await use(compPayoutPage);
+    },
+
+    compPayoutErrorsPage: async ({ page, authenticatedSession }, use) => {
+        const compPayoutErrorsPage = new CompPayoutErrorsPage(page);
+        await use(compPayoutErrorsPage);
+    },
+
+    lapseCompPage: async ({ page, authenticatedSession }, use) => {
+        const lapseCompPage = new LapseCompPage(page);
+        await use(lapseCompPage);
+    },
+
+    lapseCompRegionPage: async ({ page, authenticatedSession }, use) => {
+        const lapseCompRegionPage = new LapseCompRegionPage(page);
+        await use(lapseCompRegionPage);
+    },
+
+    lapseCompLogsPage: async ({ page, authenticatedSession }, use) => {
+        const lapseCompLogsPage = new LapseCompLogsPage(page);
+        await use(lapseCompLogsPage);
     },
 
     // Instantiate and provide ManualCompsPage

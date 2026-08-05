@@ -42,7 +42,10 @@ export class SidebarPage extends BasePage {
     readonly compAlertsNode: Locator;
     readonly compsBulkNode: Locator;
     readonly compConfigNode: Locator;
+    readonly compPayoutDetailsNode: Locator;
+    readonly compPayoutErrorDetailsNode: Locator;
     readonly manualCompsNode: Locator;
+    readonly lapseCompManagementNode: Locator;
     readonly transactionTypesNode: Locator;
     readonly whitelistTestAccountsNode: Locator;
     readonly notificationManagementNode: Locator;
@@ -100,7 +103,10 @@ export class SidebarPage extends BasePage {
         this.compAlertsNode               = menu(sidebarLocators.menuCompAlerts);
         this.compsBulkNode                = menu(sidebarLocators.menuCompsBulk);
         this.compConfigNode               = menu(sidebarLocators.menuCompConfig);
+        this.compPayoutDetailsNode        = menu(sidebarLocators.menuCompPayoutDetails);
+        this.compPayoutErrorDetailsNode   = menu(sidebarLocators.menuCompPayoutErrorDetails);
         this.manualCompsNode              = menu(sidebarLocators.menuManualComps);
+        this.lapseCompManagementNode      = menu(sidebarLocators.menuLapseCompManagement);
         this.transactionTypesNode         = menu(sidebarLocators.menuTransactionTypes);
         this.whitelistTestAccountsNode    = menu(sidebarLocators.menuWhitelistTestAccounts);
         this.notificationManagementNode   = menu(sidebarLocators.menuNotificationManagement);
@@ -513,6 +519,32 @@ export class SidebarPage extends BasePage {
         await this.page.waitForLoadState('domcontentloaded');
     }
 
+    async navigateToCompPayoutDetails() {
+        console.log('Navigating via Sidebar: Marketing Comps -> Comp Payout Details');
+        await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.marketingCompsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.marketingCompsNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+        await this.compPayoutDetailsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.compPayoutDetailsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToCompPayoutErrorDetails() {
+        console.log('Navigating via Sidebar: Marketing Comps -> Comp Payout Error Details');
+        await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 60000 }).catch(() => {});
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.marketingCompsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.marketingCompsNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+        await this.compPayoutErrorDetailsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.compPayoutErrorDetailsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
     async navigateToManualComps() {
         console.log('Navigating via Sidebar: Marketing Comps -> Manual Comps');
         await this.clickElement(this.marketingNode);
@@ -522,6 +554,18 @@ export class SidebarPage extends BasePage {
         await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
         await this.manualCompsNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.manualCompsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToLapseCompManagement() {
+        console.log('Navigating via Sidebar: Marketing Comps -> Lapse Comp Management');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.marketingCompsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.marketingCompsNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing Comps menu to fully expand
+        await this.lapseCompManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.lapseCompManagementNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

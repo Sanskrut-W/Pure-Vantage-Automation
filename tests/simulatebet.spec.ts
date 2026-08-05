@@ -343,7 +343,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_01
-//   test('Verify Simulate Bet Settlements screen opens with all fields', async ({ page }, testInfo) => {
+//   test('TC-1 Verify Simulate Bet Settlements screen opens with all fields', async ({ page }, testInfo) => {
 //     await expect(page.locator('text=Enter Player Account Id (Guid) *')).toBeVisible({ timeout: 15000 });
 //     await expect(dropdownByAriaLabel(page.locator('body'), 'Region Code *')).toBeVisible({ timeout: 10000 });
 //     await expect(page.locator('text=Payout Amount *')).toBeVisible({ timeout: 10000 });
@@ -357,7 +357,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_02
-//   test('Verify Simulate button stays disabled with all mandatory fields blank', async ({ page }, testInfo) => {
+//   test('TC-2 Verify Simulate button stays disabled with all mandatory fields blank', async ({ page }, testInfo) => {
 //     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
 //     await expect(simulateBtn, 'Expected Simulate to remain disabled with all fields blank').toBeDisabled({ timeout: 10000 });
 
@@ -365,7 +365,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_03
-//   test('Verify Player Account Id requires a valid UUID', async ({ page }, testInfo) => {
+//   test('TC-3 Verify Player Account Id requires a valid UUID', async ({ page }, testInfo) => {
 //     const playerAccountId = textInputByLabel(page.locator('body'), 'Enter Player Account Id (Guid) *');
 
 //     await playerAccountId.fill('not-a-valid-uuid');
@@ -378,7 +378,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_04
-//   test('Verify Payout Amount only accepts integers', async ({ page }, testInfo) => {
+//   test('TC-4 Verify Payout Amount only accepts integers', async ({ page }, testInfo) => {
 //     const payoutAmount = fieldGroupByLabel(page.locator('body'), 'Payout Amount *').locator('input.p-inputtext').first();
 
 //     await payoutAmount.click({ clickCount: 3 });
@@ -390,7 +390,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_05
-//   test('Verify Cash Out Amount only accepts integers', async ({ page }, testInfo) => {
+//   test('TC-5 Verify Cash Out Amount only accepts integers', async ({ page }, testInfo) => {
 //     const cashOutAmount = fieldGroupByLabel(page.locator('body'), 'Cash Out Amount *').locator('input.p-inputtext').first();
 
 //     await cashOutAmount.click({ clickCount: 3 });
@@ -415,7 +415,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_06
-//   test('Verify Sport is disabled until Feed is selected', async ({ page }, testInfo) => {
+//   test('TC-6 Verify Sport is disabled until Feed is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
 //     expect(await isDropdownDisabled(sportDropdown), 'Expected Sport to start disabled').toBe(true);
@@ -428,7 +428,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_07
-//   test('Verify League and Event are disabled until both Feed and Sport are selected', async ({ page }, testInfo) => {
+//   test('TC-7 Verify League and Event are disabled until both Feed and Sport are selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const leagueDropdown = dropdownByAriaLabel(betsTable, 'League');
 //     const eventDropdown = dropdownByAriaLabel(betsTable, 'Event');
@@ -451,7 +451,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   // Market → Outcome) — skipping League before Event leaves Event's option list unpopulated
 //   // (it's scoped by the selected League), so the enable/disable check needs the full preceding
 //   // chain walked in order, not just the immediately-preceding field.
-//   test('Verify Market is disabled until Event is selected', async ({ page }, testInfo) => {
+//   test('TC-8 Verify Market is disabled until Event is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const marketDropdown = dropdownByAriaLabel(betsTable, 'Market');
 //     expect(await isDropdownDisabled(marketDropdown), 'Expected Market to start disabled').toBe(true);
@@ -468,7 +468,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_09
-//   test('Verify Outcome is disabled until Market is selected', async ({ page }, testInfo) => {
+//   test('TC-9 Verify Outcome is disabled until Market is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const outcomeDropdown = dropdownByAriaLabel(betsTable, 'Outcome');
 //     expect(await isDropdownDisabled(outcomeDropdown), 'Expected Outcome to start disabled').toBe(true);
@@ -487,7 +487,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 
 //   // TC_10
 //   // NOTE: relies on the unconfirmed clearDropdown() helper — see the file-level comment on it.
-//   test('Verify clearing Market also clears Outcome', async ({ page }, testInfo) => {
+//   test('TC-10 Verify clearing Market also clears Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -507,7 +507,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_11
-//   test('Verify clearing Event also clears Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-11 Verify clearing Event also clears Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -527,7 +527,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_12
-//   test('Verify clearing League also clears Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-12 Verify clearing League also clears Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -550,7 +550,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   });
 
 //   // TC_13
-//   test('Verify clearing Sport clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-13 Verify clearing Sport clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
@@ -573,7 +573,7 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 //   // Feed to a different value (rather than clearing it) and verifies League, Event, Market and
 //   // Outcome all clear as a result — a Feed change invalidates the same downstream selections a
 //   // Feed clear would, since they were populated based on the old Feed.
-//   test('Verify changing Feed clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-14 Verify changing Feed clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const feedDropdown = dropdownByAriaLabel(betsTable, 'Feeds *');
 //     await selectFirstDropdownOption(page, feedDropdown);
@@ -600,162 +600,162 @@ async function fillMandatoryBetsPlacedFields(page: Page, scope: Locator): Promis
 
 // });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SIMULATE BET — SETTLEMENTS — BETS TABLE, RESET & SIMULATION
-// ─────────────────────────────────────────────────────────────────────────────
-test.describe('Simulate Bet - Settlements - Bets Table and Simulation', () => {
+// // ─────────────────────────────────────────────────────────────────────────────
+// // SIMULATE BET — SETTLEMENTS — BETS TABLE, RESET & SIMULATION
+// // ─────────────────────────────────────────────────────────────────────────────
+// test.describe('Simulate Bet - Settlements - Bets Table and Simulation', () => {
 
-  test.beforeEach(async ({ page }) => {
-    await navigateToSimulateBetSettlements(page);
-  });
+//   test.beforeEach(async ({ page }) => {
+//     await navigateToSimulateBetSettlements(page);
+//   });
 
-  // // TC_15
-  // test('Verify the Bets table is displayed on the Settlements screen', async ({ page }, testInfo) => {
-  //   const betsTable = page.locator('simulate-bets-table');
-  //   await expect(betsTable).toBeVisible({ timeout: 15000 });
-  //   await expect(betsTable.locator('text=Bets')).toBeVisible({ timeout: 10000 });
+//   // TC_15
+//   test('TC-15 Verify the Bets table is displayed on the Settlements screen', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await expect(betsTable).toBeVisible({ timeout: 15000 });
+//     await expect(betsTable.locator('text=Bets')).toBeVisible({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_15-BetsTableDisplayed_success');
-  // });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_15-BetsTableDisplayed_success');
+//   });
 
 
-  // TC_17
-  test('Verify a bet requires at least one of League, Event, Market or Outcome to be added', async ({ page }, testInfo) => {
-    const betsTable = page.locator('simulate-bets-table');
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
+//   // TC_17
+//   test('TC-16 Verify a bet requires at least one of League, Event, Market or Outcome to be added', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
 
-    // Feed + Sport alone (no League/Event/Market/Outcome) should not be a valid, addable bet.
-    const addBtn = betsTable.locator('button:has(.pi-plus)').first();
-    await addBtn.click();
+//     // Feed + Sport alone (no League/Event/Market/Outcome) should not be a valid, addable bet.
+//     const addBtn = betsTable.locator('button:has(.pi-plus)').first();
+//     await addBtn.click();
 
-    await fillMandatorySettlementFields(page, page.locator('body'));
-    const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-    await expect(simulateBtn, 'Expected Simulate to stay disabled without a valid bet added').toBeDisabled({ timeout: 10000 });
+//     await fillMandatorySettlementFields(page, page.locator('body'));
+//     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+//     await expect(simulateBtn, 'Expected Simulate to stay disabled without a valid bet added').toBeDisabled({ timeout: 10000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_17-BetRequiresOneOfFourFields_success');
-  });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_17-BetRequiresOneOfFourFields_success');
+//   });
 
-  // // TC_18
-  // test('Verify a valid bet can be added and enables Simulate once the form is otherwise complete', async ({ page }, testInfo) => {
-  //   const betsTable = page.locator('simulate-bets-table');
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
+//   // TC_18
+//   test('TC-17 Verify a valid bet can be added and enables Simulate once the form is otherwise complete', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
 
-  //   const addBtn = betsTable.locator('button:has(.pi-plus)').first();
-  //   await addBtn.click();
-  //   await page.waitForTimeout(300);
+//     const addBtn = betsTable.locator('button:has(.pi-plus)').first();
+//     await addBtn.click();
+//     await page.waitForTimeout(300);
 
-  //   await fillMandatorySettlementFields(page, page.locator('body'));
+//     await fillMandatorySettlementFields(page, page.locator('body'));
 
-  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-  //   await expect(simulateBtn, 'Expected Simulate to enable once a valid bet is added and the form is complete').toBeEnabled({ timeout: 10000 });
+//     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+//     await expect(simulateBtn, 'Expected Simulate to enable once a valid bet is added and the form is complete').toBeEnabled({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_18-ValidBetEnablesSimulate_success');
-  // });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_18-ValidBetEnablesSimulate_success');
+//   });
 
-  // // TC_19
-  // test('Verify the Delete button removes a bet from the Bets table', async ({ page }, testInfo) => {
-  //   const betsTable = page.locator('simulate-bets-table');
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
+//   // TC_19
+//   test('TC-18 Verify the Delete button removes a bet from the Bets table', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
 
-  //   const addBtn = betsTable.locator('button:has(.pi-plus)').first();
-  //   await addBtn.click();
+//     const addBtn = betsTable.locator('button:has(.pi-plus)').first();
+//     await addBtn.click();
 
-  //   await fillMandatorySettlementFields(page, page.locator('body'));
-  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-  //   await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
+//     await fillMandatorySettlementFields(page, page.locator('body'));
+//     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+//     await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
 
-  //   const deleteBtn = betsTable.locator('button:has(.pi-trash)').first();
-  //   await deleteBtn.click();
+//     const deleteBtn = betsTable.locator('button:has(.pi-trash)').first();
+//     await deleteBtn.click();
 
-  //   await expect(simulateBtn, 'Expected Simulate to disable again once the only bet is removed').toBeDisabled({ timeout: 10000 });
+//     await expect(simulateBtn, 'Expected Simulate to disable again once the only bet is removed').toBeDisabled({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_19-DeleteBetRemovesFromTable_success');
-  // });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_19-DeleteBetRemovesFromTable_success');
+//   });
 
-  // TC_20
-  // Checks every field on the page, not just a sample — a prior version only asserted on
-  // Player Account Id, Betslip Id, Feeds and the Simulate button, so Reset silently leaving
-  // Settlement Status (and others) unclear went undetected and the test still passed.
-  test('Verify Reset clears every field', async ({ page }, testInfo) => {
-    const betsTable = page.locator('simulate-bets-table');
-    await fillMandatorySettlementFields(page, page.locator('body'));
-    const feedDropdown = dropdownByAriaLabel(betsTable, 'Feeds *');
-    await selectFirstDropdownOption(page, feedDropdown);
-    const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
-    await selectFirstDropdownOption(page, sportDropdown);
-    const leagueDropdown = dropdownByAriaLabel(betsTable, 'League');
-    await selectFirstDropdownOption(page, leagueDropdown);
+//   // TC_20
+//   // Checks every field on the page, not just a sample — a prior version only asserted on
+//   // Player Account Id, Betslip Id, Feeds and the Simulate button, so Reset silently leaving
+//   // Settlement Status (and others) unclear went undetected and the test still passed.
+//   test('TC-19 Verify Reset clears every field', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await fillMandatorySettlementFields(page, page.locator('body'));
+//     const feedDropdown = dropdownByAriaLabel(betsTable, 'Feeds *');
+//     await selectFirstDropdownOption(page, feedDropdown);
+//     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
+//     await selectFirstDropdownOption(page, sportDropdown);
+//     const leagueDropdown = dropdownByAriaLabel(betsTable, 'League');
+//     await selectFirstDropdownOption(page, leagueDropdown);
 
-    const resetBtn = page.locator('button[aria-label="Reset"]').first();
-    await resetBtn.click();
-    await page.waitForTimeout(300);
+//     const resetBtn = page.locator('button[aria-label="Reset"]').first();
+//     await resetBtn.click();
+//     await page.waitForTimeout(300);
 
-    // Settlement fields
-    const playerAccountId = textInputByLabel(page.locator('body'), 'Enter Player Account Id (Guid) *');
-    await expect(playerAccountId, 'Expected Player Account Id to clear').toHaveValue('', { timeout: 5000 });
+//     // Settlement fields
+//     const playerAccountId = textInputByLabel(page.locator('body'), 'Enter Player Account Id (Guid) *');
+//     await expect(playerAccountId, 'Expected Player Account Id to clear').toHaveValue('', { timeout: 5000 });
 
-    const regionCodeDropdown = dropdownByAriaLabel(page.locator('body'), 'Region Code *');
-    await expect(regionCodeDropdown.locator('.p-dropdown-label'), 'Expected Region Code to clear back to its placeholder').toHaveText('Region Code *', { timeout: 5000 });
+//     const regionCodeDropdown = dropdownByAriaLabel(page.locator('body'), 'Region Code *');
+//     await expect(regionCodeDropdown.locator('.p-dropdown-label'), 'Expected Region Code to clear back to its placeholder').toHaveText('Region Code *', { timeout: 5000 });
 
-    // Payout/Cash Out Amount default to "0" even in the pristine, never-touched state (confirmed
-    // from the initial page markup) — Reset should revert to that default, not to an empty string.
-    const payoutAmount = fieldGroupByLabel(page.locator('body'), 'Payout Amount *').locator('input.p-inputtext').first();
-    await expect(payoutAmount, 'Expected Payout Amount to reset to its default of 0').toHaveValue('0', { timeout: 5000 });
+//     // Payout/Cash Out Amount default to "0" even in the pristine, never-touched state (confirmed
+//     // from the initial page markup) — Reset should revert to that default, not to an empty string.
+//     const payoutAmount = fieldGroupByLabel(page.locator('body'), 'Payout Amount *').locator('input.p-inputtext').first();
+//     await expect(payoutAmount, 'Expected Payout Amount to reset to its default of 0').toHaveValue('0', { timeout: 5000 });
 
-    const cashOutAmount = fieldGroupByLabel(page.locator('body'), 'Cash Out Amount *').locator('input.p-inputtext').first();
-    await expect(cashOutAmount, 'Expected Cash Out Amount to reset to its default of 0').toHaveValue('0', { timeout: 5000 });
+//     const cashOutAmount = fieldGroupByLabel(page.locator('body'), 'Cash Out Amount *').locator('input.p-inputtext').first();
+//     await expect(cashOutAmount, 'Expected Cash Out Amount to reset to its default of 0').toHaveValue('0', { timeout: 5000 });
 
-    const betslipId = textInputByLabel(page.locator('body'), 'Betslip Id *');
-    await expect(betslipId, 'Expected Betslip Id to clear').toHaveValue('', { timeout: 5000 });
+//     const betslipId = textInputByLabel(page.locator('body'), 'Betslip Id *');
+//     await expect(betslipId, 'Expected Betslip Id to clear').toHaveValue('', { timeout: 5000 });
 
-    const settlementStatusDropdown = dropdownByAriaLabel(page.locator('body'), 'Settlement Status *');
-    await expect(settlementStatusDropdown.locator('.p-dropdown-label'), 'Expected Settlement Status to clear back to its placeholder').toHaveText('Settlement Status *', { timeout: 5000 });
+//     const settlementStatusDropdown = dropdownByAriaLabel(page.locator('body'), 'Settlement Status *');
+//     await expect(settlementStatusDropdown.locator('.p-dropdown-label'), 'Expected Settlement Status to clear back to its placeholder').toHaveText('Settlement Status *', { timeout: 5000 });
 
-    // Bets fields
-    await expect(feedDropdown.locator('.p-dropdown-label'), 'Expected Feeds to clear back to its placeholder').toHaveText('Feeds *', { timeout: 5000 });
-    await expect(sportDropdown.locator('.p-dropdown-label'), 'Expected Sport to clear back to its placeholder').toHaveText('Sport *', { timeout: 5000 });
-    expect(await isDropdownDisabled(sportDropdown), 'Expected Sport to become disabled again after Reset').toBe(true);
-    await expect(leagueDropdown.locator('.p-dropdown-label'), 'Expected League to clear back to its placeholder').toHaveText('League', { timeout: 5000 });
-    expect(await isDropdownDisabled(leagueDropdown), 'Expected League to become disabled again after Reset').toBe(true);
+//     // Bets fields
+//     await expect(feedDropdown.locator('.p-dropdown-label'), 'Expected Feeds to clear back to its placeholder').toHaveText('Feeds *', { timeout: 5000 });
+//     await expect(sportDropdown.locator('.p-dropdown-label'), 'Expected Sport to clear back to its placeholder').toHaveText('Sport *', { timeout: 5000 });
+//     expect(await isDropdownDisabled(sportDropdown), 'Expected Sport to become disabled again after Reset').toBe(true);
+//     await expect(leagueDropdown.locator('.p-dropdown-label'), 'Expected League to clear back to its placeholder').toHaveText('League', { timeout: 5000 });
+//     expect(await isDropdownDisabled(leagueDropdown), 'Expected League to become disabled again after Reset').toBe(true);
 
-    const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-    await expect(simulateBtn, 'Expected Simulate to be disabled again after Reset').toBeDisabled({ timeout: 5000 });
+//     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+//     await expect(simulateBtn, 'Expected Simulate to be disabled again after Reset').toBeDisabled({ timeout: 5000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_20-ResetClearsAllFields_success');
-  });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_20-ResetClearsAllFields_success');
+//   });
 
-  // // TC_21
-  // test('Verify a successful simulation shows a confirmation toast', async ({ page }, testInfo) => {
-  //   const betsTable = page.locator('simulate-bets-table');
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
+//   // TC_21
+//   test('TC-20 Verify a successful simulation shows a confirmation toast', async ({ page }, testInfo) => {
+//     const betsTable = page.locator('simulate-bets-table');
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
+//     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'League'));
 
-  //   const addBtn = betsTable.locator('button:has(.pi-plus)').first();
-  //   await addBtn.click();
+//     const addBtn = betsTable.locator('button:has(.pi-plus)').first();
+//     await addBtn.click();
 
-  //   await fillMandatorySettlementFields(page, page.locator('body'));
+//     await fillMandatorySettlementFields(page, page.locator('body'));
 
-  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-  //   await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
+//     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+//     await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-Simulate_filled');
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-Simulate_filled');
 
-  //   await simulateBtn.click();
-  //   await page.waitForLoadState('networkidle');
+//     await simulateBtn.click();
+//     await page.waitForLoadState('networkidle');
 
-  //   const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
-  //   await expect(successToast, 'Expected a success toast confirming the simulation ran').toBeVisible({ timeout: 15000 });
+//     const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
+//     await expect(successToast, 'Expected a success toast confirming the simulation ran').toBeVisible({ timeout: 15000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-Simulate_success');
-  // });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-Simulate_success');
+//   });
 
-});
+// });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SIMULATE BET — BULK SETTLEMENTS
@@ -773,7 +773,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
   });
 
   // // TC_23
-  // test('Verify Bulk Settlements screen opens with all fields', async ({ page }, testInfo) => {
+  // test('TC-21 Verify Bulk Settlements screen opens with all fields', async ({ page }, testInfo) => {
   //   await expect(page.locator('text=Amount To Simulate *')).toBeVisible({ timeout: 15000 });
   //   await expect(dropdownByAriaLabel(page.locator('body'), 'Region *')).toBeVisible({ timeout: 10000 });
   //   await expect(dropdownByAriaLabel(page.locator('body'), 'Settlement Status *')).toBeVisible({ timeout: 10000 });
@@ -784,47 +784,47 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
   // });
 
   // // TC_24
-  // test('Verify Simulate button stays disabled with all Bulk mandatory fields blank', async ({ page }, testInfo) => {
+  // test('TC-22 Verify Simulate button stays disabled with all Bulk mandatory fields blank', async ({ page }, testInfo) => {
   //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
   //   await expect(simulateBtn, 'Expected Simulate to remain disabled with all Bulk fields blank').toBeDisabled({ timeout: 10000 });
 
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_24-BulkMandatoryFieldsBlank_success');
   // });
 
-  // TC_25
-  // The field itself does NOT clamp or reject a value above the stated max — it accepts
-  // whatever's typed. The app instead blocks the over-max value from actually simulating: either
-  // the Simulate button stays disabled, or a red inline error appears just below the field. Fill
-  // every other mandatory field too, so the over-max Amount is the only thing that could still be
-  // wrong — isolating that this specific field is what's blocking things, not something else.
-  test('Verify Amount To Simulate rejects a value above its maximum limit', async ({ page }, testInfo) => {
-    const overMax = '1000000000000000000000'; // one digit beyond the documented max of 100,000,000,000,000,000,000
+  // // TC_25
+  // // The field itself does NOT clamp or reject a value above the stated max — it accepts
+  // // whatever's typed. The app instead blocks the over-max value from actually simulating: either
+  // // the Simulate button stays disabled, or a red inline error appears just below the field. Fill
+  // // every other mandatory field too, so the over-max Amount is the only thing that could still be
+  // // wrong — isolating that this specific field is what's blocking things, not something else.
+  // test('TC-23 Verify Amount To Simulate rejects a value above its maximum limit', async ({ page }, testInfo) => {
+  //   const overMax = '1000000000000000000000'; // one digit beyond the documented max of 100,000,000,000,000,000,000
 
-    const amountGroup = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *');
-    const amountInput = amountGroup.locator('input.p-inputtext').first();
-    await fillNumberField(amountInput, overMax);
-    await page.keyboard.press('Tab');
+  //   const amountGroup = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *');
+  //   const amountInput = amountGroup.locator('input.p-inputtext').first();
+  //   await fillNumberField(amountInput, overMax);
+  //   await page.keyboard.press('Tab');
 
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Settlement Status *'));
+  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
+  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Settlement Status *'));
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-AmountToSimulateOverMax_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-AmountToSimulateOverMax_filled');
 
-    const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-    const simulateDisabled = await simulateBtn.isDisabled().catch(() => false);
-    const inlineError = amountGroup.locator('small.p-error');
-    const errorVisible = await inlineError.isVisible({ timeout: 5000 }).catch(() => false);
+  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+  //   const simulateDisabled = await simulateBtn.isDisabled().catch(() => false);
+  //   const inlineError = amountGroup.locator('small.p-error');
+  //   const errorVisible = await inlineError.isVisible({ timeout: 5000 }).catch(() => false);
 
-    expect(
-      simulateDisabled || errorVisible,
-      'Expected either Simulate to stay disabled or a red validation message below Amount To Simulate when the value exceeds the max'
-    ).toBe(true);
+  //   expect(
+  //     simulateDisabled || errorVisible,
+  //     'Expected either Simulate to stay disabled or a red validation message below Amount To Simulate when the value exceeds the max'
+  //   ).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-AmountToSimulateMaxValidation_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-AmountToSimulateMaxValidation_success');
+  // });
 
   // // TC_26
-  // test('Verify Amount To Simulate accepts its maximum limit exactly', async ({ page }, testInfo) => {
+  // test('TC-24 Verify Amount To Simulate accepts its maximum limit exactly', async ({ page }, testInfo) => {
   //   const maxValue = '100000000000000000000';
 
   //   const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
@@ -837,7 +837,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
   // });
 
   // // TC_27
-  // test('Verify a successful Bulk simulation shows a confirmation toast', async ({ page }, testInfo) => {
+  // test('TC-25 Verify a successful Bulk simulation shows a confirmation toast', async ({ page }, testInfo) => {
   //   const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
   //   await fillNumberField(amountInput, '1000');
 
@@ -891,34 +891,35 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_27-BulkSimulate_success');
   // });
 
-  // // TC_28
-  // test('Verify Reset clears every Bulk field', async ({ page }, testInfo) => {
-  //   const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
-  //   await fillNumberField(amountInput, '1000');
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
-  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Settlement Status *'));
+  // TC_28
+  test('TC-26 Verify Reset clears every Bulk field', async ({ page }, testInfo) => {
+    const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
+    await fillNumberField(amountInput, '1000');
+    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
+    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Settlement Status *'));
 
-  //   const resetBtn = page.locator('button[aria-label="Reset"]').first();
-  //   await resetBtn.click();
-  //   await page.waitForTimeout(300);
+    const resetBtn = page.locator('button[aria-label="Reset"]').first();
+    await resetBtn.click();
+    await page.waitForTimeout(300);
 
-  //   // Pass criterion: every field falls back to its ORIGINAL state (default/placeholder title),
-  //   // no longer holding the entered/selected values. "0" and "" both count as the amount's
-  //   // cleared state — only the entered "1000" must be gone.
-  //   await expect(amountInput, 'Expected Amount To Simulate to clear back to its default (0 or empty)').toHaveValue(/^0?$/, { timeout: 5000 });
+    // Pass criterion: every field falls back to its ORIGINAL state (default/placeholder title),
+    // no longer holding the entered/selected values. Confirmed by the user: Amount To Simulate's
+    // own default (both here and on Bets Placed - Bulk) is "1", not "0"/empty — Reset restores
+    // that default rather than clearing the field outright.
+    await expect(amountInput, 'Expected Amount To Simulate to clear back to its default value of 1').toHaveValue('1', { timeout: 5000 });
 
-  //   const regionDropdown = dropdownByAriaLabel(page.locator('body'), 'Region *');
-  //   await expect(regionDropdown.locator('.p-dropdown-label'), 'Expected Region to clear back to its placeholder title').toHaveText('Region *', { timeout: 5000 });
+    const regionDropdown = dropdownByAriaLabel(page.locator('body'), 'Region *');
+    await expect(regionDropdown.locator('.p-dropdown-label'), 'Expected Region to clear back to its placeholder title').toHaveText('Region *', { timeout: 5000 });
 
-  //   // Settlement Status must show its placeholder title again — specifically NOT a selected
-  //   // value like "Win"/"Loss".
-  //   const settlementStatusDropdown = dropdownByAriaLabel(page.locator('body'), 'Settlement Status *');
-  //   const statusLabel = settlementStatusDropdown.locator('.p-dropdown-label');
-  //   await expect(statusLabel, 'Expected Settlement Status to clear back to its placeholder title').toHaveText('Settlement Status *', { timeout: 5000 });
-  //   await expect(statusLabel, 'Settlement Status must not show Win/Loss after Reset').not.toHaveText(/win|loss/i);
+    // Settlement Status must show its placeholder title again — specifically NOT a selected
+    // value like "Win"/"Loss".
+    const settlementStatusDropdown = dropdownByAriaLabel(page.locator('body'), 'Settlement Status *');
+    const statusLabel = settlementStatusDropdown.locator('.p-dropdown-label');
+    await expect(statusLabel, 'Expected Settlement Status to clear back to its placeholder title').toHaveText('Settlement Status *', { timeout: 5000 });
+    await expect(statusLabel, 'Settlement Status must not show Win/Loss after Reset').not.toHaveText(/win|loss/i);
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_28-BulkResetClearsAllFields_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_28-BulkResetClearsAllFields_success');
+  });
 
 });
 
@@ -940,7 +941,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_29
-//   test('Verify Bets Placed screen opens with all fields', async ({ page }, testInfo) => {
+//   test('TC-27 Verify Bets Placed screen opens with all fields', async ({ page }, testInfo) => {
 //     await expect(page.locator('text=Enter Player Account Id (Guid) *')).toBeVisible({ timeout: 15000 });
 //     await expect(dropdownByAriaLabel(page.locator('body'), 'Region Code *')).toBeVisible({ timeout: 10000 });
 //     await expect(page.locator('text=Wager Amount *')).toBeVisible({ timeout: 10000 });
@@ -952,7 +953,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_30
-//   test('Verify Simulate button stays disabled with all Bets Placed mandatory fields blank', async ({ page }, testInfo) => {
+//   test('TC-28 Verify Simulate button stays disabled with all Bets Placed mandatory fields blank', async ({ page }, testInfo) => {
 //     const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
 //     await expect(simulateBtn, 'Expected Simulate to remain disabled with all fields blank').toBeDisabled({ timeout: 10000 });
 
@@ -960,7 +961,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_31
-//   test('Verify Wager Amount only accepts integers', async ({ page }, testInfo) => {
+//   test('TC-29 Verify Wager Amount only accepts integers', async ({ page }, testInfo) => {
 //     const wagerAmount = fieldGroupByLabel(page.locator('body'), 'Wager Amount *').locator('input.p-inputtext').first();
 
 //     await wagerAmount.click({ clickCount: 3 });
@@ -972,7 +973,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_32
-//   test('Verify Player Account Id requires a valid UUID', async ({ page }, testInfo) => {
+//   test('TC-30 Verify Player Account Id requires a valid UUID', async ({ page }, testInfo) => {
 //     const playerAccountId = textInputByLabel(page.locator('body'), 'Enter Player Account Id (Guid) *');
 
 //     await playerAccountId.fill('not-a-valid-uuid');
@@ -997,7 +998,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_33
-//   test('Verify Sport is disabled until Feed is selected', async ({ page }, testInfo) => {
+//   test('TC-31 Verify Sport is disabled until Feed is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
 //     expect(await isDropdownDisabled(sportDropdown), 'Expected Sport to start disabled').toBe(true);
@@ -1010,7 +1011,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_34
-//   test('Verify League and Event are disabled until both Feed and Sport are selected', async ({ page }, testInfo) => {
+//   test('TC-32 Verify League and Event are disabled until both Feed and Sport are selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const leagueDropdown = dropdownByAriaLabel(betsTable, 'League');
 //     const eventDropdown = dropdownByAriaLabel(betsTable, 'Event');
@@ -1029,7 +1030,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_35
-//   test('Verify Market is disabled until Event is selected', async ({ page }, testInfo) => {
+//   test('TC-33 Verify Market is disabled until Event is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const marketDropdown = dropdownByAriaLabel(betsTable, 'Market');
 //     expect(await isDropdownDisabled(marketDropdown), 'Expected Market to start disabled').toBe(true);
@@ -1046,7 +1047,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_36
-//   test('Verify Outcome is disabled until Market is selected', async ({ page }, testInfo) => {
+//   test('TC-34 Verify Outcome is disabled until Market is selected', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const outcomeDropdown = dropdownByAriaLabel(betsTable, 'Outcome');
 //     expect(await isDropdownDisabled(outcomeDropdown), 'Expected Outcome to start disabled').toBe(true);
@@ -1065,7 +1066,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 
 //   // TC_37
 //   // NOTE: relies on the unconfirmed clearDropdown() helper — see the file-level comment on it.
-//   test('Verify clearing Market also clears Outcome', async ({ page }, testInfo) => {
+//   test('TC-35 Verify clearing Market also clears Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1085,7 +1086,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_38
-//   test('Verify clearing Event also clears Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-36 Verify clearing Event also clears Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1106,7 +1107,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_39
-//   test('Verify clearing League also clears Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-37 Verify clearing League also clears Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1129,7 +1130,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   });
 
 //   // TC_40
-//   test('Verify clearing Sport clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-38 Verify clearing Sport clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
 //     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
@@ -1151,7 +1152,7 @@ test.describe('Simulate Bet - Bulk Settlements', () => {
 //   // Selects the full chain (Feed → Sport → League → Event → Market → Outcome), then CHANGES
 //   // Feed to a different value (rather than clearing it) and verifies League, Event, Market and
 //   // Outcome all clear as a result — mirrors TC_14.
-//   test('Verify changing Feed clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
+//   test('TC-39 Verify changing Feed clears League, Event, Market and Outcome', async ({ page }, testInfo) => {
 //     const betsTable = page.locator('simulate-bets-table');
 //     const feedDropdown = dropdownByAriaLabel(betsTable, 'Feeds *');
 //     await selectFirstDropdownOption(page, feedDropdown);
@@ -1190,7 +1191,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   });
 
   // // TC_42
-  // test('Verify the Bets table is displayed on the Bets Placed screen', async ({ page }, testInfo) => {
+  // test('TC-40 Verify the Bets table is displayed on the Bets Placed screen', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await expect(betsTable).toBeVisible({ timeout: 15000 });
   //   await expect(betsTable.locator('text=Bets')).toBeVisible({ timeout: 10000 });
@@ -1199,7 +1200,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   // });
 
   // // TC_43
-  // test('Verify a bet requires at least one of League, Event, Market or Outcome to be added', async ({ page }, testInfo) => {
+  // test('TC-41 Verify a bet requires at least one of League, Event, Market or Outcome to be added', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1216,7 +1217,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   // });
 
   // // TC_44
-  // test('Verify a valid bet can be added and enables Simulate once the form is otherwise complete', async ({ page }, testInfo) => {
+  // test('TC-42 Verify a valid bet can be added and enables Simulate once the form is otherwise complete', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1235,7 +1236,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   // });
 
   // // TC_45
-  // test('Verify the Delete button removes a bet from the Bets table', async ({ page }, testInfo) => {
+  // test('TC-43 Verify the Delete button removes a bet from the Bets table', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1257,15 +1258,20 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   // });
 
   // TC_46
-  test('Verify Reset clears every field', async ({ page }, testInfo) => {
+  // Bets table selections (Feed/Sport/League) run BEFORE fillMandatoryBetsPlacedFields — the
+  // reverse order was confirmed live to make the Feed dropdown's panel consistently fail to
+  // open (likely still settling from the Region Code selection / Wager Amount fill triggered
+  // by fillMandatoryBetsPlacedFields). Every other test in this describe block already follows
+  // this same bets-table-first order.
+  test('TC-44 Verify Reset clears every field', async ({ page }, testInfo) => {
     const betsTable = page.locator('simulate-bets-table');
-    await fillMandatoryBetsPlacedFields(page, page.locator('body'));
     const feedDropdown = dropdownByAriaLabel(betsTable, 'Feeds *');
     await selectFirstDropdownOption(page, feedDropdown);
     const sportDropdown = dropdownByAriaLabel(betsTable, 'Sport *');
     await selectFirstDropdownOption(page, sportDropdown);
     const leagueDropdown = dropdownByAriaLabel(betsTable, 'League');
     await selectFirstDropdownOption(page, leagueDropdown);
+    await fillMandatoryBetsPlacedFields(page, page.locator('body'));
 
     const resetBtn = page.locator('button[aria-label="Reset"]').first();
     await resetBtn.click();
@@ -1294,7 +1300,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   });
 
   // // TC_47
-  // test('Verify a successful simulation shows a confirmation toast', async ({ page }, testInfo) => {
+  // test('TC-45 Verify a successful simulation shows a confirmation toast', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1322,7 +1328,7 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
   // // TC_48
   // // Verifies Feed/Sport are excluded from the outgoing simulation request body — see TC_22's
   // // explanation for why this scans all POST bodies rather than targeting one known endpoint.
-  // test('Verify Feed and Sport values are not sent to the backend', async ({ page }, testInfo) => {
+  // test('TC-46 Verify Feed and Sport values are not sent to the backend', async ({ page }, testInfo) => {
   //   const betsTable = page.locator('simulate-bets-table');
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Feeds *'));
   //   await selectFirstDropdownOption(page, dropdownByAriaLabel(betsTable, 'Sport *'));
@@ -1362,7 +1368,8 @@ test.describe('Simulate Bet - Bets Placed - Bets Table and Simulation', () => {
 // SIMULATE BET — BULK BETS PLACED
 // Toggle confirmed as the same [role="button"][aria-label="Bulk"] used for Bulk Settlements —
 // switchToBulkTab() is reused as-is. Fields confirmed: Amount To Simulate (InputNumber — defaults
-// to "1" here, NOT "0" like Bulk Settlements' Amount To Simulate) and Region (dropdown) — only 2
+// to "1" here, the SAME default Bulk Settlements' Amount To Simulate uses (confirmed by the
+// user)) and Region (dropdown) — only 2
 // mandatory fields, no Settlement Status. Reset/Simulate share the same aria-labels as everywhere
 // else in this app.
 // NOTE: no new max limit was given for this field — TC_50/51 assume it's the same documented max
@@ -1377,7 +1384,7 @@ test.describe('Simulate Bet - Bulk Bets Placed', () => {
   });
 
   // // TC_49
-  // test('Verify Bulk Bets Placed screen opens with all fields', async ({ page }, testInfo) => {
+  // test('TC-47 Verify Bulk Bets Placed screen opens with all fields', async ({ page }, testInfo) => {
   //   await expect(page.locator('text=Amount To Simulate *')).toBeVisible({ timeout: 15000 });
   //   await expect(dropdownByAriaLabel(page.locator('body'), 'Region *')).toBeVisible({ timeout: 10000 });
   //   await expect(page.locator('button[aria-label="Simulate"]')).toBeVisible({ timeout: 10000 });
@@ -1387,44 +1394,44 @@ test.describe('Simulate Bet - Bulk Bets Placed', () => {
   // });
 
   // // TC_50
-  // test('Verify Simulate button stays disabled with all Bulk Bets Placed mandatory fields blank', async ({ page }, testInfo) => {
+  // test('TC-48 Verify Simulate button stays disabled with all Bulk Bets Placed mandatory fields blank', async ({ page }, testInfo) => {
   //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
   //   await expect(simulateBtn, 'Expected Simulate to remain disabled with all Bulk fields blank').toBeDisabled({ timeout: 10000 });
 
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_50-BulkBetsPlacedMandatoryFieldsBlank_success');
   // });
 
-  // TC_51
-  // Mirrors the corrected Bulk Settlements TC_25: the field accepts a value above the max rather
-  // than clamping it, so the app must block the over-max value some other way — either Simulate
-  // stays disabled, or a red inline error appears below the field.
-  test('Verify Amount To Simulate rejects a value above its maximum limit', async ({ page }, testInfo) => {
-    const overMax = '1000000000000000000000'; // one digit beyond the assumed max of 100,000,000,000,000,000,000
+  // // TC_51
+  // // Mirrors the corrected Bulk Settlements TC_25: the field accepts a value above the max rather
+  // // than clamping it, so the app must block the over-max value some other way — either Simulate
+  // // stays disabled, or a red inline error appears below the field.
+  // test('TC-49 Verify Amount To Simulate rejects a value above its maximum limit', async ({ page }, testInfo) => {
+  //   const overMax = '1000000000000000000000'; // one digit beyond the assumed max of 100,000,000,000,000,000,000
 
-    const amountGroup = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *');
-    const amountInput = amountGroup.locator('input.p-inputtext').first();
-    await fillNumberField(amountInput, overMax);
-    await page.keyboard.press('Tab');
+  //   const amountGroup = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *');
+  //   const amountInput = amountGroup.locator('input.p-inputtext').first();
+  //   await fillNumberField(amountInput, overMax);
+  //   await page.keyboard.press('Tab');
 
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
+  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_51-AmountToSimulateOverMax_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_51-AmountToSimulateOverMax_filled');
 
-    const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-    const simulateDisabled = await simulateBtn.isDisabled().catch(() => false);
-    const inlineError = amountGroup.locator('small.p-error');
-    const errorVisible = await inlineError.isVisible({ timeout: 5000 }).catch(() => false);
+  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+  //   const simulateDisabled = await simulateBtn.isDisabled().catch(() => false);
+  //   const inlineError = amountGroup.locator('small.p-error');
+  //   const errorVisible = await inlineError.isVisible({ timeout: 5000 }).catch(() => false);
 
-    expect(
-      simulateDisabled || errorVisible,
-      'Expected either Simulate to stay disabled or a red validation message below Amount To Simulate when the value exceeds the max'
-    ).toBe(true);
+  //   expect(
+  //     simulateDisabled || errorVisible,
+  //     'Expected either Simulate to stay disabled or a red validation message below Amount To Simulate when the value exceeds the max'
+  //   ).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_51-AmountToSimulateMaxValidation_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_51-AmountToSimulateMaxValidation_success');
+  // });
 
   // // TC_52
-  // test('Verify Amount To Simulate accepts its maximum limit exactly', async ({ page }, testInfo) => {
+  // test('TC-50 Verify Amount To Simulate accepts its maximum limit exactly', async ({ page }, testInfo) => {
   //   const maxValue = '100000000000000000000';
 
   //   const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
@@ -1436,31 +1443,31 @@ test.describe('Simulate Bet - Bulk Bets Placed', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_52-AmountToSimulateAcceptsMax_success');
   // });
 
-  // TC_53
-  test('Verify a successful Bulk Bets Placed simulation shows a confirmation toast', async ({ page }, testInfo) => {
-    const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
-    await fillNumberField(amountInput, '1000');
+  // // TC_53
+  // test('TC-51 Verify a successful Bulk Bets Placed simulation shows a confirmation toast', async ({ page }, testInfo) => {
+  //   const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
+  //   await fillNumberField(amountInput, '1000');
 
-    await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
+  //   await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));
 
-    const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
-    await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
+  //   const simulateBtn = page.locator('button[aria-label="Simulate"]').first();
+  //   await expect(simulateBtn).toBeEnabled({ timeout: 10000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_53-BulkBetsPlacedSimulate_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_53-BulkBetsPlacedSimulate_filled');
 
-    // Bulk simulation processes many bets server-side and can take noticeably longer than a
-    // single simulation — give both the network settle and the toast a much longer window.
-    await simulateBtn.click();
-    await page.waitForLoadState('networkidle', { timeout: 60000 });
+  //   // Bulk simulation processes many bets server-side and can take noticeably longer than a
+  //   // single simulation — give both the network settle and the toast a much longer window.
+  //   await simulateBtn.click();
+  //   await page.waitForLoadState('networkidle', { timeout: 60000 });
 
-    const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
-    await expect(successToast, 'Expected a success toast confirming the bulk simulation ran').toBeVisible({ timeout: 60000 });
+  //   const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
+  //   await expect(successToast, 'Expected a success toast confirming the bulk simulation ran').toBeVisible({ timeout: 60000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_53-BulkBetsPlacedSimulate_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_53-BulkBetsPlacedSimulate_success');
+  // });
 
   // TC_54
-  test('Verify Reset clears every Bulk Bets Placed field', async ({ page }, testInfo) => {
+  test('TC-52 Verify Reset clears every Bulk Bets Placed field', async ({ page }, testInfo) => {
     const amountInput = fieldGroupByLabel(page.locator('body'), 'Amount To Simulate *').locator('input.p-inputtext').first();
     await fillNumberField(amountInput, '1000');
     await selectFirstDropdownOption(page, dropdownByAriaLabel(page.locator('body'), 'Region *'));

@@ -66,6 +66,69 @@ export class CompBulkConfigurationsPage extends BasePage {
         await this.page.waitForTimeout(500);
     }
 
+    /** Opens the given configuration card's kebab ("⋮") menu and clicks Delete. */
+    async clickDeleteOnCard(description: string): Promise<void> {
+        console.log(`Clicking Delete on configuration card: "${description}"...`);
+        const card = this.getCardByName(description);
+        await card.waitFor({ state: 'visible', timeout: 15000 });
+        const menuTrigger = card.locator(compBulkConfigurationsLocators.cardMenuTrigger);
+        await this.clickElement(menuTrigger);
+
+        const deleteItem = this.page.locator(compBulkConfigurationsLocators.deleteMenuItem);
+        await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
+        await deleteItem.click();
+        await this.page.waitForTimeout(500);
+    }
+
+    /** Reads the card's own visible "Active"/"InActive" status label. */
+    getActiveStatusLabel(description: string): Locator {
+        return this.getCardByName(description).getByText(/^(Active|InActive)$/, { exact: true }).first();
+    }
+
+    /**
+     * Clicks the given Configuration card's Active/Inactive toggle and waits for its visible
+     * Active/InActive label to actually flip, throwing if it never does — a single click isn't
+     * trusted to have taken effect on its own, since a click that's silently swallowed would
+     * otherwise go undetected and make a caller that toggles twice in a row (activate, then
+     * deactivate) see "activate" happen twice instead (confirmed by the user).
+     *
+     * Defaults to a generous 60s, matching this same action's toast (confirmed by the user to
+     * be unusually slow) — an earlier, shorter bound here was throwing its OWN timeout error
+     * before the slow backend update (and toast) ever arrived, ending the test early.
+     * Activating requires the Configuration to already have at least 1 Band (confirmed by the
+     * user). force bypasses PrimeNG InputSwitch's own hidden-input-over-visual-slider overlap —
+     * the same class of hit-test failure already fixed for this suite's checkboxes.
+     */
+    async toggleActiveStatus(description: string, timeout: number = 60000): Promise<void> {
+        console.log(`Toggling Active status on configuration card: "${description}"...`);
+        const card = this.getCardByName(description);
+        const toggle = card.locator(compBulkConfigurationsLocators.activeToggle);
+        const statusLabel = this.getActiveStatusLabel(description);
+
+        const before = (await statusLabel.textContent().catch(() => null))?.trim() ?? '';
+        await toggle.waitFor({ state: 'visible', timeout: 15000 });
+        await CommonUtils.highlightElement(toggle);
+        await toggle.click({ force: true });
+
+        const pollInterval = 500;
+        const maxAttempts = Math.ceil(timeout / pollInterval);
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const current = (await statusLabel.textContent().catch(() => null))?.trim() ?? '';
+            if (current && current !== before) {
+                console.log(`  Status changed: "${before}" -> "${current}"`);
+                return;
+            }
+            await this.page.waitForTimeout(pollInterval);
+        }
+        throw new Error(`toggleActiveStatus: status label still reads "${before}" after clicking the toggle — the click may not have registered.`);
+    }
+
+    /** Clicks the Back button on the Configurations page. */
+    async clickBackButton(): Promise<void> {
+        console.log('Clicking Back button...');
+        await this.clickElement(this.page.locator(compBulkConfigurationsLocators.backButton));
+    }
+
     /** Opens the given configuration card's kebab ("⋮") menu and clicks Payout Errors. */
     async clickPayoutErrorsOnCard(description: string): Promise<void> {
         console.log(`Clicking Payout Errors on configuration card: "${description}"...`);
@@ -281,6 +344,64 @@ export class CompBulkConfigurationsPage extends BasePage {
     async selectBanner(dialog: Locator, searchText?: string): Promise<string> {
         console.log(`Selecting Banner${searchText ? ` matching "${searchText}"` : ''}...`);
         return this.selectDropdownOption(dialog.locator(compBulkConfigurationsLocators.fieldBanner), searchText);
+    }
+
+    // ── Bands (Edit / Delete) ────────────────────────────────────────────────────
+    // Bands render as one flat list further down the Configurations page, not nested per
+    // Configuration card — see compBulkConfigurationsLocators.bandRow.
+
+    /**
+     * Locates a specific Band row by its Boost Amount value — the one field a caller can make
+     * reliably unique per test run (unlike Minimum/Maximum, which tests reuse fixed valid
+     * values for), so this scopes to the exact Band automation just created rather than any
+     * pre-existing one. Both :has() clauses apply to the SAME detail-item div, requiring it to
+     * carry both the "Boost Amount:" label and that exact value — not just either one anywhere
+     * in the row.
+     */
+    getBandByBoostAmount(boostAmount: string): Locator {
+        return this.page.locator(
+            `${compBulkConfigurationsLocators.bandRow}:has(${compBulkConfigurationsLocators.bandDetailItem}:has(label:text-is("Boost Amount:")):has(span:text-is("${boostAmount}")))`
+        );
+    }
+
+    /** Opens the given Band row's kebab ("⋮") menu and clicks Edit. */
+    async clickEditOnBand(boostAmount: string): Promise<void> {
+        console.log(`Clicking Edit on Band with Boost Amount "${boostAmount}"...`);
+        const band = this.getBandByBoostAmount(boostAmount);
+        await band.waitFor({ state: 'visible', timeout: 15000 });
+        const menuTrigger = band.locator(compBulkConfigurationsLocators.cardMenuTrigger);
+        await this.clickElement(menuTrigger);
+
+        const editItem = this.page.locator(compBulkConfigurationsLocators.editMenuItem);
+        await editItem.waitFor({ state: 'visible', timeout: 5000 });
+        await editItem.click();
+        await this.page.waitForTimeout(500);
+    }
+
+    /** Opens the given Band row's kebab ("⋮") menu and clicks Delete. */
+    async clickDeleteOnBand(boostAmount: string): Promise<void> {
+        console.log(`Clicking Delete on Band with Boost Amount "${boostAmount}"...`);
+        const band = this.getBandByBoostAmount(boostAmount);
+        await band.waitFor({ state: 'visible', timeout: 15000 });
+        const menuTrigger = band.locator(compBulkConfigurationsLocators.cardMenuTrigger);
+        await this.clickElement(menuTrigger);
+
+        const deleteItem = this.page.locator(compBulkConfigurationsLocators.deleteMenuItem);
+        await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
+        await deleteItem.click();
+        await this.page.waitForTimeout(500);
+    }
+
+    async clickYesOnDeleteDialog(): Promise<void> {
+        console.log('Clicking Yes to confirm Band deletion...');
+        await this.clickElement(this.page.locator(compBulkConfigurationsLocators.buttonYes));
+        await this.page.waitForTimeout(500);
+    }
+
+    async clickNoOnDeleteDialog(): Promise<void> {
+        console.log('Clicking No to cancel Band deletion...');
+        await this.clickElement(this.page.locator(compBulkConfigurationsLocators.buttonNo));
+        await this.page.waitForTimeout(500);
     }
 
     // ── Add Band dialog ─────────────────────────────────────────────────────────

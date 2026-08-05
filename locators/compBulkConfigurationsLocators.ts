@@ -57,4 +57,32 @@ export const compBulkConfigurationsLocators = {
     // id sits on the native <input> itself, confirmed live — the same convention Comp Bulk's own
     // Create/Edit dialog checkboxes use.
     bandCheckboxIsPercentageAmount: 'isPercentageAmount',
+
+    // Bands render as one flat ".band-details" list further down the Configurations page
+    // (confirmed live) — NOT nested inside each ".configuration-card", so a Band row is a
+    // sibling section, not a child of any card. Each row's own kebab menu -> Edit/Delete uses
+    // the identical trigger/menu-item CSS as Configuration cards' own kebab (must be scoped to
+    // the specific band row, not queried globally, or it'll match a card's kebab too).
+    bandRow: '.band-details',
+    bandDetailItem: 'div.detail-item',
+
+    // Delete confirmation — the same Yes/No modal pattern already used for Comp Bulk's own
+    // Delete/Process/Cancel actions (CompsBulkPage). deleteMenuItem is shared by both a
+    // Configuration card's own kebab menu and a Band row's kebab menu — same aria-label either
+    // way, always scoped to whichever row/card's kebab was just opened.
+    deleteMenuItem: 'a.p-menuitem-link[aria-label="Delete"]',
+    buttonYes: 'button[aria-label="Yes"]',
+    buttonNo: 'button[aria-label="No"]',
+
+    // Active/Inactive toggle on a Configuration card — no id/aria-label. A card actually
+    // renders 4 PrimeNG InputSwitches (Status, Allow Multiple Comp, Value Provided, Dry Run),
+    // all sharing the same .p-inputswitch-slider class, so a bare class match strict-mode
+    // violates (confirmed live via the real error). Only the Status one sits under its own
+    // ".status-toggle" wrapper (per that same error's element paths), which is what scopes
+    // this to the right one. Requires at least 1 Band already on the Configuration to
+    // successfully activate (confirmed by the user).
+    activeToggle: '.status-toggle .p-inputswitch-slider',
+
+    // Back button on the Configurations page — no id/aria-label, matched by its icon + class.
+    backButton: 'button.btn--info.p-button-icon-only:has(.pi-chevron-left)',
 };

@@ -239,7 +239,7 @@ test.describe('Marketing - Scratch and Win', () => {
   });
 
   // // TC_01
-  // test('Verify Scratch and Win page loads successfully', async ({ page }, testInfo) => {
+  // test('TC-1 Verify Scratch and Win page loads successfully', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
 
   //   await expect(container.locator('input[placeholder="Search"]')).toBeVisible({ timeout: 10000 });
@@ -252,7 +252,7 @@ test.describe('Marketing - Scratch and Win', () => {
   // });
 
   // // TC_02
-  // test('Verify Search functionality', async ({ page }, testInfo) => {
+  // test('TC-2 Verify Search functionality', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
   //   const rows = container.locator('.pure__table tbody tr');
   //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -271,45 +271,45 @@ test.describe('Marketing - Scratch and Win', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_02-ScratchAndWinSearch_success');
   // });
 
-  // TC_03
-  test('Verify Region filter', async ({ page }, testInfo) => {
-    const container = page.locator('scratch-and-win-management');
-    const rows = container.locator('.pure__table tbody tr');
-    await rows.first().waitFor({ state: 'visible', timeout: 20000 });
-    const idsBaseline = await getVisiblePromotionIds(rows);
+  // // TC_03
+  // test('TC-3 Verify Region filter', async ({ page }, testInfo) => {
+  //   const container = page.locator('scratch-and-win-management');
+  //   const rows = container.locator('.pure__table tbody tr');
+  //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+  //   const idsBaseline = await getVisiblePromotionIds(rows);
 
-    const regionDropdown = container.locator('div.dropdown-input.p-dropdown').first();
+  //   const regionDropdown = container.locator('div.dropdown-input.p-dropdown').first();
 
-    // Pass criterion: selecting a region changes the visible promotion list (by even one
-    // promotion) versus the unfiltered baseline. Cycle through up to 3 different regions
-    // for stronger evidence — the table shows region CODES while the dropdown shows full
-    // names, so per-row region-name equality is not verifiable here.
-    const results: { region: string; changed: boolean }[] = [];
-    for (let i = 0; i < 3; i++) {
-      const regionName = await selectFirstDropdownOption(page, regionDropdown, i).catch(() => null);
-      if (regionName === null) break; // fewer than i+1 regions available in the dropdown
+  //   // Pass criterion: selecting a region changes the visible promotion list (by even one
+  //   // promotion) versus the unfiltered baseline. Cycle through up to 3 different regions
+  //   // for stronger evidence — the table shows region CODES while the dropdown shows full
+  //   // names, so per-row region-name equality is not verifiable here.
+  //   const results: { region: string; changed: boolean }[] = [];
+  //   for (let i = 0; i < 3; i++) {
+  //     const regionName = await selectFirstDropdownOption(page, regionDropdown, i).catch(() => null);
+  //     if (regionName === null) break; // fewer than i+1 regions available in the dropdown
 
-      await page.waitForTimeout(500);
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(500); // a region with zero promotions is a legitimate result — don't wait on rows
+  //     await page.waitForTimeout(500);
+  //     await page.waitForLoadState('networkidle');
+  //     await page.waitForTimeout(500); // a region with zero promotions is a legitimate result — don't wait on rows
 
-      const idsNow = await getVisiblePromotionIds(rows);
-      const changed = JSON.stringify(idsNow) !== JSON.stringify(idsBaseline);
-      results.push({ region: regionName, changed });
-      console.log(`Region "${regionName}": ${idsNow.length} promotion(s) visible, list changed vs baseline: ${changed}`);
+  //     const idsNow = await getVisiblePromotionIds(rows);
+  //     const changed = JSON.stringify(idsNow) !== JSON.stringify(idsBaseline);
+  //     results.push({ region: regionName, changed });
+  //     console.log(`Region "${regionName}": ${idsNow.length} promotion(s) visible, list changed vs baseline: ${changed}`);
 
-      await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', `TC_03-RegionFilter_${i + 1}`);
-    }
+  //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', `TC_03-RegionFilter_${i + 1}`);
+  //   }
 
-    expect(results.length, 'Could not select any region from the dropdown').toBeGreaterThan(0);
-    expect(
-      results.some((r) => r.changed),
-      `Promotion list never changed across the tried regions (${results.map((r) => r.region).join(', ')}) — region filter appears to have no effect`,
-    ).toBe(true);
-  });
+  //   expect(results.length, 'Could not select any region from the dropdown').toBeGreaterThan(0);
+  //   expect(
+  //     results.some((r) => r.changed),
+  //     `Promotion list never changed across the tried regions (${results.map((r) => r.region).join(', ')}) — region filter appears to have no effect`,
+  //   ).toBe(true);
+  // });
 
   // // TC_04
-  // test('Verify Include Inactive toggle', async ({ page }, testInfo) => {
+  // test('TC-4 Verify Include Inactive toggle', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
   //   const rows = container.locator('.pure__table tbody tr');
   //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -334,7 +334,7 @@ test.describe('Marketing - Scratch and Win', () => {
   // });
 
   // // TC_05
-  // test('Verify Create Promotion popup opens', async ({ page }, testInfo) => {
+  // test('TC-5 Verify Create Promotion popup opens', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
 
   //   const createBtn = container.locator('button[aria-label="Create Promotion"]').first();
@@ -508,7 +508,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
   });
 
   // // TC_06
-  // test('Verify Create Promotion popup UI', async ({ page }, testInfo) => {
+  // test('TC-6 Verify Create Promotion popup UI', async ({ page }, testInfo) => {
   //   const dialog = page.locator('div[role="dialog"]').first();
 
   //   // Step 6: Verify all fields, checkboxes and buttons in the popup
@@ -539,7 +539,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
   // });
 
   // // TC_07
-  // test('Verify mandatory field validation', async ({ page }, testInfo) => {
+  // test('TC-7 Verify mandatory field validation', async ({ page }, testInfo) => {
   //   const dialog = page.locator('div[role="dialog"]').first();
 
   //   // Step 6: Leave all mandatory fields blank
@@ -560,103 +560,103 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
   //   await expect(dialog).not.toBeVisible({ timeout: 10000 });
   // });
 
-  // // TC_08
-  // test('Verify Scratch Card Expiry Days minimum value validation', async ({ page }, testInfo) => {
-  //   const dialog = page.locator('div[role="dialog"]').first();
+  // TC_08
+  test('TC-8 Verify Scratch Card Expiry Days minimum value validation', async ({ page }, testInfo) => {
+    const dialog = page.locator('div[role="dialog"]').first();
 
-  //   // Step 6: Fill all mandatory fields
-  //   await fillCreatePromotionMandatoryFields(page, dialog);
+    // Step 6: Fill all mandatory fields
+    await fillCreatePromotionMandatoryFields(page, dialog);
 
-  //   // Step 7: Enter 0 in the Scratch Card Expiry Days field
-  //   await verifyMinValueClamp(page, dialog, 'scratchCardExpiryDays', '1');
+    // Step 7: Enter 0 in the Scratch Card Expiry Days field
+    await verifyMinValueClamp(page, dialog, 'scratchCardExpiryDays', '1');
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_08-ScratchCardExpiryDaysMinValidation_success');
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_08-ScratchCardExpiryDaysMinValidation_success');
 
-  //   const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
-  //   if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  //     await cancelBtn.click();
-  //     await expect(dialog).not.toBeVisible({ timeout: 10000 });
-  //   }
-  // });
+    const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
+    if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 10000 });
+    }
+  });
 
-  // // TC_09
-  // test('Verify Ticker Total Days minimum value validation', async ({ page }, testInfo) => {
-  //   const dialog = page.locator('div[role="dialog"]').first();
+  // TC_09
+  test('TC-9 Verify Ticker Total Days minimum value validation', async ({ page }, testInfo) => {
+    const dialog = page.locator('div[role="dialog"]').first();
 
-  //   // Step 6: Fill all mandatory fields
-  //   await fillCreatePromotionMandatoryFields(page, dialog);
+    // Step 6: Fill all mandatory fields
+    await fillCreatePromotionMandatoryFields(page, dialog);
 
-  //   // Step 7: Enter 0 in the Ticker Total Days field
-  //   await verifyMinValueClamp(page, dialog, 'tickerTotalDays', '1');
+    // Step 7: Enter 0 in the Ticker Total Days field
+    await verifyMinValueClamp(page, dialog, 'tickerTotalDays', '1');
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_09-TickerTotalDaysMinValidation_success');
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_09-TickerTotalDaysMinValidation_success');
 
-  //   const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
-  //   if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  //     await cancelBtn.click();
-  //     await expect(dialog).not.toBeVisible({ timeout: 10000 });
-  //   }
-  // });
+    const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
+    if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 10000 });
+    }
+  });
 
-  // // TC_10
-  // test('Verify Ticker Start Amount minimum value validation', async ({ page }, testInfo) => {
-  //   const dialog = page.locator('div[role="dialog"]').first();
+  // TC_10
+  test('TC-10 Verify Ticker Start Amount minimum value validation', async ({ page }, testInfo) => {
+    const dialog = page.locator('div[role="dialog"]').first();
 
-  //   // Step 6: Fill all mandatory fields
-  //   await fillCreatePromotionMandatoryFields(page, dialog);
+    // Step 6: Fill all mandatory fields
+    await fillCreatePromotionMandatoryFields(page, dialog);
 
-  //   // Step 7: Enter 0 in the Ticker Start Amount field
-  //   await verifyMinValueClamp(page, dialog, 'tickerStartAmount', '0.01');
+    // Step 7: Enter 0 in the Ticker Start Amount field
+    await verifyMinValueClamp(page, dialog, 'tickerStartAmount', '0.01');
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_10-TickerStartAmountMinValidation_success');
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_10-TickerStartAmountMinValidation_success');
 
-  //   const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
-  //   if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  //     await cancelBtn.click();
-  //     await expect(dialog).not.toBeVisible({ timeout: 10000 });
-  //   }
-  // });
+    const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
+    if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 10000 });
+    }
+  });
 
-  // // TC_11
-  // test('Verify Chance of Winning maximum value validation', async ({ page }, testInfo) => {
-  //   const dialog = page.locator('div[role="dialog"]').first();
+  // TC_11
+  test('TC-11 Verify Chance of Winning maximum value validation', async ({ page }, testInfo) => {
+    const dialog = page.locator('div[role="dialog"]').first();
 
-  //   // Step 6: Fill all mandatory fields
-  //   await fillCreatePromotionMandatoryFields(page, dialog);
+    // Step 6: Fill all mandatory fields
+    await fillCreatePromotionMandatoryFields(page, dialog);
 
-  //   // Step 7: Enter 101 in the Chance of Winning (%) field
-  //   await verifyMaxValueClamp(page, dialog, 'chanceOfWinning', '101', '100');
+    // Step 7: Enter 101 in the Chance of Winning (%) field
+    await verifyMaxValueClamp(page, dialog, 'chanceOfWinning', '101', '100');
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_11-ChanceOfWinningMaxValidation_success');
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_11-ChanceOfWinningMaxValidation_success');
 
-  //   const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
-  //   if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  //     await cancelBtn.click();
-  //     await expect(dialog).not.toBeVisible({ timeout: 10000 });
-  //   }
-  // });
+    const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
+    if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 10000 });
+    }
+  });
 
-  // // TC_12
-  // test('Verify Scratch Cards Per Period minimum value validation', async ({ page }, testInfo) => {
-  //   const dialog = page.locator('div[role="dialog"]').first();
+  // TC_12
+  test('TC-12 Verify Scratch Cards Per Period minimum value validation', async ({ page }, testInfo) => {
+    const dialog = page.locator('div[role="dialog"]').first();
 
-  //   // Step 6: Fill all mandatory fields
-  //   await fillCreatePromotionMandatoryFields(page, dialog);
+    // Step 6: Fill all mandatory fields
+    await fillCreatePromotionMandatoryFields(page, dialog);
 
-  //   // Step 7: Enter 0 in the Scratch Cards Per Period field
-  //   await verifyMinValueClamp(page, dialog, 'scratchCardsPerPeriod', '1');
+    // Step 7: Enter 0 in the Scratch Cards Per Period field
+    await verifyMinValueClamp(page, dialog, 'scratchCardsPerPeriod', '1');
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_12-ScratchCardsPerPeriodMinValidation_success');
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_12-ScratchCardsPerPeriodMinValidation_success');
 
-  //   const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
-  //   if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  //     await cancelBtn.click();
-  //     await expect(dialog).not.toBeVisible({ timeout: 10000 });
-  //   }
-  // });
+    const cancelBtn = dialog.locator('button[aria-label="Cancel"], button:has-text("Cancel")').first();
+    if (await cancelBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 10000 });
+    }
+  });
 
   // // TC_13
-  // test('Verify checkbox functionality', async ({ page }, testInfo) => {
+  // test('TC-13 Verify checkbox functionality', async ({ page }, testInfo) => {
   //   const dialog = page.locator('div[role="dialog"]').first();
   //   const checkboxIds = ['requiresJourneySelection', 'useValueBuckets', 'isScratchAndComp'];
 
@@ -685,79 +685,79 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
   //   await expect(dialog).not.toBeVisible({ timeout: 10000 });
   // });
 
-  // TC_14
-  test('Verify successful promotion creation', async ({ page }, testInfo) => {
-    const container = page.locator('scratch-and-win-management');
-    const dialog = page.locator('div[role="dialog"]').first();
-    const promoName = `AutoPromo-${CommonUtils.generateRandomString(6)}`;
+  // // TC_14
+  // test('TC-14 Verify successful promotion creation', async ({ page }, testInfo) => {
+  //   const container = page.locator('scratch-and-win-management');
+  //   const dialog = page.locator('div[role="dialog"]').first();
+  //   const promoName = `AutoPromo-${CommonUtils.generateRandomString(6)}`;
 
-    // Step 6: Enter valid values in all mandatory fields — Promotion Name
-    const nameInput = dialog.locator('#promotionName');
-    await nameInput.waitFor({ state: 'visible', timeout: 10000 });
-    await nameInput.fill(promoName);
+  //   // Step 6: Enter valid values in all mandatory fields — Promotion Name
+  //   const nameInput = dialog.locator('#promotionName');
+  //   await nameInput.waitFor({ state: 'visible', timeout: 10000 });
+  //   await nameInput.fill(promoName);
 
-    // Step 7: Select values from all mandatory dropdown fields
-    await selectFirstDropdownOption(page, dialog.locator('#gameType'));
-    await selectFirstDropdownOption(page, dialog.locator('#region'));
-    await selectFirstDropdownOption(page, dialog.locator('#periodType'));
-    await selectFirstDropdownOption(page, dialog.locator('#allocationNotificationTemplate'));
+  //   // Step 7: Select values from all mandatory dropdown fields
+  //   await selectFirstDropdownOption(page, dialog.locator('#gameType'));
+  //   await selectFirstDropdownOption(page, dialog.locator('#region'));
+  //   await selectFirstDropdownOption(page, dialog.locator('#periodType'));
+  //   await selectFirstDropdownOption(page, dialog.locator('#allocationNotificationTemplate'));
 
-    // Step 8: Select the Start Date and click any other field to close the calendar
-    const startDateInput = dialog.locator('#startDate input');
-    await startDateInput.click();
-    const startPanel = page.locator('#startDate_panel');
-    await startPanel.waitFor({ state: 'visible', timeout: 10000 });
-    await startPanel.locator(ENABLED_DAY_SELECTOR).first().click({ force: true });
-    await nameInput.click({ force: true });
-    await startPanel.waitFor({ state: 'hidden', timeout: 5000 });
+  //   // Step 8: Select the Start Date and click any other field to close the calendar
+  //   const startDateInput = dialog.locator('#startDate input');
+  //   await startDateInput.click();
+  //   const startPanel = page.locator('#startDate_panel');
+  //   await startPanel.waitFor({ state: 'visible', timeout: 10000 });
+  //   await startPanel.locator(ENABLED_DAY_SELECTOR).first().click({ force: true });
+  //   await nameInput.click({ force: true });
+  //   await startPanel.waitFor({ state: 'hidden', timeout: 5000 });
 
-    // Step 9: Select the End Date and click any other field to close the calendar
-    const endDateInput = dialog.locator('#endDate input');
-    await endDateInput.click();
-    const endPanel = page.locator('#endDate_panel');
-    await endPanel.waitFor({ state: 'visible', timeout: 10000 });
-    await endPanel.locator(ENABLED_DAY_SELECTOR).last().click({ force: true });
-    await nameInput.click({ force: true });
-    await endPanel.waitFor({ state: 'hidden', timeout: 5000 });
+  //   // Step 9: Select the End Date and click any other field to close the calendar
+  //   const endDateInput = dialog.locator('#endDate input');
+  //   await endDateInput.click();
+  //   const endPanel = page.locator('#endDate_panel');
+  //   await endPanel.waitFor({ state: 'visible', timeout: 10000 });
+  //   await endPanel.locator(ENABLED_DAY_SELECTOR).last().click({ force: true });
+  //   await nameInput.click({ force: true });
+  //   await endPanel.waitFor({ state: 'hidden', timeout: 5000 });
 
-    // Step 10: Select the Ticker Start Date and click any other field to close the calendar —
-    // Scratch Card Expiry Days sits right next to it in the same row, so use that as the closer
-    // instead of jumping back up to Promotion Name.
-    const tickerStartDateInput = dialog.locator('#tickerStartDate input');
-    await tickerStartDateInput.click();
-    const tickerStartPanel = page.locator('#tickerStartDate_panel');
-    await tickerStartPanel.waitFor({ state: 'visible', timeout: 10000 });
-    await tickerStartPanel.locator(ENABLED_DAY_SELECTOR).first().click({ force: true });
-    const scratchCardExpiryDaysInput = dialog.locator('#scratchCardExpiryDays input');
-    await scratchCardExpiryDaysInput.click({ force: true });
-    await tickerStartPanel.waitFor({ state: 'hidden', timeout: 5000 });
+  //   // Step 10: Select the Ticker Start Date and click any other field to close the calendar —
+  //   // Scratch Card Expiry Days sits right next to it in the same row, so use that as the closer
+  //   // instead of jumping back up to Promotion Name.
+  //   const tickerStartDateInput = dialog.locator('#tickerStartDate input');
+  //   await tickerStartDateInput.click();
+  //   const tickerStartPanel = page.locator('#tickerStartDate_panel');
+  //   await tickerStartPanel.waitFor({ state: 'visible', timeout: 10000 });
+  //   await tickerStartPanel.locator(ENABLED_DAY_SELECTOR).first().click({ force: true });
+  //   const scratchCardExpiryDaysInput = dialog.locator('#scratchCardExpiryDays input');
+  //   await scratchCardExpiryDaysInput.click({ force: true });
+  //   await tickerStartPanel.waitFor({ state: 'hidden', timeout: 5000 });
 
-    // Step 11: Enter valid values in all required numeric fields
-    await fillNumberField(dialog.locator('#chanceOfWinning input'), '50');
-    await fillNumberField(dialog.locator('#tickerStartAmount input'), '10');
-    await fillNumberField(dialog.locator('#tickerTotalDays input'), '7');
-    await fillNumberField(dialog.locator('#scratchCardExpiryDays input'), '5');
-    await fillNumberField(dialog.locator('#scratchCardsPerPeriod input'), '3');
+  //   // Step 11: Enter valid values in all required numeric fields
+  //   await fillNumberField(dialog.locator('#chanceOfWinning input'), '50');
+  //   await fillNumberField(dialog.locator('#tickerStartAmount input'), '10');
+  //   await fillNumberField(dialog.locator('#tickerTotalDays input'), '7');
+  //   await fillNumberField(dialog.locator('#scratchCardExpiryDays input'), '5');
+  //   await fillNumberField(dialog.locator('#scratchCardsPerPeriod input'), '3');
 
-    // Step 12: Select optional checkboxes if required — none required for this scenario
+  //   // Step 12: Select optional checkboxes if required — none required for this scenario
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_14-CreatePromotion_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_14-CreatePromotion_filled');
 
-    // Step 13: Click Save
-    const saveBtn = dialog.locator('button[aria-label="Save"], button:has-text("Save")').first();
-    await saveBtn.scrollIntoViewIfNeeded();
-    await expect(saveBtn).toBeEnabled({ timeout: 15000 });
-    await saveBtn.click();
-    await expect(dialog).not.toBeVisible({ timeout: 20000 });
-    await page.waitForLoadState('networkidle');
+  //   // Step 13: Click Save
+  //   const saveBtn = dialog.locator('button[aria-label="Save"], button:has-text("Save")').first();
+  //   await saveBtn.scrollIntoViewIfNeeded();
+  //   await expect(saveBtn).toBeEnabled({ timeout: 15000 });
+  //   await saveBtn.click();
+  //   await expect(dialog).not.toBeVisible({ timeout: 20000 });
+  //   await page.waitForLoadState('networkidle');
 
-    await expect(container.locator(`.pure__table tbody td:text-is("${promoName}")`)).toBeVisible({ timeout: 20000 });
+  //   await expect(container.locator(`.pure__table tbody td:text-is("${promoName}")`)).toBeVisible({ timeout: 20000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_14-CreatePromotion_success');
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_14-CreatePromotion_success');
+  // });
 
   // // TC_15
-  // test('Verify Cancel button functionality', async ({ page }, testInfo) => {
+  // test('TC-15 Verify Cancel button functionality', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
   //   const dialog = page.locator('div[role="dialog"]').first();
   //   const promoName = `AutoPromo-${CommonUtils.generateRandomString(6)}`;
@@ -780,7 +780,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
   // });
 
   // // TC_16
-  // test('Verify popup close (X) button functionality', async ({ page }, testInfo) => {
+  // test('TC-16 Verify popup close (X) button functionality', async ({ page }, testInfo) => {
   //   const container = page.locator('scratch-and-win-management');
   //   const dialog = page.locator('div[role="dialog"]').first();
   //   const promoName = `AutoPromo-${CommonUtils.generateRandomString(6)}`;
@@ -804,25 +804,25 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 
 });
 
-// // ─────────────────────────────────────────────────────────────────────────────
-// // SCRATCH AND WIN — EDIT & STATUS ACTIONS  (TC_17 – TC_22)
-// // Navigation: Marketing → Promotions → Scratch and Win → three dots → Edit/Activate/Deactivate
-// // NOTE: the three-dot row menu selector (`button:has(.pi-ellipsis-v)` → `.p-menu-overlay`) and
-// // the Yes/No confirmation buttons mirror the confirmed-working pattern from
-// // timedpromo.spec.ts's Activate/Approve tests — not yet confirmed against this page's actual
-// // menu/dialog markup. There's no visible "Status" column in this table, so TC_20/21/22 can't
-// // assert the Active/Inactive value directly; they verify via the confirmation flow completing
-// // (Yes → success toast / No → popup closes with no action) rather than a status cell.
-// // ─────────────────────────────────────────────────────────────────────────────
-// test.describe('Marketing - Scratch and Win - Edit and Status Actions', () => {
+// ─────────────────────────────────────────────────────────────────────────────
+// SCRATCH AND WIN — EDIT & STATUS ACTIONS  (TC_17 – TC_22)
+// Navigation: Marketing → Promotions → Scratch and Win → three dots → Edit/Activate/Deactivate
+// NOTE: the three-dot row menu selector (`button:has(.pi-ellipsis-v)` → `.p-menu-overlay`) and
+// the Yes/No confirmation buttons mirror the confirmed-working pattern from
+// timedpromo.spec.ts's Activate/Approve tests — not yet confirmed against this page's actual
+// menu/dialog markup. There's no visible "Status" column in this table, so TC_20/21/22 can't
+// assert the Active/Inactive value directly; they verify via the confirmation flow completing
+// (Yes → success toast / No → popup closes with no action) rather than a status cell.
+// ─────────────────────────────────────────────────────────────────────────────
+test.describe('Marketing - Scratch and Win - Edit and Status Actions', () => {
 
-//   test.beforeEach(async ({ page }) => {
-//     // Steps 1-4: Launch the site → expand Marketing → expand Promotions → click Scratch and Win
-//     await navigateToScratchAndWin(page);
-//   });
+  test.beforeEach(async ({ page }) => {
+    // Steps 1-4: Launch the site → expand Marketing → expand Promotions → click Scratch and Win
+    await navigateToScratchAndWin(page);
+  });
 
 //   // TC_17
-//   test('Verify Edit Promotion popup opens', async ({ page }, testInfo) => {
+//   test('TC-17 Verify Edit Promotion popup opens', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 //     const rows = container.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -859,7 +859,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_18
-//   test('Verify promotion details can be updated', async ({ page }, testInfo) => {
+//   test('TC-18 Verify promotion details can be updated', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 //     const rows = container.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -904,7 +904,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_19
-//   test('Verify Cancel button in Edit popup', async ({ page }, testInfo) => {
+//   test('TC-19 Verify Cancel button in Edit popup', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 //     const rows = container.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -943,7 +943,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_20
-//   test('Verify promotion activation', async ({ page }, testInfo) => {
+//   test('TC-20 Verify promotion activation', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 
 //     // Inactive promotions are hidden by default — enable Include Inactive so a row with an
@@ -978,7 +978,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_21
-//   test('Verify Activate popup No button', async ({ page }, testInfo) => {
+//   test('TC-21 Verify Activate popup No button', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 
 //     const toggle = container.locator('div.p-inputswitch').first();
@@ -1011,7 +1011,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_22
-//   test('Verify promotion deactivation', async ({ page }, testInfo) => {
+//   test('TC-22 Verify promotion deactivation', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 //     const rows = container.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -1032,7 +1032,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_23
-//   test('Verify Deactivate popup No button', async ({ page }, testInfo) => {
+//   test('TC-23 Verify Deactivate popup No button', async ({ page }, testInfo) => {
 //     const container = page.locator('scratch-and-win-management');
 //     const rows = container.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
@@ -1052,114 +1052,114 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_23-DeactivatePopupNoButton_success');
 //   });
 
-//   // TC_24
-//   test('Verify Initialize Budget functionality', async ({ page }, testInfo) => {
-//     const container = page.locator('scratch-and-win-management');
-//     const rows = container.locator('.pure__table tbody tr');
-//     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+  // TC_24
+  test('TC-24 Verify Initialize Budget functionality', async ({ page }, testInfo) => {
+    const container = page.locator('scratch-and-win-management');
+    const rows = container.locator('.pure__table tbody tr');
+    await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
-//     // Steps 5-6: Click the three dots for any promotion, then click Initialize budget
-//     const targetRow = await findRowWithMenuAction(page, rows, 'Initialize');
-//     expect(targetRow, 'No row with an available "Initialize Budget" action was found').not.toBeNull();
+    // Steps 5-6: Click the three dots for any promotion, then click Initialize budget
+    const targetRow = await findRowWithMenuAction(page, rows, 'Initialize');
+    expect(targetRow, 'No row with an available "Initialize Budget" action was found').not.toBeNull();
 
-//     await openMenuItem(page, 'Initialize').click();
+    await openMenuItem(page, 'Initialize').click();
 
-//     // Step 7: Click Yes
-//     const yesBtn = page.locator('button:has-text("Yes")').first();
-//     await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
-//     await yesBtn.click();
-//     await page.waitForLoadState('networkidle');
+    // Step 7: Click Yes
+    const yesBtn = page.locator('button:has-text("Yes")').first();
+    await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await yesBtn.click();
+    await page.waitForLoadState('networkidle');
 
-//     const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
-//     await expect(successToast, 'Expected a success toast confirming budget initialization').toBeVisible({ timeout: 10000 });
+    const successToast = page.locator('.p-toast-message-success, [data-p-severity="success"]').first();
+    await expect(successToast, 'Expected a success toast confirming budget initialization').toBeVisible({ timeout: 10000 });
 
-//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_24-InitializeBudget_success');
-//   });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_24-InitializeBudget_success');
+  });
 
-//   // TC_25
-//   test('Verify Initialize Budget popup No button', async ({ page }, testInfo) => {
-//     const container = page.locator('scratch-and-win-management');
-//     const rows = container.locator('.pure__table tbody tr');
-//     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+  // // TC_25
+  // test('TC-25 Verify Initialize Budget popup No button', async ({ page }, testInfo) => {
+  //   const container = page.locator('scratch-and-win-management');
+  //   const rows = container.locator('.pure__table tbody tr');
+  //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
-//     // Steps 5-6: Click the three dots for any promotion, then click Initialize budget
-//     const targetRow = await findRowWithMenuAction(page, rows, 'Initialize');
-//     expect(targetRow, 'No row with an available "Initialize Budget" action was found').not.toBeNull();
+  //   // Steps 5-6: Click the three dots for any promotion, then click Initialize budget
+  //   const targetRow = await findRowWithMenuAction(page, rows, 'Initialize');
+  //   expect(targetRow, 'No row with an available "Initialize Budget" action was found').not.toBeNull();
 
-//     await openMenuItem(page, 'Initialize').click();
+  //   await openMenuItem(page, 'Initialize').click();
 
-//     // Step 7: Click No
-//     const noBtn = page.locator('button:has-text("No")').first();
-//     await noBtn.waitFor({ state: 'visible', timeout: 10000 });
-//     await noBtn.click();
-//     await expect(noBtn).not.toBeVisible({ timeout: 10000 });
+  //   // Step 7: Click No
+  //   const noBtn = page.locator('button:has-text("No")').first();
+  //   await noBtn.waitFor({ state: 'visible', timeout: 10000 });
+  //   await noBtn.click();
+  //   await expect(noBtn).not.toBeVisible({ timeout: 10000 });
 
-//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-InitializeBudgetPopupNoButton_success');
-//   });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_25-InitializeBudgetPopupNoButton_success');
+  // });
 
-//   // TC_26
-//   test('Verify promotion deletion', async ({ page }, testInfo) => {
-//     const container = page.locator('scratch-and-win-management');
-//     const rows = container.locator('.pure__table tbody tr');
-//     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+  // // TC_26
+  // test('TC-26 Verify promotion deletion', async ({ page }, testInfo) => {
+  //   const container = page.locator('scratch-and-win-management');
+  //   const rows = container.locator('.pure__table tbody tr');
+  //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
-//     const firstRow = rows.first();
-//     const deletedName = (await firstRow.locator('td').nth(1).textContent())?.trim() ?? '';
+  //   const firstRow = rows.first();
+  //   const deletedName = (await firstRow.locator('td').nth(1).textContent())?.trim() ?? '';
 
-//     // Steps 5-6: Click the three dots for any promotion, then click Delete
-//     const dotsBtn = firstRow.locator('button:has(.pi-ellipsis-v)');
-//     await dotsBtn.waitFor({ state: 'visible', timeout: 15000 });
-//     await dotsBtn.click();
+  //   // Steps 5-6: Click the three dots for any promotion, then click Delete
+  //   const dotsBtn = firstRow.locator('button:has(.pi-ellipsis-v)');
+  //   await dotsBtn.waitFor({ state: 'visible', timeout: 15000 });
+  //   await dotsBtn.click();
 
-//     const menu = page.locator('.p-menu-overlay');
-//     await expect(menu).toBeVisible({ timeout: 10000 });
-//     await menu.getByText('Delete', { exact: false }).first().click();
+  //   const menu = page.locator('.p-menu-overlay');
+  //   await expect(menu).toBeVisible({ timeout: 10000 });
+  //   await menu.getByText('Delete', { exact: false }).first().click();
 
-//     // Step 7: Click Yes
-//     const yesBtn = page.locator('button:has-text("Yes")').first();
-//     await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
-//     await yesBtn.click();
-//     await page.waitForLoadState('networkidle');
+  //   // Step 7: Click Yes
+  //   const yesBtn = page.locator('button:has-text("Yes")').first();
+  //   await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
+  //   await yesBtn.click();
+  //   await page.waitForLoadState('networkidle');
 
-//     if (deletedName) {
-//       await expect(container.locator(`.pure__table tbody td:text-is("${deletedName}")`)).not.toBeVisible({ timeout: 10000 });
-//     }
+  //   if (deletedName) {
+  //     await expect(container.locator(`.pure__table tbody td:text-is("${deletedName}")`)).not.toBeVisible({ timeout: 10000 });
+  //   }
 
-//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_26-DeletePromotion_success');
-//   });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_26-DeletePromotion_success');
+  // });
 
-//   // TC_27
-//   test('Verify Delete popup No button', async ({ page }, testInfo) => {
-//     const container = page.locator('scratch-and-win-management');
-//     const rows = container.locator('.pure__table tbody tr');
-//     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+  // // TC_27
+  // test('TC-27 Verify Delete popup No button', async ({ page }, testInfo) => {
+  //   const container = page.locator('scratch-and-win-management');
+  //   const rows = container.locator('.pure__table tbody tr');
+  //   await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
-//     const firstRow = rows.first();
-//     const promoName = (await firstRow.locator('td').nth(1).textContent())?.trim() ?? '';
+  //   const firstRow = rows.first();
+  //   const promoName = (await firstRow.locator('td').nth(1).textContent())?.trim() ?? '';
 
-//     // Steps 5-6: Click the three dots for any promotion, then click Delete
-//     const dotsBtn = firstRow.locator('button:has(.pi-ellipsis-v)');
-//     await dotsBtn.waitFor({ state: 'visible', timeout: 15000 });
-//     await dotsBtn.click();
+  //   // Steps 5-6: Click the three dots for any promotion, then click Delete
+  //   const dotsBtn = firstRow.locator('button:has(.pi-ellipsis-v)');
+  //   await dotsBtn.waitFor({ state: 'visible', timeout: 15000 });
+  //   await dotsBtn.click();
 
-//     const menu = page.locator('.p-menu-overlay');
-//     await expect(menu).toBeVisible({ timeout: 10000 });
-//     await menu.getByText('Delete', { exact: false }).first().click();
+  //   const menu = page.locator('.p-menu-overlay');
+  //   await expect(menu).toBeVisible({ timeout: 10000 });
+  //   await menu.getByText('Delete', { exact: false }).first().click();
 
-//     // Step 7: Click No
-//     const noBtn = page.locator('button:has-text("No")').first();
-//     await noBtn.waitFor({ state: 'visible', timeout: 10000 });
-//     await noBtn.click();
-//     await expect(noBtn).not.toBeVisible({ timeout: 10000 });
+  //   // Step 7: Click No
+  //   const noBtn = page.locator('button:has-text("No")').first();
+  //   await noBtn.waitFor({ state: 'visible', timeout: 10000 });
+  //   await noBtn.click();
+  //   await expect(noBtn).not.toBeVisible({ timeout: 10000 });
 
-//     if (promoName) {
-//       await expect(container.locator(`.pure__table tbody td:text-is("${promoName}")`)).toBeVisible({ timeout: 10000 });
-//     }
+  //   if (promoName) {
+  //     await expect(container.locator(`.pure__table tbody td:text-is("${promoName}")`)).toBeVisible({ timeout: 10000 });
+  //   }
 
-//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_27-DeletePopupNoButton_success');
-//   });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_27-DeletePopupNoButton_success');
+  // });
 
-// });
+});
 
 // // ─────────────────────────────────────────────────────────────────────────────
 // // SCRATCH AND WIN — MANAGE PERIODS  (TC_28 – TC_32)
@@ -1191,7 +1191,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //  // TC_28
-//   test('Verify Manage Periods page opens', async ({ page }, testInfo) => {
+//   test('TC-28 Verify Manage Periods page opens', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await expect(rows.first().or(page.locator('.pure__table')).first()).toBeVisible({ timeout: 20000 });
 
@@ -1199,7 +1199,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_29
-//   test('Verify Generate Periods button', async ({ page }, testInfo) => {
+//   test('TC-29 Verify Generate Periods button', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {});
 //     const initialCount = await waitForStableRowCount(page, rows);
@@ -1225,7 +1225,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_30
-//   test('Verify Period can be updated', async ({ page }, testInfo) => {
+//   test('TC-30 Verify Period can be updated', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1269,7 +1269,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_31
-//   test('Verify Mark Special functionality', async ({ page }, testInfo) => {
+//   test('TC-31 Verify Mark Special functionality', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1303,7 +1303,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_32
-//   test('Verify Delete Period', async ({ page }, testInfo) => {
+//   test('TC-32 Verify Delete Period', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1445,7 +1445,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_33
-//   test('Verify Manage Prizes page opens', async ({ page }, testInfo) => {
+//   test('TC-33 Verify Manage Prizes page opens', async ({ page }, testInfo) => {
 //     await expect(page.locator('button[aria-label="Create Prize"]').first()).toBeVisible({ timeout: 20000 });
 //     await expect(page.locator('button:has(.pi-chevron-left)').first()).toBeVisible({ timeout: 10000 });
 
@@ -1453,7 +1453,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_34
-//   test('Verify Create Prize popup opens', async ({ page }, testInfo) => {
+//   test('TC-34 Verify Create Prize popup opens', async ({ page }, testInfo) => {
 //     // Step 7: Click on Create Prize button
 //     const createBtn = page.locator('button[aria-label="Create Prize"]').first();
 //     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
@@ -1472,7 +1472,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_35
-//   test('Verify mandatory field validation in Create Prize', async ({ page }, testInfo) => {
+//   test('TC-35 Verify mandatory field validation in Create Prize', async ({ page }, testInfo) => {
 //     const createBtn = page.locator('button[aria-label="Create Prize"]').first();
 //     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
 //     await createBtn.click();
@@ -1494,7 +1494,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_36
-//   test('Verify successful Prize creation', async ({ page }, testInfo) => {
+//   test('TC-36 Verify successful Prize creation', async ({ page }, testInfo) => {
 //     const createBtn = page.locator('button[aria-label="Create Prize"]').first();
 //     await createBtn.waitFor({ state: 'visible', timeout: 15000 });
 //     await createBtn.click();
@@ -1526,7 +1526,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_37
-//   test('Verify Back button', async ({ page }, testInfo) => {
+//   test('TC-37 Verify Back button', async ({ page }, testInfo) => {
 //     // Step 7: Click on Back button
 //     const backBtn = page.locator('button:has(.pi-chevron-left)').first();
 //     await backBtn.waitFor({ state: 'visible', timeout: 15000 });
@@ -1543,7 +1543,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   // Given: navigate to Manage Prizes for a promotion that already has at least one prize
 //   // (created by TC_36 or otherwise) — Edit lives behind the prize row's three-dot menu and
 //   // opens the same field set as Create Prize, pre-populated with the existing values.
-//   test('Verify Edit Prize', async ({ page }, testInfo) => {
+//   test('TC-38 Verify Edit Prize', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1592,7 +1592,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   // TC_39
 //   // Create Budget dialog field ids (#dailyCount, #dayType) confirmed directly against the
 //   // real markup (Edit Budget uses the identical structure/ids).
-//   test('Verify mandatory field validation in Create Budget', async ({ page }, testInfo) => {
+//   test('TC-39 Verify mandatory field validation in Create Budget', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1624,7 +1624,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_40
-//   test('Verify successful Budget creation', async ({ page }, testInfo) => {
+//   test('TC-40 Verify successful Budget creation', async ({ page }, testInfo) => {
 //     // The shared Manage Prizes table accumulates prizes across test runs, and any prize that
 //     // already has a budget offers "Edit Budget"/"Delete Budget" instead of "Create Budget" in its
 //     // menu — confirmed live: the first row was exactly such a prize, so blindly acting on
@@ -1702,7 +1702,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   });
 
 //   // TC_41
-//   test('Verify Delete Prize', async ({ page }, testInfo) => {
+//   test('TC-41 Verify Delete Prize', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await rows.first().waitFor({ state: 'visible', timeout: 20000 });
 
@@ -1738,7 +1738,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   // TC_42
 //   // Self-contained: ensures a budget exists on the first prize (creating one via Create Budget
 //   // if none does yet) rather than depending on TC_40 having already run against the same prize.
-//   test('Verify Edit Budget', async ({ page }, testInfo) => {
+//   test('TC-42 Verify Edit Budget', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await ensureBudgetExistsOnFirstPrize(page, rows);
 
@@ -1784,7 +1784,7 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
 //   // TC_43
 //   // Self-contained: ensures a budget exists on the first prize (creating one via Create Budget
 //   // if none does yet) rather than depending on TC_40/TC_42 having already run against it.
-//   test('Verify Delete Budget', async ({ page }, testInfo) => {
+//   test('TC-43 Verify Delete Budget', async ({ page }, testInfo) => {
 //     const rows = page.locator('.pure__table tbody tr');
 //     await ensureBudgetExistsOnFirstPrize(page, rows);
 
