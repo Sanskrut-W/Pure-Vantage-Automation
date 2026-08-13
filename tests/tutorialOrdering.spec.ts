@@ -58,9 +58,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_tutorial_ordering_structure');
     });
 
-    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
-    //  Toggle Tests (Serial â€” toggle mutations affect shared state)
-    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
+    // // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
+    // //  Toggle Tests (Serial â€” toggle mutations affect shared state)
+    // // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
 
     test.describe.serial('Toggle Tests', () => {
 
@@ -138,9 +138,9 @@ test.describe('Tutorial Ordering Tests', () => {
         });
     });
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Drag-and-Drop Tests (Independent â€” each starts fresh)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // //  Drag-and-Drop Tests (Independent â€” each starts fresh)
+    // // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-9 Verify Logged In List: Drag-and-Drop to adjacent position', async ({ page, tutorialOrderingPage }, testInfo) => {
         await tutorialOrderingPage.selectRegion(REGION);
