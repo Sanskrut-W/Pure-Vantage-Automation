@@ -45,13 +45,19 @@ export class TutorialOrderingPage extends BasePage {
         await this.selectDropdown(this.regionDropdown, regionName);
         // Wait for all region-data API calls to complete before continuing
         await this.page.waitForLoadState('networkidle');
-        // Then wait until the Logged In table actually has rows — this is the
+        // Then wait until both ordering tables actually have rows — this is the
         // true signal that the page content has finished loading for the region.
-        try {
-            await this.loggedInTable.locator('tbody tr').first()
-                .waitFor({ state: 'visible', timeout: 30000 });
-        } catch {
-            console.log(`selectRegion('${regionName}'): LoggedIn table is empty for this region`);
+        // Waiting on LoggedIn alone left LoggedOut's own load race unguarded.
+        for (const [label, table] of [
+            ['LoggedIn', this.loggedInTable],
+            ['LoggedOut', this.loggedOutTable],
+        ] as const) {
+            try {
+                await table.locator('tbody tr:not(.p-datatable-emptymessage)').first()
+                    .waitFor({ state: 'visible', timeout: 30000 });
+            } catch {
+                console.log(`selectRegion('${regionName}'): ${label} table is empty for this region`);
+            }
         }
     }
 
@@ -86,14 +92,41 @@ export class TutorialOrderingPage extends BasePage {
 
     // ─── Row counts ──────────────────────────────────────────────────────────
 
+    // PrimeVue renders a "No Data Found" placeholder as a real <tr> (class
+    // p-datatable-emptymessage) while the region's data is still being fetched —
+    // every other page object in this suite already excludes it (see
+    // MessageTemplatesPage.getRowCount, NotificationSchedulePage.getRowCount, etc.).
+    // Without the exclusion that placeholder row is itself a stable, unchanging
+    // "row" that satisfies a naive first-row-visible + count-stabilizes check
+    // immediately, well before the real data ever loads — so both the wait and
+    // the count below must only ever look at genuine data rows.
+    private async waitForStableRowCount(table: Locator, timeoutMs: number = 30000): Promise<number> {
+        const dataRows = table.locator('tbody tr:not(.p-datatable-emptymessage)');
+        try {
+            await dataRows.first().waitFor({ state: 'visible', timeout: timeoutMs });
+        } catch {
+            return 0;
+        }
+        const deadline = Date.now() + timeoutMs;
+        let previousCount = -1;
+        while (Date.now() < deadline) {
+            const currentCount = await dataRows.count();
+            if (currentCount === previousCount) {
+                return currentCount;
+            }
+            previousCount = currentCount;
+            await this.page.waitForTimeout(300);
+        }
+        return previousCount;
+    }
+
     async getRowCount(listType: 'LoggedIn' | 'LoggedOut'): Promise<number> {
         const table = listType === 'LoggedIn' ? this.loggedInTable : this.loggedOutTable;
-        try {
-            await table.locator('tbody tr').first().waitFor({ state: 'visible' });
-        } catch {
+        const count = await this.waitForStableRowCount(table);
+        if (count === 0) {
             console.log(`No rows visible in ${listType} list.`);
         }
-        return await table.locator('tbody tr').count();
+        return count;
     }
 
     // ─── Reading row data ─────────────────────────────────────────────────────

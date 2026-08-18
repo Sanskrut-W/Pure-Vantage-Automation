@@ -151,7 +151,11 @@ export class ManualCompsPage extends BasePage {
             await this.fillAccountId(accountId);
         }
         if (!skip.includes('mobileNumber')) {
-            await this.fillMobileNumber(overrides?.mobileNumber ?? String(Date.now()).slice(-9));
+            // Must carry the "27" (South Africa) prefix the app's validator expects — confirmed
+            // against test-data/bulk_comp.csv's real, accepted MobileNumber values (e.g.
+            // "271324555"). A plain timestamp slice has no such prefix and always fails
+            // validation ("Field must be a valid mobile number"), leaving Save disabled forever.
+            await this.fillMobileNumber(overrides?.mobileNumber ?? ('27' + String(Date.now()).slice(-7)));
         }
         if (!skip.includes('compValue')) {
             await this.fillCompValue('1');

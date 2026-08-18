@@ -3899,6 +3899,10 @@ test.describe('Marketing - Generic Wheel', () => {
     const prizeContainer84 = page.locator('generic-wheel-promotion-prizes');
     await prizeContainer84.waitFor({ state: 'visible', timeout: 20000 });
 
+    // The container becomes visible before its prize rows finish loading (async fetch) —
+    // count()'d immediately, rowsBefore84 could read 0 while the table is still populating,
+    // then read as changed once the fetch resolves during the dialog interaction that follows.
+    await prizeContainer84.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     const rowsBefore84 = await prizeContainer84.locator('tbody tr[data-pc-section="bodyrow"]').count();
 
     await page.locator('button[aria-label="Create Prize"]').click();
@@ -3933,6 +3937,10 @@ test.describe('Marketing - Generic Wheel', () => {
     const prizeContainer85 = page.locator('generic-wheel-promotion-prizes');
     await prizeContainer85.waitFor({ state: 'visible', timeout: 20000 });
 
+    // The container becomes visible before its prize rows finish loading (async fetch) —
+    // count()'d immediately, rowsBefore85 could read 0 while the table is still populating,
+    // then read as changed once the fetch resolves during the dialog interaction that follows.
+    await prizeContainer85.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     const rowsBefore85 = await prizeContainer85.locator('tbody tr[data-pc-section="bodyrow"]').count();
 
     await page.locator('button[aria-label="Create Prize"]').click();

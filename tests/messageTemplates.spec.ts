@@ -266,7 +266,7 @@ test.describe('Message Templates Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-16_msg_tmpl_after_save');
     });
 
-    test('TC-17 Verify mandatory field validation on Update Message Template popup', async ({ page, messageTemplatesPage }, testInfo) => {
+    test('TC-17 Verify Template Name is not editable on Update, and changing another field still saves successfully', async ({ page, messageTemplatesPage }, testInfo) => {
         await messageTemplatesPage.selectRegion(REGION);
 
         const rowCount = await messageTemplatesPage.getRowCount();
@@ -277,18 +277,60 @@ test.describe('Message Templates Tests', () => {
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });
 
-        // Clear the Template Name field (editable text input, NOT the readonly dropdown inputs)
+        // Confirmed live: unlike the New Template popup, Template Name is rendered
+        // `disabled=""` on Update — .clear()/.fill() can never actually change it, so mandatory-
+        // field validation can't be exercised through this field here. Assert that disabled
+        // state directly (documenting why), then exercise validation through a field that's
+        // actually editable instead.
         const nameInput = dialog.locator('input#templateName');
-        await nameInput.clear();
+        await expect(nameInput, 'Expected Template Name to be disabled on the Update popup').toBeDisabled();
+        const originalName = await nameInput.inputValue();
+        expect(originalName.trim().length, 'Expected Template Name to be pre-filled').toBeGreaterThan(0);
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_msg_tmpl_field_cleared');
+        // Edit the Notification Type dropdown instead — pick an option different from whatever
+        // is currently selected, since re-picking the same one wouldn't be a real change (the
+        // same pitfall confirmed live on Segmentation's Field/Operator dropdowns).
+        const notificationTypeDropdown = dialog.locator('#notificationType');
+        const currentLabel = (await notificationTypeDropdown.locator('.p-dropdown-label').first().textContent())?.trim() ?? '';
+        await notificationTypeDropdown.click();
 
-        // Save button must become disabled when mandatory field is empty
+        const options = page.locator('.p-dropdown-panel .p-dropdown-item');
+        await options.first().waitFor({ state: 'visible', timeout: 5000 });
+
+        const optionCount = await options.count();
+        let pickedDifferentOption = false;
+        for (let i = 0; i < optionCount; i++) {
+            const text = (await options.nth(i).textContent())?.trim() ?? '';
+            if (text && text !== currentLabel) {
+                await options.nth(i).click();
+                pickedDifferentOption = true;
+                break;
+            }
+        }
+        expect(pickedDifferentOption, 'Expected at least one Notification Type option different from the current selection').toBe(true);
+        await page.waitForTimeout(300);
+
+        // Template Name must still be exactly what it was — untouched and still disabled.
+        await expect(nameInput, 'Expected Template Name to remain unchanged after editing a different field').toHaveValue(originalName);
+        await expect(nameInput, 'Expected Template Name to still be disabled').toBeDisabled();
+
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_other_field_edited');
+
         const saveBtn = dialog.locator('button[aria-label="Save"]');
-        await expect(saveBtn).toBeDisabled({ timeout: 3000 });
+        await expect(saveBtn, 'Expected Save to be enabled — Template Name is still valid').not.toBeDisabled({ timeout: 5000 });
+        await saveBtn.click();
+        await page.waitForLoadState('networkidle');
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_msg_tmpl_validation_error');
-        await messageTemplatesPage.closeDialogWithCancel();
+        await expect(dialog, 'Expected the Update popup to close after Save').not.toBeVisible({ timeout: 10000 });
+
+        // The template — still under its original, unchanged name — must still be listed.
+        await messageTemplatesPage.searchFor(originalName);
+        const rowsAfter = await messageTemplatesPage.getRowCount();
+        expect(rowsAfter, 'Expected the template to still be listed under its unchanged Template Name').toBeGreaterThanOrEqual(1);
+
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_saved');
+        console.log(`✅ TC-17 PASSED — Template Name stayed "${originalName}" (disabled, unchanged); Notification Type changed from "${currentLabel}" and saved successfully.`);
+        await messageTemplatesPage.clearSearch();
     });
 
     test('TC-18 Verify fields on the New Message Template popup', async ({ page, messageTemplatesPage }, testInfo) => {
@@ -344,7 +386,10 @@ test.describe('Message Templates Tests', () => {
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });
 
-        const NEW_TEMPLATE_NAME = 'AutoTest_TC20_Template';
+        // Must be unique per run — the app rejects Save with a duplicate Template Name, and a
+        // hardcoded literal here collides with itself on every re-run (and across parallel
+        // workers/retries).
+        const NEW_TEMPLATE_NAME = `AutoTest_TC20_Template_${CommonUtils.generateRandomString(8)}`;
         // PrimeVue renders visible options as li.p-dropdown-item in an overlay panel
         const dropdownItem = page.locator('.p-dropdown-panel .p-dropdown-item').first();
 
@@ -428,7 +473,10 @@ test.describe('Message Templates Tests', () => {
         const rowCount = await messageTemplatesPage.getRowCount();
         expect(rowCount).toBeGreaterThan(0);
 
-        await messageTemplatesPage.clickConfigFirst();
+        // Target a Push-type row specifically — the Configure popup's rich text editor and
+        // inline Preview card only render for Push templates; a stray SMS-type row sorting to
+        // the top (by Modified Date) would silently break these assertions otherwise.
+        await messageTemplatesPage.clickConfigForType('Push');
 
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });
@@ -456,7 +504,10 @@ test.describe('Message Templates Tests', () => {
         const rowCount = await messageTemplatesPage.getRowCount();
         expect(rowCount).toBeGreaterThan(0);
 
-        await messageTemplatesPage.clickConfigFirst();
+        // Target a Push-type row specifically — the Configure popup's rich text editor and
+        // inline Preview card only render for Push templates; a stray SMS-type row sorting to
+        // the top (by Modified Date) would silently break these assertions otherwise.
+        await messageTemplatesPage.clickConfigForType('Push');
 
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });
@@ -526,7 +577,10 @@ test.describe('Message Templates Tests', () => {
         const rowCount = await messageTemplatesPage.getRowCount();
         expect(rowCount).toBeGreaterThan(0);
 
-        await messageTemplatesPage.clickConfigFirst();
+        // Target a Push-type row specifically — the Configure popup's rich text editor and
+        // inline Preview card only render for Push templates; a stray SMS-type row sorting to
+        // the top (by Modified Date) would silently break these assertions otherwise.
+        await messageTemplatesPage.clickConfigForType('Push');
 
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });
@@ -546,7 +600,10 @@ test.describe('Message Templates Tests', () => {
         const rowCount = await messageTemplatesPage.getRowCount();
         expect(rowCount).toBeGreaterThan(0);
 
-        await messageTemplatesPage.clickConfigFirst();
+        // Target a Push-type row specifically — the Configure popup's rich text editor and
+        // inline Preview card only render for Push templates; a stray SMS-type row sorting to
+        // the top (by Modified Date) would silently break these assertions otherwise.
+        await messageTemplatesPage.clickConfigForType('Push');
 
         const dialog = page.locator('div.p-dialog').first();
         await expect(dialog).toBeVisible({ timeout: 10000 });

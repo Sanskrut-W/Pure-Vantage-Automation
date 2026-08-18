@@ -74,6 +74,23 @@ export class MessageTemplatesPage extends BasePage {
         await this.page.waitForTimeout(500);
     }
 
+    /**
+     * Opens the Configure Template popup for the first row of a given Type (e.g. "Push"),
+     * falling back to the first row overall if none matches. clickConfigFirst() blindly opens
+     * whatever row is first in Modified Date order — but the Configure popup's rich text
+     * editor and inline Preview card only render for certain template types (confirmed: an
+     * SMS-type row's popup has neither), so a stray SMS/etc. template sorting to the top
+     * silently breaks any test asserting on those elements. Targeting a known type sidesteps
+     * that data churn instead of assuming row order.
+     */
+    async clickConfigForType(type: string) {
+        const rows = this.dataTable.locator('tbody tr');
+        const typedRow = rows.filter({ has: this.page.locator(`td:nth-child(2):text-is("${type}")`) }).first();
+        const target = (await typedRow.count()) > 0 ? typedRow : rows.first();
+        await this.clickElement(target.locator(messageTemplatesLocators.configBtn));
+        await this.page.waitForTimeout(500);
+    }
+
     async clickDuplicateFirst() {
         await this.clickElement(this.duplicateBtn.first());
         await this.page.waitForTimeout(500);
