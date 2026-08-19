@@ -359,6 +359,20 @@ export class CashbackPage extends BasePage {
         await this.fillNumericField(field, percentage);
     }
 
+    /** Reads back the Comp Percentage field's current value (e.g. to check whether the
+     * framework clamped an out-of-range entry once the field lost focus). */
+    async getCompPercentageValueInDialog(dialog: Locator): Promise<string> {
+        const field = await this.resolveInputByLabel(dialog, cashbackLocators.fieldCompPercentage);
+        return (await field.inputValue().catch(() => '')).trim();
+    }
+
+    /** Clicks into the Min Comp Amount field — used purely to move focus away from another
+     * field (e.g. to force its blur/validation to run) without changing its value. */
+    async clickAnotherFieldInDialog(dialog: Locator) {
+        const otherField = await this.resolveInputByLabel(dialog, cashbackLocators.fieldMinCompAmount);
+        await otherField.click().catch(() => {});
+    }
+
     async selectExecutionFrequencyInDialog(dialog: Locator, frequency: string) {
         console.log(`Selecting execution frequency: "${frequency}"`);
         const dropdown = dialog.getByLabel(cashbackLocators.fieldExecutionFrequency);
@@ -428,10 +442,24 @@ export class CashbackPage extends BasePage {
         await this.pickCalendarDay(dialog, 1, true, '01/12/2026 00:00');
     }
 
-    /** Picks an end date that comes BEFORE the current start date (for date-validation tests). */
+    /**
+     * Sets an End Date that comes BEFORE the current Start Date (for date-validation tests).
+     * Deliberately bypasses pickCalendarDay's "click the first enabled day" flow — the End
+     * Date picker disables every day earlier than Start Date client-side, so clicking the
+     * panel's own first non-disabled day can only ever land on a VALID date (>= Start Date),
+     * never the invalid one this test needs. Typing the date directly into the input sidesteps
+     * that guard so the actually-invalid value reaches Save.
+     */
     async setEndDateBeforeStartDateInDialog(dialog: Locator) {
         console.log('Setting end date to BEFORE start date (for validation test)...');
-        await this.pickCalendarDay(dialog, 1, false, '01/01/2026 00:00');
+        const calendarInput = dialog.locator('.p-calendar input').nth(1);
+        await calendarInput.click();
+        await this.page.waitForTimeout(200);
+        await calendarInput.fill('01/01/2026 00:00');
+        await this.page.keyboard.press('Tab');
+        await this.page.waitForTimeout(200);
+        await dialog.locator('.p-dialog-title').click({ force: true }).catch(() => {});
+        await this.page.waitForTimeout(200);
     }
 
     /** Picks a next execution date (future date via the third calendar in the dialog). */
