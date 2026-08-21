@@ -27,57 +27,57 @@ test.describe('Manual Comps', () => {
         await navigateToManualComps(page, sidebarPage, manualCompsPage);
     });
 
-    // test('TC-1 Verify Manual Comps page is accessible', async ({ page, manualCompsPage }, testInfo) => {
-    //     await expect(manualCompsPage.createManualCompBtn).toBeVisible();
+    test('TC-1 Verify Manual Comps page is accessible', async ({ page, manualCompsPage }, testInfo) => {
+        await expect(manualCompsPage.createManualCompBtn).toBeVisible();
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1_manual_comps_page_accessible');
-    //     console.log('✅ TC-1 PASSED — Manual Comps page is accessible with its Create Manual Comp button.');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-1_manual_comps_page_accessible');
+        console.log('✅ TC-1 PASSED — Manual Comps page is accessible with its Create Manual Comp button.');
+    });
 
-    // test('TC-2 Verify Create Manual Comp popup opens with all 6 fields', async ({ page, manualCompsPage }, testInfo) => {
-    //     await manualCompsPage.clickCreateManualComp();
-    //     await manualCompsPage.waitForPopupLoad();
+    test('TC-2 Verify Create Manual Comp popup opens with all 6 fields', async ({ page, manualCompsPage }, testInfo) => {
+        await manualCompsPage.clickCreateManualComp();
+        await manualCompsPage.waitForPopupLoad();
 
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Comp Code *")')).toBeVisible();
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Region Code *")')).toBeVisible();
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Account ID *")')).toBeVisible();
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Mobile Number *")')).toBeVisible();
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Comp Value *")')).toBeVisible();
-    //     await expect(manualCompsPage.dialog.locator('label:text-is("Comp Free Bets *")')).toBeVisible();
-    //     await expect(manualCompsPage.saveBtn).toBeVisible();
-    //     await expect(manualCompsPage.cancelBtn).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Comp Code *")')).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Region Code *")')).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Account ID *")')).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Mobile Number *")')).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Comp Value *")')).toBeVisible();
+        await expect(manualCompsPage.dialog.locator('label:text-is("Comp Free Bets *")')).toBeVisible();
+        await expect(manualCompsPage.saveBtn).toBeVisible();
+        await expect(manualCompsPage.cancelBtn).toBeVisible();
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_create_manual_comp_popup_structure');
-    //     console.log('✅ TC-2 PASSED — Create Manual Comp popup shows all 6 fields.');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_create_manual_comp_popup_structure');
+        console.log('✅ TC-2 PASSED — Create Manual Comp popup shows all 6 fields.');
+    });
 
-    // test('TC-3 Verify Save stays disabled until every mandatory field is filled', async ({ page, manualCompsPage }, testInfo) => {
-    //     await manualCompsPage.clickCreateManualComp();
-    //     await manualCompsPage.waitForPopupLoad();
+    test('TC-3 Verify Save stays disabled until every mandatory field is filled', async ({ page, manualCompsPage }, testInfo) => {
+        await manualCompsPage.clickCreateManualComp();
+        await manualCompsPage.waitForPopupLoad();
 
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to start disabled').toBe(false);
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to start disabled').toBe(false);
 
-    //     await manualCompsPage.selectFirstAvailableCompCode();
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Region Code/Account ID/Mobile Number/Comp Value/Comp Free Bets').toBe(false);
+        await manualCompsPage.selectFirstAvailableCompCode();
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Region Code/Account ID/Mobile Number/Comp Value/Comp Free Bets').toBe(false);
 
-    //     await manualCompsPage.selectFirstAvailableRegionCode();
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Account ID/Mobile Number/Comp Value/Comp Free Bets').toBe(false);
+        await manualCompsPage.selectFirstAvailableRegionCode();
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Account ID/Mobile Number/Comp Value/Comp Free Bets').toBe(false);
 
-    //     await manualCompsPage.fillAccountId(CommonUtils.generateUUID());
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Mobile Number/Comp Value/Comp Free Bets').toBe(false);
+        await manualCompsPage.fillAccountId(CommonUtils.generateUUID());
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Mobile Number/Comp Value/Comp Free Bets').toBe(false);
 
-    //     await manualCompsPage.fillMobileNumber('1234567890');
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Comp Value/Comp Free Bets').toBe(false);
+        await manualCompsPage.fillMobileNumber('1234567890');
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Comp Value/Comp Free Bets').toBe(false);
 
-    //     await manualCompsPage.fillCompValue('1');
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Comp Free Bets').toBe(false);
+        await manualCompsPage.fillCompValue('1');
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to still be disabled without Comp Free Bets').toBe(false);
 
-    //     await manualCompsPage.fillCompFreeBets('0');
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to enable once every mandatory field is filled').toBe(true);
+        await manualCompsPage.fillCompFreeBets('0');
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to enable once every mandatory field is filled').toBe(true);
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_save_enabled_after_mandatory_fields');
-    //     console.log('✅ TC-3 PASSED — Save correctly stays disabled until every mandatory field is filled.');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_save_enabled_after_mandatory_fields');
+        console.log('✅ TC-3 PASSED — Save correctly stays disabled until every mandatory field is filled.');
+    });
 
     test('TC-4 Verify Account ID must be a valid GUID', async ({ page, manualCompsPage }, testInfo) => {
         await manualCompsPage.clickCreateManualComp();
@@ -94,20 +94,20 @@ test.describe('Manual Comps', () => {
         console.log('✅ TC-4 PASSED — Account ID correctly requires a valid GUID.');
     });
 
-    // test('TC-5 Verify Mobile Number only accepts integers', async ({ page, manualCompsPage }, testInfo) => {
-    //     await manualCompsPage.clickCreateManualComp();
-    //     await manualCompsPage.waitForPopupLoad();
+    test('TC-5 Verify Mobile Number only accepts integers', async ({ page, manualCompsPage }, testInfo) => {
+        await manualCompsPage.clickCreateManualComp();
+        await manualCompsPage.waitForPopupLoad();
 
-    //     await manualCompsPage.fillMandatoryFields({ skip: ['mobileNumber'] });
-    //     await manualCompsPage.fillMobileNumber('abc123def');
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to stay disabled with a non-integer Mobile Number').toBe(false);
+        await manualCompsPage.fillMandatoryFields({ skip: ['mobileNumber'] });
+        await manualCompsPage.fillMobileNumber('abc123def');
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to stay disabled with a non-integer Mobile Number').toBe(false);
 
-    //     await manualCompsPage.fillMobileNumber('1234567890123');
-    //     expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to enable once Mobile Number is all integers, regardless of length').toBe(true);
+        await manualCompsPage.fillMobileNumber('1234567890123');
+        expect(await manualCompsPage.isSaveEnabled(), 'Expected Save to enable once Mobile Number is all integers, regardless of length').toBe(true);
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_mobile_number_integer_validation');
-    //     console.log('✅ TC-5 PASSED — Mobile Number correctly requires integers only, of any length.');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_mobile_number_integer_validation');
+        console.log('✅ TC-5 PASSED — Mobile Number correctly requires integers only, of any length.');
+    });
 
     test('TC-6 Verify Comp Value must be at least 1', async ({ page, manualCompsPage }, testInfo) => {
         await manualCompsPage.clickCreateManualComp();
@@ -136,20 +136,20 @@ test.describe('Manual Comps', () => {
         console.log('✅ TC-7 PASSED — Comp Free Bets correctly allows 0 (not less than 0).');
     });
 
-    // test('TC-8 Verify Cancel button discards data', async ({ page, manualCompsPage }, testInfo) => {
-    //     await manualCompsPage.clickCreateManualComp();
-    //     await manualCompsPage.waitForPopupLoad();
+    test('TC-8 Verify Cancel button discards data', async ({ page, manualCompsPage }, testInfo) => {
+        await manualCompsPage.clickCreateManualComp();
+        await manualCompsPage.waitForPopupLoad();
 
-    //     const discardedAccountId = CommonUtils.generateUUID();
-    //     await manualCompsPage.fillMandatoryFields({ accountId: discardedAccountId });
-    //     await manualCompsPage.clickCancel();
+        const discardedAccountId = CommonUtils.generateUUID();
+        await manualCompsPage.fillMandatoryFields({ accountId: discardedAccountId });
+        await manualCompsPage.clickCancel();
 
-    //     await expect(manualCompsPage.dialog).toBeHidden();
-    //     await expect(page.getByText(discardedAccountId)).toHaveCount(0);
+        await expect(manualCompsPage.dialog).toBeHidden();
+        await expect(page.getByText(discardedAccountId)).toHaveCount(0);
 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_cancel_discards_data');
-    //     console.log('✅ TC-8 PASSED — Cancel correctly discarded the entered data.');
-    // });
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_cancel_discards_data');
+        console.log('✅ TC-8 PASSED — Cancel correctly discarded the entered data.');
+    });
 
     test('TC-9 Verify creating a Manual Comp shows a success toast', async ({ page, manualCompsPage }, testInfo) => {
         await manualCompsPage.clickCreateManualComp();

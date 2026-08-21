@@ -24,6 +24,8 @@ import { PlayerTaggingPage } from '../pages/PlayerTaggingPage';
 import { PlayerTaggingLogsPage } from '../pages/PlayerTaggingLogsPage';
 import { SegmentTaggingPage } from '../pages/SegmentTaggingPage';
 import { TagConfigPage } from '../pages/TagConfigPage';
+import { AutoOptinPage } from '../pages/AutoOptinPage';
+import { OptinExpiryPage } from '../pages/OptinExpiryPage';
 import { TutorialConfigPage } from '../pages/TutorialConfigPage';
 import { TutorialOrderingPage } from '../pages/TutorialOrderingPage';
 import { CompAlertsPage } from '../pages/CompAlertsPage';
@@ -76,6 +78,8 @@ type MyFixtures = {
     playerTaggingLogsPage: PlayerTaggingLogsPage;
     segmentTaggingPage: SegmentTaggingPage;
     tagConfigPage: TagConfigPage;
+    autoOptinPage: AutoOptinPage;
+    optinExpiryPage: OptinExpiryPage;
     tutorialConfigPage: TutorialConfigPage;
     tutorialOrderingPage: TutorialOrderingPage;
     compAlertsPage: CompAlertsPage;
@@ -272,6 +276,18 @@ export const test = base.extend<MyFixtures>({
     tagConfigPage: async ({ page, authenticatedSession }, use) => {
         const tagConfigPage = new TagConfigPage(page);
         await use(tagConfigPage);
+    },
+
+    // Instantiate and provide AutoOptinPage
+    autoOptinPage: async ({ page, authenticatedSession }, use) => {
+        const autoOptinPage = new AutoOptinPage(page);
+        await use(autoOptinPage);
+    },
+
+    // Instantiate and provide OptinExpiryPage
+    optinExpiryPage: async ({ page, authenticatedSession }, use) => {
+        const optinExpiryPage = new OptinExpiryPage(page);
+        await use(optinExpiryPage);
     },
 
     // Instantiate and provide TutorialConfigPage

@@ -56,6 +56,9 @@ export class SidebarPage extends BasePage {
     readonly notificationScheduleNode: Locator;
     readonly formBuilderConfigNode: Locator;
     readonly stencilConfigNode: Locator;
+    readonly optInConfigurationNode: Locator;
+    readonly autoOptInConfigNode: Locator;
+    readonly optInExpiryNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -121,6 +124,9 @@ export class SidebarPage extends BasePage {
         this.formBuilderNode              = menu(sidebarLocators.menuFormBuilder);
         this.systemAdminNode              = menu(sidebarLocators.menuSystemAdmin);
         this.stencilConfigNode            = menu(sidebarLocators.menuStencilConfig);
+        this.optInConfigurationNode       = menu(sidebarLocators.menuOptInConfiguration);
+        this.autoOptInConfigNode          = menu(sidebarLocators.menuAutoOptInConfig);
+        this.optInExpiryNode              = menu(sidebarLocators.menuOptInExpiry);
     }
 
     /**
@@ -454,6 +460,30 @@ export class SidebarPage extends BasePage {
         await this.page.waitForTimeout(500); // Wait for Tag Management menu to fully expand
         await this.tagConfigNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.tagConfigNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToAutoOptInConfig() {
+        console.log('Navigating via Sidebar: Marketing -> Opt In Configuration -> Auto Opt In Config');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+        await this.optInConfigurationNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.optInConfigurationNode);
+        await this.page.waitForTimeout(500); // Wait for Opt In Configuration menu to fully expand
+        await this.autoOptInConfigNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.autoOptInConfigNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToOptInExpiry() {
+        console.log('Navigating via Sidebar: Marketing -> Opt In Configuration -> Opt In Expiry');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+        await this.optInConfigurationNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.optInConfigurationNode);
+        await this.page.waitForTimeout(500); // Wait for Opt In Configuration menu to fully expand
+        await this.optInExpiryNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.optInExpiryNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

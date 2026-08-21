@@ -55,4 +55,7 @@ export const sidebarLocators = {
     menuNotificationSchedule: 'Notification Schedule',
     menuFormBuilderConfig: 'Form Builder Configuration',
     menuStencilConfig: 'Stencil Configuration',
+    menuOptInConfiguration: 'Opt In Configuration',
+    menuAutoOptInConfig: 'Auto Opt In Config',
+    menuOptInExpiry: 'Opt In Expiry',
 };
