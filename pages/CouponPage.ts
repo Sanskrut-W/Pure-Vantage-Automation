@@ -58,9 +58,12 @@ export class CouponPage extends BasePage {
         this.selectRequirementTypeDropdown = page.locator(couponLocators.selectRequirementTypeDropdown);
         this.createBtn = page.getByRole('button', { name: couponLocators.createBtn });
         this.couponTable = page.locator(couponLocators.couponTable);
+        // Row actions are NOT standalone named buttons — confirmed live: each row has a single
+        // unlabeled "..." trigger (button.pure__table-menu-trigger, icon pi-ellipsis-v) that opens
+        // a menu with Edit/Region Requirements/Copy/Coupon Players/Payout Status/Schedule/Delete.
         this.deleteBtn = page.getByRole('button', { name: couponLocators.buttonDelete, exact: true });
         this.editBtn = page.getByRole('button', { name: couponLocators.buttonEdit, exact: true });
-        this.ellipsisMenuBtn = page.getByRole('button', { name: couponLocators.buttonOptions, exact: true });
+        this.ellipsisMenuBtn = page.locator('button.pure__table-menu-trigger');
         this.paginatorNext = page.locator(couponLocators.paginatorNext);
         this.paginatorPrev = page.locator(couponLocators.paginatorPrev);
         this.paginatorPages = page.locator(couponLocators.paginatorPages);
@@ -69,15 +72,15 @@ export class CouponPage extends BasePage {
         /////// Popup Dialog Locators ///////
         this.popupDialog = page.locator(couponLocators.popupDialog);
         this.popupTitle = page.locator(couponLocators.popupTitle);
-        this.couponNameInput = page.getByLabel(couponLocators.couponNameInput);
-        this.couponGroupInput = page.getByLabel(couponLocators.couponGroupInput);
-        this.descriptionTextarea = page.getByLabel(couponLocators.descriptionTextarea);
-        this.compCodeDropdown = page.getByLabel(couponLocators.compCodeDropdown);
-        this.campaignDropdown = page.getByLabel(couponLocators.campaignDropdown);
-        this.isGlobalCouponCheckbox = page.getByLabel(couponLocators.isGlobalCouponCheckbox);
-        this.expiryTimeInput = page.getByLabel(couponLocators.expiryTimeInput);
-        this.expiryTimeUnitDropdown = page.getByLabel(couponLocators.expiryTimeUnitDropdown);
-        this.couponExpiryDatePicker = page.getByLabel(couponLocators.couponExpiryDatePicker);
+        this.couponNameInput = page.locator(couponLocators.couponNameInput);
+        this.couponGroupInput = page.locator(couponLocators.couponGroupInput);
+        this.descriptionTextarea = page.locator(couponLocators.descriptionTextarea);
+        this.compCodeDropdown = page.locator(couponLocators.compCodeDropdown);
+        this.campaignDropdown = page.locator(couponLocators.campaignDropdown);
+        this.isGlobalCouponCheckbox = page.locator(couponLocators.isGlobalCouponCheckbox);
+        this.expiryTimeInput = page.locator(couponLocators.expiryTimeInput);
+        this.expiryTimeUnitDropdown = page.locator(couponLocators.expiryTimeUnitDropdown);
+        this.couponExpiryDatePicker = page.locator(couponLocators.couponExpiryDatePicker);
         this.addRegionBtn = page.locator(couponLocators.addRegionBtn);
         this.saveBtn = page.locator(couponLocators.saveBtn);
         this.cancelBtn = page.locator(couponLocators.cancelBtn);
@@ -143,12 +146,14 @@ export class CouponPage extends BasePage {
 
     async clickDeleteForRow(rowIndex: number) {
         console.log(`Clicking Delete button for row ${rowIndex}...`);
-        await this.clickElement(this.deleteBtn.nth(rowIndex));
+        await this.clickEllipsisMenuForRow(rowIndex);
+        await this.clickEllipsisOption(couponLocators.buttonDelete);
     }
 
     async clickEditForRow(rowIndex: number) {
         console.log(`Clicking Edit button for row ${rowIndex}...`);
-        await this.clickElement(this.editBtn.nth(rowIndex));
+        await this.clickEllipsisMenuForRow(rowIndex);
+        await this.clickEllipsisOption(couponLocators.buttonEdit);
         await this.popupDialog.waitFor({ state: 'visible', timeout: 10000 });
     }
 
@@ -223,15 +228,18 @@ export class CouponPage extends BasePage {
         await this.selectDropdown(this.compCodeDropdown, compCode);
     }
 
-    async clearCompCodeInPopup() {
+    // Comp Code is a PrimeNG dropdown (a <div>, not a real input) — confirmed live it has no
+    // clear ("x") icon and no blank option, so there's no UI affordance to clear it once set.
+    // Returns whether a clear affordance was found and used, rather than attempting
+    // Locator.clear() on a non-input element (which throws outright).
+    async clearCompCodeInPopup(): Promise<boolean> {
         console.log('Clearing Comp Code field...');
-        // Click the clear icon if available, or clear the input
         const clearIcon = this.popupDialog.locator('.p-dropdown-clear-icon, .p-icon-times');
         if (await clearIcon.count() > 0) {
             await this.clickElement(clearIcon.first());
-        } else {
-            await this.compCodeDropdown.clear();
+            return true;
         }
+        return false;
     }
 
     async selectCampaign(campaign: string) {
@@ -247,7 +255,15 @@ export class CouponPage extends BasePage {
 
     async fillExpiryTime(time: string) {
         console.log(`Filling Expiry Time: ${time}`);
-        await this.fillInput(this.expiryTimeInput, time);
+        // A plain .fill() doesn't register with this p-inputnumber's internal value binding —
+        // confirmed live: the field silently reverts to 0/invalid on blur. Needs the
+        // click(x3)+pressSequentially+Tab pattern already proven elsewhere in this suite for
+        // p-inputnumber fields (e.g. AutoOptinPage.ts, GenericPredictorPage.ts).
+        await this.expiryTimeInput.waitFor({ state: 'visible' });
+        await this.expiryTimeInput.click({ clickCount: 3 });
+        await this.expiryTimeInput.pressSequentially(time);
+        await this.expiryTimeInput.press('Tab');
+        await this.page.waitForTimeout(200);
     }
 
     async selectExpiryTimeUnit(unit: string) {
@@ -266,20 +282,41 @@ export class CouponPage extends BasePage {
         await this.page.waitForTimeout(500);
     }
 
+    // Scoped to the calendar's own overlay panel (read from its aria-controls attribute) rather
+    // than a bare global .p-datepicker selector — confirmed live that an unscoped selector can
+    // silently miss the actual open panel, leaving the field registered as empty/invalid even
+    // though a day was clicked. Escape afterward closes the panel: it's a genuine aria-modal
+    // overlay, so a day click alone doesn't always dismiss it (same pattern proven elsewhere in
+    // this suite, e.g. GenericPredictorPage.ts / GenericWheel.spec.ts).
+    private async getCouponExpiryPanel(): Promise<Locator> {
+        const panelId = await this.couponExpiryDatePicker.getAttribute('aria-controls');
+        return panelId ? this.page.locator(`#${panelId}`) : this.page.locator('.p-datepicker').last();
+    }
+
+    private async dismissCouponExpiryPanel(panel: Locator) {
+        if (await panel.isVisible().catch(() => false)) {
+            await this.page.keyboard.press('Escape').catch(() => {});
+            await this.page.waitForTimeout(300);
+        }
+    }
+
     async selectFutureDateFromPicker() {
         console.log('Selecting a future date from the date picker...');
         await this.couponExpiryDatePicker.click();
         await this.page.waitForTimeout(500);
 
+        const panel = await this.getCouponExpiryPanel();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+
         // Navigate to next month and pick the first available day
-        const nextMonthBtn = this.page.locator('.p-datepicker-next');
+        const nextMonthBtn = panel.locator('.p-datepicker-next');
         if (await nextMonthBtn.count() > 0) {
             await nextMonthBtn.click();
             await this.page.waitForTimeout(300);
         }
-        const firstAvailableDay = this.page.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
-        await firstAvailableDay.click({ force: true });
-        await this.page.waitForTimeout(500);
+        await panel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first().click();
+        await this.page.waitForTimeout(300);
+        await this.dismissCouponExpiryPanel(panel);
     }
 
     async selectPastDateFromPicker() {
@@ -287,15 +324,18 @@ export class CouponPage extends BasePage {
         await this.couponExpiryDatePicker.click();
         await this.page.waitForTimeout(500);
 
+        const panel = await this.getCouponExpiryPanel();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+
         // Navigate to previous month and pick the first day
-        const prevMonthBtn = this.page.locator('.p-datepicker-prev');
+        const prevMonthBtn = panel.locator('.p-datepicker-prev');
         if (await prevMonthBtn.count() > 0) {
             await prevMonthBtn.click();
             await this.page.waitForTimeout(300);
         }
-        const firstDay = this.page.locator('td:not(.p-datepicker-other-month) span').first();
-        await firstDay.click({ force: true });
-        await this.page.waitForTimeout(500);
+        await panel.locator('td:not(.p-datepicker-other-month) span').first().click();
+        await this.page.waitForTimeout(300);
+        await this.dismissCouponExpiryPanel(panel);
     }
 
     async selectDistantFutureDate() {
@@ -303,23 +343,57 @@ export class CouponPage extends BasePage {
         await this.couponExpiryDatePicker.click();
         await this.page.waitForTimeout(500);
 
+        const panel = await this.getCouponExpiryPanel();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+
         // Navigate forward multiple months (2 years ~ 24 months)
-        const nextMonthBtn = this.page.locator('.p-datepicker-next');
+        const nextMonthBtn = panel.locator('.p-datepicker-next');
         for (let i = 0; i < 24; i++) {
             if (await nextMonthBtn.count() > 0) {
                 await nextMonthBtn.click();
                 await this.page.waitForTimeout(100);
             }
         }
-        const firstAvailableDay = this.page.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
-        await firstAvailableDay.click({ force: true });
-        await this.page.waitForTimeout(500);
+        await panel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first().click();
+        await this.page.waitForTimeout(300);
+        await this.dismissCouponExpiryPanel(panel);
     }
 
     async clickAddRegion() {
         console.log('Clicking Add Region button...');
         await this.clickElement(this.page.locator(couponLocators.addRegionBtn));
         await this.page.waitForTimeout(500);
+    }
+
+    // "Add Region" reveals a pending row with a "Select Region" dropdown (#add-region-dropdown)
+    // plus a checkmark (confirm) and trash (discard) button — confirmed live.
+    async selectFirstAvailableRegionInPendingRow() {
+        console.log('Selecting first available region in pending row...');
+        const regionDropdown = this.popupDialog.locator('#add-region-dropdown');
+        await this.clickElement(regionDropdown);
+        const panel = this.page.locator('.p-dropdown-panel');
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        await panel.locator('.p-dropdown-item:not(.p-disabled)').first().click();
+        await this.page.waitForTimeout(300);
+    }
+
+    async confirmAddedRegion() {
+        console.log('Confirming added region...');
+        await this.clickElement(this.popupDialog.locator('button.p-button-icon-only:has(.pi-check)').last());
+        await this.page.waitForTimeout(500);
+    }
+
+    // Confirming a region reveals a "Requirements *" multiselect (id="requirements-{index}") for
+    // that region — confirmed live. Targets the LAST one, i.e. the region just confirmed.
+    async selectFirstAvailableRegionRequirement() {
+        console.log('Selecting first available region requirement...');
+        const requirementsMultiselect = this.popupDialog.locator('[id^="requirements-"]').last();
+        await this.clickElement(requirementsMultiselect);
+        const panel = this.page.locator('.p-multiselect-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        await panel.locator('.p-multiselect-item:not(.p-disabled)').first().click();
+        await panel.locator('.p-multiselect-close').click().catch(() => {});
+        await this.page.waitForTimeout(300);
     }
 
     async clickSave() {

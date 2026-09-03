@@ -161,8 +161,16 @@ export class PromotionConfigPage extends BasePage {
         const endPanel = this.page.locator('#endDate_panel');
         await endPanel.waitFor({ state: 'visible' });
 
-        // Finding the LAST valid enable day guarantees it will always geometrically succeed the start date
-        const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
+        // Confirmed live: when only a single day is enabled in the currently displayed month,
+        // .last() resolves to that SAME day as Start (picked via .first() above), tripping "End
+        // date must be after start date". Navigating to the next month before picking guarantees
+        // End always lands on a later day regardless of how many days are enabled in this view.
+        const endNextMonthBtn = endPanel.locator('.p-datepicker-next');
+        if (await endNextMonthBtn.count() > 0) {
+            await endNextMonthBtn.click();
+            await this.page.waitForTimeout(300);
+        }
+        const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
         await this.clickElement(activeEndDay, { force: true });
         await this.page.waitForTimeout(500);
         // await this.page.mouse.click(0, 0)
@@ -186,8 +194,16 @@ export class PromotionConfigPage extends BasePage {
         const endPanel = this.page.locator('#endDate_panel');
         await endPanel.waitFor({ state: 'visible' });
 
-        // Finding the LAST valid enable day guarantees it will always geometrically succeed the start date
-        const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
+        // Confirmed live: when only a single day is enabled in the currently displayed month,
+        // .last() resolves to that SAME day as Start (picked via .first() above), tripping "End
+        // date must be after start date". Navigating to the next month before picking guarantees
+        // End always lands on a later day regardless of how many days are enabled in this view.
+        const endNextMonthBtn = endPanel.locator('.p-datepicker-next');
+        if (await endNextMonthBtn.count() > 0) {
+            await endNextMonthBtn.click();
+            await this.page.waitForTimeout(300);
+        }
+        const activeEndDay = endPanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
         await this.clickElement(activeEndDay, { force: true });
         await this.page.waitForTimeout(500);
         await this.dialog.click();

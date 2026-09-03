@@ -26,6 +26,7 @@ import { SegmentTaggingPage } from '../pages/SegmentTaggingPage';
 import { TagConfigPage } from '../pages/TagConfigPage';
 import { AutoOptinPage } from '../pages/AutoOptinPage';
 import { OptinExpiryPage } from '../pages/OptinExpiryPage';
+import { GenericPredictorPage } from '../pages/GenericPredictorPage';
 import { TutorialConfigPage } from '../pages/TutorialConfigPage';
 import { TutorialOrderingPage } from '../pages/TutorialOrderingPage';
 import { CompAlertsPage } from '../pages/CompAlertsPage';
@@ -80,6 +81,7 @@ type MyFixtures = {
     tagConfigPage: TagConfigPage;
     autoOptinPage: AutoOptinPage;
     optinExpiryPage: OptinExpiryPage;
+    genericPredictorPage: GenericPredictorPage;
     tutorialConfigPage: TutorialConfigPage;
     tutorialOrderingPage: TutorialOrderingPage;
     compAlertsPage: CompAlertsPage;
@@ -288,6 +290,12 @@ export const test = base.extend<MyFixtures>({
     optinExpiryPage: async ({ page, authenticatedSession }, use) => {
         const optinExpiryPage = new OptinExpiryPage(page);
         await use(optinExpiryPage);
+    },
+
+    // Instantiate and provide GenericPredictorPage
+    genericPredictorPage: async ({ page, authenticatedSession }, use) => {
+        const genericPredictorPage = new GenericPredictorPage(page);
+        await use(genericPredictorPage);
     },
 
     // Instantiate and provide TutorialConfigPage

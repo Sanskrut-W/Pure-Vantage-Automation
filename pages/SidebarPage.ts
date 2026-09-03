@@ -59,6 +59,7 @@ export class SidebarPage extends BasePage {
     readonly optInConfigurationNode: Locator;
     readonly autoOptInConfigNode: Locator;
     readonly optInExpiryNode: Locator;
+    readonly genericPredictorNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -127,6 +128,7 @@ export class SidebarPage extends BasePage {
         this.optInConfigurationNode       = menu(sidebarLocators.menuOptInConfiguration);
         this.autoOptInConfigNode          = menu(sidebarLocators.menuAutoOptInConfig);
         this.optInExpiryNode              = menu(sidebarLocators.menuOptInExpiry);
+        this.genericPredictorNode         = menu(sidebarLocators.menuGenericPredictor);
     }
 
     /**
@@ -362,6 +364,18 @@ export class SidebarPage extends BasePage {
         await this.clickElement(this.genericWheelNode, { force: true });
         await this.page.waitForTimeout(500);
         await this.clickElement(this.genericWheelNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToGenericPredictor() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Generic Predictor');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+        await this.genericPredictorNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.genericPredictorNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

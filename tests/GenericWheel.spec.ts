@@ -2774,9 +2774,13 @@ test.describe('Marketing - Generic Wheel', () => {
     }
     await page.waitForTimeout(300);
 
-    // Click the Promotion Name field to close the calendar popup before clicking Save
-    await dialog53.locator('#promotionNameInput').click();
-    await page.waitForTimeout(300);
+    // The calendar panel is a genuine aria-modal="true" overlay — selecting a day doesn't always
+    // close it, and while open it intercepts every click on the rest of the dialog. Escape is the
+    // reliable way to dismiss it (proven across AutoOptin/OptinExpiry/GenericPredictor calendars).
+    if (await startPanel53.isVisible().catch(() => false)) {
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(300);
+    }
 
     // Click Save
     const saveBtn53 = dialog53.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
@@ -2884,9 +2888,13 @@ test.describe('Marketing - Generic Wheel', () => {
     }
     await page.waitForTimeout(300);
 
-    // Click Promotion Name to close the Start Date calendar panel
-    await dialog55.locator('#promotionNameInput').click();
-    await page.waitForTimeout(300);
+    // The calendar panel is a genuine aria-modal="true" overlay — selecting a day doesn't always
+    // close it, and while open it intercepts every click on the rest of the dialog. Escape is the
+    // reliable way to dismiss it (proven across AutoOptin/OptinExpiry/GenericPredictor calendars).
+    if (await startPanel55.isVisible().catch(() => false)) {
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(300);
+    }
 
     // Set End Date — navigate one month forward and pick first enabled day
     await dialog55.locator('#endDateCalendar input').click();
@@ -2896,9 +2904,10 @@ test.describe('Marketing - Generic Wheel', () => {
     await endPanel55.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]').first().click();
     await page.waitForTimeout(300);
 
-    // Click Promotion Name to close the End Date calendar panel
-    await dialog55.locator('#promotionNameInput').click();
-    await page.waitForTimeout(300);
+    if (await endPanel55.isVisible().catch(() => false)) {
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(300);
+    }
 
     // Click Save
     const saveBtn55 = dialog55.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();

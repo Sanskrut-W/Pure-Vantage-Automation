@@ -58,4 +58,5 @@ export const sidebarLocators = {
     menuOptInConfiguration: 'Opt In Configuration',
     menuAutoOptInConfig: 'Auto Opt In Config',
     menuOptInExpiry: 'Opt In Expiry',
+    menuGenericPredictor: 'Generic Predictor',
 };

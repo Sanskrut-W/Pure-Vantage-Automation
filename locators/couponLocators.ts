@@ -39,8 +39,9 @@ export const couponLocators = {
     paginatorPages: 'button.p-paginator-page',
     paginatorRowsPerPage: 'div.p-paginator .p-dropdown',
 
-    // Confirmation Dialog
-    confirmDialog: 'div.p-confirmdialog, div.p-dialog:has-text("Are you sure")',
+    // Confirmation Dialog — a custom <pure-action-modal-component> (.action-modal /
+    // .action-modal-overlay), NOT a standard PrimeNG ConfirmDialog — confirmed live.
+    confirmDialog: '.action-modal',
     confirmYesBtn: 'button:has-text("Yes"), button[aria-label="Yes"]',
     confirmNoBtn: 'button:has-text("No"), button[aria-label="No"]',
 
