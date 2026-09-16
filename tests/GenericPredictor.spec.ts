@@ -1345,16 +1345,18 @@ test.describe('Generic Predictor - Period Events Tests', () => {
     });
 
     test('TC-37 Verify the Back button on the Events page navigates to the Predictor Periods page', async ({ page, genericPredictorPage }, testInfo) => {
-        // Per instruction: no new Predictor/Period/Event is created for this test — it drills into
-        // whichever already exist (nothing is set on createdName/createdRegion, so the shared
-        // afterEach's guard skips cleanup — there's nothing this test created to delete).
-        await genericPredictorPage.showInactivePredictors();
-        await genericPredictorPage.clickRowMenuForFirstPredictor();
-        await genericPredictorPage.clickPromotionPeriodsFromRowMenu();
-        await genericPredictorPage.createPeriodBtn.waitFor({ state: 'visible', timeout: 15000 });
+        // Creates its own Predictor + Period rather than reusing "whichever already exist" —
+        // confirmed live that the first Predictor (with inactive ones shown) can genuinely have
+        // zero Periods, leaving nothing to open an Events page for. A fresh Predictor/Period
+        // guarantees this test always has real data to navigate through. This describe block's
+        // shared afterEach only tracks the Predictor (see TC-22) — deleting it is assumed to
+        // cascade-remove its Periods and Events too, so no separate periodName cleanup is needed.
+        const name = `Predictor_${Date.now()}`;
+        const region = await createPredictor(page, genericPredictorPage, name);
+        createdName = name;
+        createdRegion = region;
 
-        await genericPredictorPage.clickRowMenuForFirstPeriod();
-        await genericPredictorPage.clickEventsFromPeriodRowMenu();
+        const periodName = await createPeriodAndOpenEvents(page, genericPredictorPage, name, region);
         await genericPredictorPage.createEventBtn.waitFor({ state: 'visible', timeout: 15000 });
 
         await genericPredictorPage.clickEventsPageBack();
@@ -1362,7 +1364,7 @@ test.describe('Generic Predictor - Period Events Tests', () => {
         await expect(genericPredictorPage.predictorPeriodsHeading, 'Expected the Back button to navigate to the Predictor Periods page').toBeVisible({ timeout: 15000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-37_events_page_back_button');
-        console.log('Back button on the Events page navigates to the Predictor Periods page.');
+        console.log(`✅ TC-37 PASSED — Back button on the Events page for Period "${periodName}" navigates to the Predictor Periods page.`);
     });
 
     test('TC-38 Verify Stats navigates to the Predictor Period Stats page', async ({ page, genericPredictorPage }, testInfo) => {

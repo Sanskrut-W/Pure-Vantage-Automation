@@ -80,8 +80,13 @@ export const couponLocators = {
     requirementTypeDropdown: 'Requirement Type',
     dataFieldRequirementTypeDropdown: 'Data Field Requirement Type',
     dataFieldFilterPropertyInput: 'Data Field Filter Property',
-    addRequirementBtn: 'button:has-text("Add Requirement")',
+    // Icon-only button, no text/aria-label — "Add Filter Group" and "Add Filter" share this
+    // exact same markup, so this selector must be scoped to a position preceding any
+    // requirement's filter toolbar (see CouponPage.addRequirementToRegion).
+    addRequirementBtn: 'button.btn--success.icon-button:has(.pi-plus)',
     hideFiltersBtn: 'button:has-text("Hide Filters"), button:has-text("Show Filters")',
     regionSaveBtn: 'button:has-text("Save")',
-    regionCloseBtn: 'button.p-dialog-header-close, button[aria-label="Close"]',
+    // The dialog also has a header "X" icon with the same aria-label="Close" — scope to
+    // the dedicated bottom action button (btn--danger) to avoid a strict-mode violation.
+    regionCloseBtn: 'button.btn--danger[aria-label="Close"]',
 };

@@ -1170,7 +1170,19 @@ export class GenericPredictorPage extends BasePage {
         console.log('Opening the "..." menu for the first available Predictor...');
         const row = this.predictorTable.locator('tbody tr').first();
         await row.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(row.locator(genericPredictorLocators.rowMenuTrigger));
+
+        // The first <tr> can be an empty-state placeholder ("No Predictors Found") with no menu
+        // button at all — confirmed live this leaves clickElement()'s uncapped waitFor to burn the
+        // full 120s configured action timeout instead of failing with a clear reason. Check with a
+        // short timeout and fail fast instead.
+        const menuTrigger = row.locator(genericPredictorLocators.rowMenuTrigger);
+        const hasMenuTrigger = await menuTrigger.isVisible({ timeout: 5000 }).catch(() => false);
+        if (!hasMenuTrigger) {
+            const rowText = (await row.innerText().catch(() => '')).trim();
+            throw new Error(`Expected at least one real Predictor row with a "..." menu, but the table's first row has none — row text: "${rowText}" (likely an empty-state placeholder, e.g. "No Predictors Found")`);
+        }
+
+        await this.clickElement(menuTrigger);
         await this.page.waitForTimeout(300);
     }
 
@@ -1178,7 +1190,18 @@ export class GenericPredictorPage extends BasePage {
         console.log('Opening the "..." menu for the first available Period...');
         const row = this.periodsTable.locator('tbody tr').first();
         await row.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(row.locator(genericPredictorLocators.rowMenuTrigger));
+
+        // Same empty-state hazard as clickRowMenuForFirstPredictor() — the currently-selected
+        // Predictor may have zero Periods, leaving just a "No Promotion Periods Found" placeholder
+        // row with no menu button. Fail fast with a clear reason instead of a 120s hang.
+        const menuTrigger = row.locator(genericPredictorLocators.rowMenuTrigger);
+        const hasMenuTrigger = await menuTrigger.isVisible({ timeout: 5000 }).catch(() => false);
+        if (!hasMenuTrigger) {
+            const rowText = (await row.innerText().catch(() => '')).trim();
+            throw new Error(`Expected at least one real Period row with a "..." menu, but the table's first row has none — row text: "${rowText}" (likely "No Promotion Periods Found" for the currently-selected Predictor)`);
+        }
+
+        await this.clickElement(menuTrigger);
         await this.page.waitForTimeout(300);
     }
 

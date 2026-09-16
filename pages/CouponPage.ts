@@ -429,12 +429,20 @@ export class CouponPage extends BasePage {
 
     async addRequirementToRegion(requirementType: string) {
         console.log(`Adding requirement: ${requirementType}`);
-        const addReqBtn = this.regionRequirementsDialog.locator(couponLocators.addRequirementBtn);
+        // "Add Requirement" is the first "+" button in the dialog — it precedes any
+        // existing requirement's filter toolbar (Add Filter Group / Hide Filters / Add
+        // Filter), which reuse the identical icon-only button markup further down.
+        const addReqBtn = this.regionRequirementsDialog.locator(couponLocators.addRequirementBtn).first();
         await this.clickElement(addReqBtn);
         await this.page.waitForTimeout(500);
 
-        // Select the requirement type from the newly appeared dropdown
-        const lastReqDropdown = this.regionRequirementsDialog.getByLabel(couponLocators.requirementTypeDropdown).last();
+        // Select the requirement type from the newly appeared dropdown.
+        // getByLabel resolves to PrimeNG's visually-hidden accessibility <input>
+        // (readonly, aria-haspopup="listbox") for this control, which never becomes
+        // visible — the actual clickable element is its ancestor ".p-dropdown" div
+        // (the same pattern the landing-page filters use, e.g. selectRegionDropdown).
+        const lastReqDropdownInput = this.regionRequirementsDialog.getByLabel(couponLocators.requirementTypeDropdown).last();
+        const lastReqDropdown = lastReqDropdownInput.locator('xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " p-dropdown ")][1]');
         await this.selectDropdown(lastReqDropdown, requirementType);
     }
 

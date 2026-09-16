@@ -390,11 +390,12 @@ async function fillNumberField(input: Locator, value: string): Promise<void> {
 // Fields left out on purpose (not marked mandatory "*" in the dialog): Increased Chance of
 // Winning, Ticker Start Date, Expiry/Wager Notification Template, Minimum Wager, Default Value
 // Bucket, and the 3 checkboxes.
-async function fillCreatePromotionMandatoryFields(page: Page, dialog: Locator): Promise<void> {
+async function fillCreatePromotionMandatoryFields(page: Page, dialog: Locator): Promise<string> {
   // 1. Promotion Name
+  const promoName = `AutoPromo-${CommonUtils.generateRandomString(6)}`;
   const nameInput = dialog.locator('#promotionName');
   await nameInput.waitFor({ state: 'visible', timeout: 10000 });
-  await nameInput.fill(`AutoPromo-${CommonUtils.generateRandomString(6)}`);
+  await nameInput.fill(promoName);
 
   // 2. Game Type
   await selectFirstDropdownOption(page, dialog.locator('#gameType'));
@@ -447,6 +448,8 @@ async function fillCreatePromotionMandatoryFields(page: Page, dialog: Locator): 
 
   // 14. Scratch Cards Per Period
   await fillNumberField(dialog.locator('#scratchCardsPerPeriod input'), '3');
+
+  return promoName;
 }
 
 // Enters "0" into a min-value-constrained InputNumber field and asserts it snaps back to the
@@ -750,6 +753,16 @@ test.describe('Marketing - Scratch and Win - Create Promotion Popup', () => {
     await saveBtn.click();
     await expect(dialog).not.toBeVisible({ timeout: 20000 });
     await page.waitForLoadState('networkidle');
+
+    // Confirmed live: a freshly created Promotion doesn't necessarily show up in the default
+    // active-only view — Include Inactive must be enabled to find it (same requirement TC-4
+    // already proves changes what's visible in this table).
+    const includeInactiveToggle = container.locator('div.p-inputswitch').first();
+    await includeInactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
+    if ((await includeInactiveToggle.getAttribute('aria-checked')) !== 'true') {
+      await includeInactiveToggle.click();
+      await page.waitForLoadState('networkidle');
+    }
 
     await expect(container.locator(`.pure__table tbody td:text-is("${promoName}")`)).toBeVisible({ timeout: 20000 });
 
@@ -1592,25 +1605,94 @@ test.describe('Marketing - Scratch and Win - Manage Prizes', () => {
   // TC_39
   // Create Budget dialog field ids (#dailyCount, #dayType) confirmed directly against the
   // real markup (Edit Budget uses the identical structure/ids).
+  //
+  // Fully self-contained: this describe's shared beforeEach opens Manage Prizes for whichever
+  // Promotion happens to be first, but that Promotion may have no Prizes at all (and any existing
+  // Prize may already have a budget, offering Edit/Delete Budget instead of Create Budget — same
+  // hazard TC-40 already works around). Rather than depend on leftover data, this test backs out
+  // to the Promotions list (Back button, confirmed pattern from TC-37) and builds its own
+  // Promotion → Prize → Create Budget chain from scratch.
   test('TC-39 Verify mandatory field validation in Create Budget', async ({ page }, testInfo) => {
-    const rows = page.locator('.pure__table tbody tr');
-    await rows.first().waitFor({ state: 'visible', timeout: 20000 });
+    const backBtn = page.locator('button:has(.pi-chevron-left)').first();
+    await backBtn.waitFor({ state: 'visible', timeout: 15000 });
+    await backBtn.click();
+    await page.waitForLoadState('networkidle');
 
-    // Step 7: Click the three dots of the created prize
-    const dotsBtn = rows.first().locator('button:has(.pi-ellipsis-v)');
+    const container = page.locator('scratch-and-win-management');
+    await expect(container, 'Expected navigation back to the Scratch and Win page').toBeVisible({ timeout: 15000 });
+
+    // Step 1: Create a Promotion
+    const createPromotionBtn = container.locator('button[aria-label="Create Promotion"]').first();
+    await createPromotionBtn.waitFor({ state: 'visible', timeout: 15000 });
+    await createPromotionBtn.click();
+
+    const promotionDialog = page.locator('div[role="dialog"]').first();
+    await expect(promotionDialog).toBeVisible({ timeout: 15000 });
+    const promoName = await fillCreatePromotionMandatoryFields(page, promotionDialog);
+
+    const promotionSaveBtn = promotionDialog.locator('button[aria-label="Save"], button:has-text("Save")').first();
+    await promotionSaveBtn.scrollIntoViewIfNeeded();
+    await expect(promotionSaveBtn).toBeEnabled({ timeout: 15000 });
+    await promotionSaveBtn.click();
+    await expect(promotionDialog).not.toBeVisible({ timeout: 20000 });
+    await page.waitForLoadState('networkidle');
+
+    // Step 2: Turn on Include Inactive and find the created Promotion — confirmed live (TC-14)
+    // that a freshly created Promotion doesn't necessarily appear in the default active-only view.
+    const includeInactiveToggle = container.locator('div.p-inputswitch').first();
+    await includeInactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
+    if ((await includeInactiveToggle.getAttribute('aria-checked')) !== 'true') {
+      await includeInactiveToggle.click();
+      await page.waitForLoadState('networkidle');
+    }
+
+    const promotionRows = container.locator('.pure__table tbody tr');
+    const promotionRow = promotionRows.filter({ hasText: promoName }).first();
+    await promotionRow.waitFor({ state: 'visible', timeout: 15000 });
+
+    // Step 3: Click the three dots for the created Promotion and navigate to Manage Prizes
+    const promotionDotsBtn = promotionRow.locator('button:has(.pi-ellipsis-v)');
+    await promotionDotsBtn.waitFor({ state: 'visible', timeout: 15000 });
+    await promotionDotsBtn.click();
+
+    const promotionMenu = page.locator('.p-menu-overlay');
+    await expect(promotionMenu).toBeVisible({ timeout: 10000 });
+    await promotionMenu.getByText('Manage Prizes', { exact: false }).first().click();
+    await page.waitForLoadState('networkidle');
+
+    // Step 4: Create a Prize under this Promotion
+    const createPrizeBtn = page.locator('button[aria-label="Create Prize"]').first();
+    await createPrizeBtn.waitFor({ state: 'visible', timeout: 15000 });
+    await createPrizeBtn.click();
+
+    const prizeDialog = page.locator('div[role="dialog"]').first();
+    await expect(prizeDialog).toBeVisible({ timeout: 15000 });
+    const { prizeName } = await fillPrizeMandatoryFields(page, prizeDialog);
+
+    const prizeSaveBtn = prizeDialog.locator('button[aria-label="Save"], button:has-text("Save")').first();
+    await prizeSaveBtn.scrollIntoViewIfNeeded();
+    await expect(prizeSaveBtn).toBeEnabled({ timeout: 15000 });
+    await prizeSaveBtn.click();
+    await expect(prizeDialog).not.toBeVisible({ timeout: 20000 });
+    await page.waitForLoadState('networkidle');
+
+    // Step 5: Click the three dots of the freshly created (budget-less) Prize, then Create Budget
+    const prizeRows = page.locator('.pure__table tbody tr');
+    const prizeRow = prizeRows.filter({ hasText: prizeName }).first();
+    await prizeRow.waitFor({ state: 'visible', timeout: 15000 });
+
+    const dotsBtn = prizeRow.locator('button:has(.pi-ellipsis-v)');
     await dotsBtn.waitFor({ state: 'visible', timeout: 15000 });
     await dotsBtn.click();
 
     const menu = page.locator('.p-menu-overlay');
     await expect(menu).toBeVisible({ timeout: 10000 });
-
-    // Step 8: Click Create Budget
     await menu.getByText('Create Budget', { exact: false }).first().click();
 
     const dialog = page.locator('div[role="dialog"]').first();
     await expect(dialog).toBeVisible({ timeout: 15000 });
 
-    // Step 9: Leave Daily Count and Day Type blank
+    // Step 6: Leave Daily Count and Day Type blank — verify mandatory field validation
     const saveBtn = dialog.locator('button[aria-label="Save"], button:has-text("Save")').first();
     await expect(saveBtn, 'Expected Save to remain disabled with Daily Count and Day Type blank').toBeDisabled({ timeout: 10000 });
 

@@ -3,6 +3,38 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import { CommonUtils } from '../utils/commonUtils';
 
+// The original test.describe wrapper (and its beforeEach) that navigated to the Generic Wheel
+// promotions list page got commented out while TC_83/TC_87 (and any other currently-active tests
+// in this file) stayed live — leaving them with no navigation at all, so `generic-wheel` never
+// existed on the page. Restored as a top-level beforeEach (applies to every test in this file
+// regardless of describe nesting) so active tests get the page loaded before they run.
+test.beforeEach(async ({ page }) => {
+    await page.goto('/main/home');
+    // Deep-link navigation doesn't always fully hydrate the Angular/Stencil
+    // component before the sidebar click fires — a reload reliably forces it
+    // to initialize from scratch (same fix proven across this project's other
+    // spec files).
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
+    await marketingNode.click();
+
+    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+    await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
+    await promotionsNode.click();
+
+    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
+    await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
+    await genericWheelLink.click();
+    await page.waitForURL('**/generic-wheel', { timeout: 15000 });
+    // Full reload forces Angular/Stencil to initialize the component from scratch
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('generic-wheel')).toBeVisible({ timeout: 30000 });
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // GENERIC WHEEL  (TC_01 – TC_05)
 // Navigation: Marketing → Promotions → Generic Wheel
