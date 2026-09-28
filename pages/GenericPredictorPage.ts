@@ -16,10 +16,11 @@ export class GenericPredictorPage extends BasePage {
     // removed), so an unscoped page-wide `table` locator risks matching the wrong one.
     readonly predictorTable: Locator;
 
-    // ─── Create/Edit Predictor popup — 5 core fields ───────────────────────────
+    // ─── Create/Edit Predictor popup — 6 core fields (Promotion Type added) ────
     readonly popupDialog: Locator;
     readonly nameInput: Locator;
     readonly regionDropdown: Locator;
+    readonly promotionTypeDropdown: Locator;
     readonly startDateTimeInput: Locator;
     readonly endDateTimeInput: Locator;
     readonly leagueDropdown: Locator;
@@ -34,7 +35,7 @@ export class GenericPredictorPage extends BasePage {
     readonly maximumSelectionsInput: Locator;
     readonly minimumDepositInput: Locator;
     readonly maximumWagerInput: Locator;
-    readonly competitionTypeInput: Locator;
+    // Competition Type has been removed from the Advanced accordion entirely (confirmed).
     readonly redirectUrlInput: Locator;
     readonly sportIdInput: Locator;
     readonly leagueNameInput: Locator;
@@ -66,23 +67,21 @@ export class GenericPredictorPage extends BasePage {
     readonly createPeriodBtn: Locator;
     readonly periodsTable: Locator;
 
-    // ─── Create Period popup — 4 fields + 2 checkboxes (all confirmed live). Unlike the
+    // ─── Create Period popup — 4 fields, no checkboxes (removed — confirmed). Unlike the
     // Predictor Periods page above, this genuinely IS a `.p-dialog` opened on top of it.
     readonly periodNameInput: Locator;
     readonly periodNumberInput: Locator;
     readonly periodStartDateInput: Locator;
     readonly periodEndDateInput: Locator;
-    readonly practiceRoundCheckbox: Locator;
-    readonly competitiveWeekCheckbox: Locator;
 
     // ─── Period Events — a genuine page navigation (confirmed live), same pattern as Predictor
-    // Periods. The Create Event popup's Event Name / Start Date Time / League are real fielded
-    // inputs; its Event Participants section (Team / Type / Role per participant) has no ids.
+    // Periods. The Create Event popup's Event Name / Start Date Time are real fielded inputs
+    // (League* has been removed from this popup); its Event Participants section (Team / Type /
+    // Role per participant) has no ids.
     readonly createEventBtn: Locator;
     readonly eventsTable: Locator;
     readonly eventNameInput: Locator;
     readonly eventStartDateTimeInput: Locator;
-    readonly eventLeagueDropdown: Locator;
     readonly addParticipantBtn: Locator;
 
     // ─── Capture Outcome — a genuine `.p-dialog` popup (confirmed live), 3 fields: Result Type
@@ -94,10 +93,11 @@ export class GenericPredictorPage extends BasePage {
 
     // ─── Event Participants page — Create is a page-level button, but Edit/Delete are confirmed
     // live to be PER-ROW buttons inside each row's own frozen action column (no "select a row"
-    // step). The Create/Edit popup's 4 dropdown fields (#teamId/Team, #playerId/Player,
-    // #participantType/Participant Type, #participantRole/Participant Role) are confirmed live to
-    // carry real `for`-linked <label>s, so getByLabel targeting them is correct. Edit's submit
-    // button is confirmed live to say "Update" (aria-label="Update"), NOT "Save" like Create.
+    // step). The Create/Edit popup now has only 2 dropdown fields (#teamId/Team,
+    // #participantRole/Participant Role) — Player and Participant Type have been removed from
+    // this popup entirely (confirmed live). Both remaining fields carry real `for`-linked
+    // <label>s, so getByLabel targeting them is correct. Edit's submit button is confirmed live
+    // to say "Update" (aria-label="Update"), NOT "Save" like Create.
     readonly createParticipantBtn: Locator;
     readonly editParticipantBtn: Locator;
     readonly deleteParticipantBtn: Locator;
@@ -105,8 +105,6 @@ export class GenericPredictorPage extends BasePage {
     readonly participantsSearchInput: Locator;
     readonly participantsTable: Locator;
     readonly participantTeamDropdown: Locator;
-    readonly participantPlayerDropdown: Locator;
-    readonly participantTypeDropdown: Locator;
     readonly participantRoleDropdown: Locator;
 
     // Results popup (per-row "Results" button on the Event Participants page) — Is Winner
@@ -127,6 +125,7 @@ export class GenericPredictorPage extends BasePage {
         this.popupDialog = page.locator('.p-dialog, [role="dialog"]').first();
         this.nameInput = page.locator(genericPredictorLocators.inputName);
         this.regionDropdown = page.locator(genericPredictorLocators.dropdownRegion);
+        this.promotionTypeDropdown = page.locator(genericPredictorLocators.dropdownPromotionType);
         this.startDateTimeInput = page.locator(genericPredictorLocators.calendarStartDateTime);
         this.endDateTimeInput = page.locator(genericPredictorLocators.calendarEndDateTime);
         this.leagueDropdown = page.locator(genericPredictorLocators.dropdownLeague);
@@ -140,7 +139,6 @@ export class GenericPredictorPage extends BasePage {
         this.maximumSelectionsInput = page.locator(genericPredictorLocators.inputMaximumSelections);
         this.minimumDepositInput = page.locator(genericPredictorLocators.inputMinimumDeposit);
         this.maximumWagerInput = page.locator(genericPredictorLocators.inputMaximumWager);
-        this.competitionTypeInput = page.locator(genericPredictorLocators.inputCompetitionType);
         this.redirectUrlInput = page.locator(genericPredictorLocators.inputRedirectUrl);
         this.sportIdInput = page.locator(genericPredictorLocators.inputSportId);
         this.leagueNameInput = page.locator(genericPredictorLocators.inputLeagueName);
@@ -172,14 +170,11 @@ export class GenericPredictorPage extends BasePage {
         this.periodNumberInput = page.locator(genericPredictorLocators.inputPeriodNumber);
         this.periodStartDateInput = page.locator(genericPredictorLocators.calendarPeriodStartDate);
         this.periodEndDateInput = page.locator(genericPredictorLocators.calendarPeriodEndDate);
-        this.practiceRoundCheckbox = page.locator(genericPredictorLocators.checkboxPracticeRound);
-        this.competitiveWeekCheckbox = page.locator(genericPredictorLocators.checkboxCompetitiveWeek);
 
         this.createEventBtn = page.locator(genericPredictorLocators.createEventBtn);
         this.eventsTable = page.locator('main table').first();
         this.eventNameInput = page.locator(genericPredictorLocators.inputEventName);
         this.eventStartDateTimeInput = page.locator(genericPredictorLocators.calendarEventStartDateTime);
-        this.eventLeagueDropdown = page.locator(genericPredictorLocators.dropdownEventLeague);
         this.addParticipantBtn = page.locator(genericPredictorLocators.addParticipantBtn);
 
         this.resultTypeDropdown = page.locator(genericPredictorLocators.dropdownResultType);
@@ -193,8 +188,6 @@ export class GenericPredictorPage extends BasePage {
         this.participantsSearchInput = page.locator(genericPredictorLocators.participantsSearchInput);
         this.participantsTable = page.locator('main table').first();
         this.participantTeamDropdown = page.getByLabel('Team', { exact: false });
-        this.participantPlayerDropdown = page.getByLabel('Player', { exact: false });
-        this.participantTypeDropdown = page.getByLabel('Participant Type', { exact: false });
         this.participantRoleDropdown = page.getByLabel('Participant Role', { exact: false });
 
         this.isWinnerDropdown = page.locator(genericPredictorLocators.dropdownIsWinner);
@@ -218,10 +211,6 @@ export class GenericPredictorPage extends BasePage {
     async fillName(value: string) {
         console.log(`Filling Promotion Name: "${value}"...`);
         await this.fillInput(this.nameInput, value);
-    }
-
-    async fillCompetitionType(value: string) {
-        await this.fillInput(this.competitionTypeInput, value);
     }
 
     async fillRedirectUrl(value: string) {
@@ -415,6 +404,14 @@ export class GenericPredictorPage extends BasePage {
     async selectFirstLeague(): Promise<string> {
         console.log('Selecting first available League...');
         return this.selectFirstOption(this.leagueDropdown);
+    }
+
+    /** Promotion Type* is a newly-added mandatory dropdown on the Create/Edit Predictor popup —
+     * Save stays disabled until a value is selected. Treated the same as Region/League: pick
+     * whichever option renders first rather than hardcoding a value. */
+    async selectFirstPromotionType(): Promise<string> {
+        console.log('Selecting first available Promotion Type...');
+        return this.selectFirstOption(this.promotionTypeDropdown);
     }
 
     async selectFirstAllocationCompCode(): Promise<string> {
@@ -723,26 +720,8 @@ export class GenericPredictorPage extends BasePage {
         await this.setPeriodDateField(this.periodEndDateInput);
     }
 
-    /** Practice Round / First Competitive Week are plain native checkboxes with a real `for`-
-     * labeled <input> (confirmed live) — unlike every other checkbox in this app, no
-     * `.p-checkbox-box` force-click workaround is needed here. */
-    async togglePracticeRound() {
-        console.log('Toggling "Practice Round"...');
-        await this.practiceRoundCheckbox.click();
-    }
-
-    async isPracticeRoundChecked(): Promise<boolean> {
-        return this.practiceRoundCheckbox.isChecked();
-    }
-
-    async toggleCompetitiveWeek() {
-        console.log('Toggling "First Competitive Week"...');
-        await this.competitiveWeekCheckbox.click();
-    }
-
-    async isCompetitiveWeekChecked(): Promise<boolean> {
-        return this.competitiveWeekCheckbox.isChecked();
-    }
+    // Practice Round / First Competitive Week checkboxes have been removed from the Create
+    // Period popup entirely (confirmed) — it now only has Period Name/Number/Start/End Date.
 
     getPeriodRowByName(name: string): Locator {
         return this.periodsTable.locator('tbody tr', { hasText: name }).first();
@@ -886,11 +865,6 @@ export class GenericPredictorPage extends BasePage {
         await this.setDateTimeField(this.eventStartDateTimeInput, 'eventStartDateTime_panel');
     }
 
-    async selectEventLeague(): Promise<string> {
-        console.log('Selecting first available League for Event...');
-        return this.selectFirstOption(this.eventLeagueDropdown);
-    }
-
     async clickAddParticipant() {
         console.log('Clicking Add Participant button...');
         await this.clickElement(this.addParticipantBtn);
@@ -919,16 +893,12 @@ export class GenericPredictorPage extends BasePage {
         return this.getParticipantBlock(index).locator('.p-dropdown').nth(0);
     }
 
-    getParticipantTypeDropdown(index: number): Locator {
+    // Participant Type has been removed from this popup's participant blocks — confirmed live,
+    // a block now only has Team and Participant Role, so Role shifted from index 2 to index 1.
+    getParticipantRoleDropdown(index: number): Locator {
         return this.getParticipantBlock(index).locator('.p-dropdown').nth(1);
     }
 
-    getParticipantRoleDropdown(index: number): Locator {
-        return this.getParticipantBlock(index).locator('.p-dropdown').nth(2);
-    }
-
-    /** Team is confirmed to render disabled until a League is selected on the Event itself (a
-     * participant's Team must belong to the chosen League) — select the Event's League first. */
     async selectParticipantTeam(index: number): Promise<string> {
         console.log(`Selecting first available Team for Participant ${index}...`);
         return this.selectFirstOption(this.getParticipantTeamDropdown(index));
@@ -941,11 +911,6 @@ export class GenericPredictorPage extends BasePage {
     async selectParticipantTeamByIndex(participantIndex: number, teamOptionIndex: number): Promise<string> {
         console.log(`Selecting Team option #${teamOptionIndex} for Participant ${participantIndex}...`);
         return this.selectNthOption(this.getParticipantTeamDropdown(participantIndex), teamOptionIndex);
-    }
-
-    async selectParticipantType(index: number): Promise<string> {
-        console.log(`Selecting first available Participant Type for Participant ${index}...`);
-        return this.selectFirstOption(this.getParticipantTypeDropdown(index));
     }
 
     async selectParticipantRole(index: number): Promise<string> {
@@ -1456,9 +1421,8 @@ export class GenericPredictorPage extends BasePage {
         await option.waitFor({ state: 'visible', timeout: 10000 });
         const text = (await option.textContent())?.trim() ?? '';
 
-        // Confirmed live: re-clicking the trigger to close just the panel (as done in
-        // selectParticipantPlayerOptionIfAvailable, where the dialog needs to STAY open) is
-        // unreliable here — the panel can end up still covering the Cancel button underneath,
+        // Confirmed live: re-clicking the trigger to close just the panel is unreliable here —
+        // the panel can end up still covering the Cancel button underneath,
         // intercepting its click for the full 120s action timeout. Escape closes the panel AND
         // bubbles up to close the whole parent p-dialog too (same behavior noted elsewhere in
         // this suite) — exactly what's wanted here, since this popup was only opened to peek.
@@ -1467,47 +1431,8 @@ export class GenericPredictorPage extends BasePage {
         return text;
     }
 
-    /** Player is optional and confirmed live to sometimes have no data at all — selects the
-     * first available option if the dropdown actually has any, otherwise leaves it blank.
-     * Returns the selected player's text, or '' if left blank. */
-    async selectParticipantPlayerOptionIfAvailable(): Promise<string> {
-        console.log('Checking whether Player dropdown has any data...');
-
-        const isDisabled = await this.participantPlayerDropdown.isDisabled().catch(() => false);
-        if (isDisabled) {
-            console.log('Player dropdown is disabled — no data, leaving it blank.');
-            return '';
-        }
-
-        await this.clickElement(this.participantPlayerDropdown);
-        const panel = this.page.locator('.p-dropdown-panel').last();
-        await panel.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-
-        const option = panel.locator(genericPredictorLocators.dropdownItem).first();
-        const hasData = await option.isVisible({ timeout: 2000 }).catch(() => false);
-
-        if (!hasData) {
-            // Confirmed live: unlike a p-calendar (its own aria-modal sub-dialog), a plain
-            // p-dropdown panel is NOT an isolated modal — Escape isn't captured by it and bubbles
-            // up to close the whole Create/Edit Participant p-dialog instead, wiping out
-            // Participant Type/Role along with it. Re-clicking the dropdown's own trigger toggles
-            // just the panel closed without touching the parent dialog.
-            console.log('Player dropdown opened with no selectable options — leaving it blank.');
-            await this.participantPlayerDropdown.click().catch(() => {});
-            await this.page.waitForTimeout(300);
-            return '';
-        }
-
-        const text = (await option.textContent())?.trim() ?? '';
-        await option.click();
-        await this.page.waitForTimeout(200);
-        return text;
-    }
-
-    async selectParticipantTypeOption(): Promise<string> {
-        console.log('Selecting first available Participant Type...');
-        return this.selectFirstOption(this.participantTypeDropdown);
-    }
+    // Player and Participant Type have been removed from the Create/Edit Participant popup
+    // entirely (confirmed live) — it now only has Team* and Participant Role*.
 
     async selectParticipantRoleOption(): Promise<string> {
         console.log('Selecting first available Participant Role...');

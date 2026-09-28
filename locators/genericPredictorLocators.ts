@@ -3,9 +3,12 @@ export const genericPredictorLocators = {
     createBtn: 'button[aria-label="Create Predictor"]',
     viewLeaguesBtn: 'View Leagues',
 
-    // Create/Edit Predictor popup — 5 core fields
+    // Create/Edit Predictor popup — 6 core fields (Promotion Type added; id unconfirmed live —
+    // follows this app's existing camelCase-field-name convention, e.g. #regionCode/#leagueId —
+    // verify against a real run and correct if it turns out different).
     inputName: '#name',
     dropdownRegion: '#regionCode',
+    dropdownPromotionType: '#promotionType',
     calendarStartDateTime: '#startDateTimeCalendar input',
     calendarEndDateTime: '#endDateTimeCalendar input',
     dropdownLeague: '#leagueId',
@@ -23,7 +26,7 @@ export const genericPredictorLocators = {
     inputMaximumSelections: '#maximumselections input',
     inputMinimumDeposit: '#minimumdeposit input',
     inputMaximumWager: '#maximumwager input',
-    inputCompetitionType: '#competitiontype',
+    // Competition Type has been removed from the Advanced accordion entirely (confirmed).
     inputRedirectUrl: '#redirecturl',
     inputSportId: '#sportId',
     inputLeagueName: '#leagueName',
@@ -73,21 +76,17 @@ export const genericPredictorLocators = {
     calendarPeriodStartDate: '#startDateCalendar input',
     calendarPeriodEndDate: '#endDateCalendar input',
 
-    // 2 checkboxes — confirmed live: unlike every other checkbox in this app, these labels DO
-    // carry a real `for` attribute pointing straight at the native <input>, so they're driven as
-    // plain native checkboxes (click/isChecked), not the `.p-checkbox-box` force-click hack used
-    // for the other checkboxes in this suite. Also confirmed: the second checkbox's real label is
-    // "First Competitive Week" (id "competitiveWeek"), not "First Competitive" as first described.
-    checkboxPracticeRound: '#practiceRound',
-    checkboxCompetitiveWeek: '#competitiveWeek',
+    // Practice Round / First Competitive Week checkboxes have been removed from this popup
+    // entirely (confirmed) — it now only has the 4 fields above.
 
     // Period Events — reached via a Period row's "..." menu -> Events (confirmed live: a genuine
     // page navigation, same as Promotion Periods itself, not a dialog).
     menuItemEvents: 'Events',
+    // League* was removed from the Create/Edit Event popup — it now only asks for Event Name*,
+    // Event Start Date Time*, and Event Participants.
     createEventBtn: 'button[aria-label="Create Event"]',
     inputEventName: '#eventName',
     calendarEventStartDateTime: '#eventStartDateTime input',
-    dropdownEventLeague: '#leagueId',
 
     // Create Event popup — Event Participants section. Confirmed live: participant fields (Team,
     // Participant Type, Participant Role) carry no id and no `for` attribute, so they can only be

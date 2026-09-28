@@ -982,7 +982,16 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
         await page.waitForTimeout(500);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-46_sort_description');
-            test('TC-34 Verify Comp Percentage > 100 is rejected on Update', async ({ page, cashbackPage }, testInfo) => {
+        console.log('Attempted sort click on Description column header.');
+    });
+
+    test('TC-34 Verify Comp Percentage > 100 is rejected on Update', async ({ page, cashbackPage }, testInfo) => {
+        // Same reasoning as TC-35/TC-38 — this describe block's beforeEach doesn't open the
+        // Edit dialog, so it has to be opened explicitly here first.
+        await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
+        await cashbackPage.clickEditFirstCashback();
+        await expect(page.locator(cashbackLocators.dialogContainer)).toBeVisible({ timeout: 15000 });
+
         const dialog = cashbackPage.getEditDialog();
         await cashbackPage.fillCompPercentageInDialog(dialog, '101');
 
@@ -1014,6 +1023,14 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
     });
 
     test('TC-35 Verify Execution Frequency change updates Execution Time visibility on Update', async ({ page, cashbackPage }, testInfo) => {
+        // getEditDialog() only returns a locator scoped to the dialog — it doesn't open it.
+        // This describe block's beforeEach only navigates to the page (unlike the original
+        // "Edit Popup Tests" block this test came from, whose beforeEach clicked Edit first),
+        // so the Edit dialog has to be opened here explicitly before using it.
+        await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
+        await cashbackPage.clickEditFirstCashback();
+        await expect(page.locator(cashbackLocators.dialogContainer)).toBeVisible({ timeout: 15000 });
+
         const dialog = cashbackPage.getEditDialog();
 
         await cashbackPage.selectExecutionFrequencyInDialog(dialog, 'Daily');
@@ -1033,6 +1050,12 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
     });
 
     test('TC-37 Verify Segment dropdown is pre-filled when editing a segmented promotion', async ({ page, cashbackPage }, testInfo) => {
+        // Same reasoning as TC-34/TC-35/TC-38 — this describe block's beforeEach doesn't open
+        // the Edit dialog, so it has to be opened explicitly here first.
+        await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
+        await cashbackPage.clickEditFirstCashback();
+        await expect(page.locator(cashbackLocators.dialogContainer)).toBeVisible({ timeout: 15000 });
+
         const dialog = cashbackPage.getEditDialog();
 
         if (await cashbackPage.isSegmentDropdownVisibleInDialog(dialog)) {
@@ -1047,6 +1070,12 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
     });
 
     test('TC-38 Verify Game Name list refreshes when Game Type is changed on Update', async ({ page, cashbackPage }, testInfo) => {
+        // Same reasoning as TC-35 — this describe block's beforeEach doesn't open the Edit
+        // dialog, so it has to be opened explicitly here before getEditDialog() means anything.
+        await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
+        await cashbackPage.clickEditFirstCashback();
+        await expect(page.locator(cashbackLocators.dialogContainer)).toBeVisible({ timeout: 15000 });
+
         const dialog = cashbackPage.getEditDialog();
         await cashbackPage.clickGameTypeDropdownInDialog(dialog);
         const options = page.locator('.p-dropdown-items .p-dropdown-item');
@@ -1063,6 +1092,12 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
     });
 
     test('TC-43 Verify past dates are disabled in Next Execution Date calendar on Update', async ({ page, cashbackPage }, testInfo) => {
+        // Same reasoning as TC-35/TC-38 — this describe block's beforeEach doesn't open the
+        // Edit dialog, so it has to be opened explicitly here first.
+        await cashbackPage.cashbackTable.locator('tbody tr').first().waitFor({ state: 'visible' });
+        await cashbackPage.clickEditFirstCashback();
+        await expect(page.locator(cashbackLocators.dialogContainer)).toBeVisible({ timeout: 15000 });
+    
         const dialog = cashbackPage.getEditDialog();
         const calInput = dialog.locator('.p-calendar input').nth(2);
         await calInput.click();
@@ -1076,6 +1111,5 @@ test.describe('Cashback Promotions - Table Feature Tests', () => {
         console.log(`TC-43: ${disabledCount} past-date cells disabled in Next Execution Date calendar.`);
 
         await page.keyboard.press('Escape');
-    });console.log('Attempted sort click on Description column header.');
     });
 });
