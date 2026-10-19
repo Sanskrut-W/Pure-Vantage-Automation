@@ -24,14 +24,17 @@ test.describe('Notification Schedule Tests', () => {
     });
 
     test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
-        await notificationSchedulePage.selectFirstCommunicationType();
+        await notificationSchedulePage.selectCommunicationType('File Push');
 
-        // Email data takes a while to load after selecting the type — wait for
+        // File Push data takes a while to load after selecting the type — wait for
         // rows to appear before searching
         const hasRows = await notificationSchedulePage.waitForRows(30000);
         expect(hasRows, 'Schedule rows must load after selecting the communication type').toBe(true);
 
-        await notificationSchedulePage.searchFor('Test Email 6 Offer');
+        // "arnoTest123" is confirmed live to appear exactly once in the File Push list — unlike
+        // "ABC"/"ABCTest", which would both match "ABCTest" rows under a contains-style filter and
+        // break the exact-count-of-1 assertion below.
+        await notificationSchedulePage.searchFor('arnoTest123');
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_results');
 
         // The table refresh can lag behind the typed search term — poll until

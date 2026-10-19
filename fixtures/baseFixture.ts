@@ -47,6 +47,8 @@ import { MessageTemplatesPage } from '../pages/MessageTemplatesPage';
 import { NotificationSchedulePage } from '../pages/NotificationSchedulePage';
 import { WhitelistTestAccountsPage } from '../pages/WhitelistTestAccountsPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
+import { RulesEnginePage } from '../pages/RulesEnginePage';
+import { BetPromotionRulesPage } from '../pages/BetPromotionRulesPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -103,6 +105,8 @@ type MyFixtures = {
     whitelistTestAccountsPage: WhitelistTestAccountsPage;
     formBuilderPage: FormBuilderPage;
     stencilConfigPage: StencilConfigPage;
+    rulesEnginePage: RulesEnginePage;
+    betPromotionRulesPage: BetPromotionRulesPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -411,6 +415,18 @@ export const test = base.extend<MyFixtures>({
     stencilConfigPage: async ({ page, authenticatedSession }, use) => {
         const stencilConfigPage = new StencilConfigPage(page);
         await use(stencilConfigPage);
+    },
+
+    // Instantiate and provide RulesEnginePage
+    rulesEnginePage: async ({ page, authenticatedSession }, use) => {
+        const rulesEnginePage = new RulesEnginePage(page);
+        await use(rulesEnginePage);
+    },
+
+    // Instantiate and provide BetPromotionRulesPage
+    betPromotionRulesPage: async ({ page, authenticatedSession }, use) => {
+        const betPromotionRulesPage = new BetPromotionRulesPage(page);
+        await use(betPromotionRulesPage);
     },
 });
 

@@ -18,6 +18,7 @@ export const sidebarLocators = {
     menuLeaderboard: 'Leaderboard',
     menuLoyaltyPromotions: 'Loyalty Promotions',
     menuSegmentSchedule: 'Segment Schedule',
+    menuRulesEngine: 'Rules Engine',
     menuSegmentation: 'Segmentation',
     menuTelegramLeaderboard: 'Telegram Leaderboard',
     menuToastConfig: 'Toast Configuration',
@@ -59,4 +60,10 @@ export const sidebarLocators = {
     menuAutoOptInConfig: 'Auto Opt In Config',
     menuOptInExpiry: 'Opt In Expiry',
     menuGenericPredictor: 'Generic Predictor',
+    // Confirmed live (user-supplied outerHTML): both render as the same span.menuitem-text
+    // convention as every other sidebar node — Workflow Management is its own top-level
+    // accordion (a sibling of Marketing/Platform/System Admin), Bet Promotion Rules a direct
+    // child of it (single level, no further nesting).
+    menuWorkflowManagement: 'Workflow Management',
+    menuBetPromotionRules: 'Bet Promotion Rules',
 };

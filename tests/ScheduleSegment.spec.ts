@@ -80,9 +80,10 @@ async function ensureAllChannelTogglesOff(segmentSchedulePage: any) {
  * template dropdown) and Dry Run, then schedules. Confirmed live this app rejects a new scheduled
  * notification that collides with an EXISTING one for the same Campaign — two variants seen so
  * far: an exact/near match ("A scheduled notification with campaign name 'X' already exists for
- * this segmentation group") and a too-close-in-time match ("new scheduled date must be 1 hour
- * away from existing scheduled date. Please select a different date/time"). Both stem from the
- * same root cause: this environment accumulates leftover Pending entries per Campaign whenever a
+ * this segmentation group") and a too-close-in-time match ("New scheduled date must be at least
+ * 1 hour away from the existing scheduled date. Please select a different date/time" — confirmed
+ * live wording includes "at least" and "the", which the collision regex must tolerate). Both stem
+ * from the same root cause: this environment accumulates leftover Pending entries per Campaign whenever a
  * run fails before reaching its own cleanup, and setScheduledDate() always picks the same
  * "now"-based day/time, so successive runs land close together. Rather than fail outright on
  * either, this retries with a different Campaign (selectDifferentActiveCampaign) up to a few
@@ -127,7 +128,7 @@ async function scheduleWithSingleChannel(
 
         const isSchedulingCollision = !!text && (
             /already exists for this segmentation group/i.test(text) ||
-            /must be \d+ hour[s]? away from existing scheduled date/i.test(text)
+            /must be (?:at least )?\d+ hour[s]? away from (?:the )?existing scheduled date/i.test(text)
         );
         if (!isSchedulingCollision || attempt === MAX_ATTEMPTS) {
             throw new Error(
@@ -599,7 +600,7 @@ test.describe('Segment Schedule - Edit Tests', () => {
 
             const isSchedulingCollision = !!text && (
                 /already exists for this segmentation group/i.test(text) ||
-                /must be \d+ hour[s]? away from existing scheduled date/i.test(text)
+                /must be (?:at least )?\d+ hour[s]? away from (?:the )?existing scheduled date/i.test(text)
             );
             if (!isSchedulingCollision || attempt === MAX_EDIT_ATTEMPTS) {
                 throw new Error(

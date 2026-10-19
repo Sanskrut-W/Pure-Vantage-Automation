@@ -122,6 +122,29 @@ async function findRowWithMenuAction(page: Page, rows: Locator, actionLabel: str
   return null;
 }
 
+// Confirmed live (TC-40): the Manage Prizes table paginates server-side (10 rows/page) and the
+// visible rows are sorted by Value Bucket rather than creation order, so a freshly created row
+// can land on any page, not just page 1 — the plain rows.filter(...).first().waitFor() in TC-40
+// only ever saw page 1's rows and timed out even though the prize really was created. This page
+// has no search/filter input (unlike the Promotions table elsewhere in this file), so walk the
+// paginator forward with its "Next Page" button until the row turns up.
+async function findRowAcrossPages(page: Page, rows: Locator, matchText: string, maxPages: number = 20): Promise<Locator> {
+  const nextPageBtn = page.getByRole('button', { name: 'Next Page' });
+  for (let i = 0; i < maxPages; i++) {
+    const match = rows.filter({ hasText: matchText }).first();
+    const found = await match.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false);
+    if (found) {
+      return match;
+    }
+    const canGoNext = await nextPageBtn.isEnabled().catch(() => false);
+    if (!canGoNext) break;
+    await nextPageBtn.click();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(300);
+  }
+  throw new Error(`Row matching "${matchText}" was not found across up to ${maxPages} paginator pages.`);
+}
+
 // Opens a PrimeNG dropdown and clicks its first option, returning the selected option's text.
 // A plain .click() on the root/trigger doesn't always register (overlay timing, event binding
 // living on a different descendant) — this tries several trigger candidates, polls for the
@@ -1729,8 +1752,7 @@ test.describe('Marketing - Scratch and Win - Manage Prizes', () => {
     await page.waitForLoadState('networkidle');
 
     const rows = page.locator('.pure__table tbody tr');
-    const ownRow = rows.filter({ hasText: prizeName }).first();
-    await ownRow.waitFor({ state: 'visible', timeout: 15000 });
+    const ownRow = await findRowAcrossPages(page, rows, prizeName);
 
     // Step 7: Click the three dots of the freshly created (budget-less) prize
     const dotsBtn = ownRow.locator('button:has(.pi-ellipsis-v)');

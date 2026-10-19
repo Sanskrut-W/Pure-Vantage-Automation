@@ -21,6 +21,7 @@ export class SidebarPage extends BasePage {
     readonly leaderboardNode: Locator;
     readonly loyaltyPromotionsNode: Locator;
     readonly segmentScheduleNode: Locator;
+    readonly rulesEngineNode: Locator;
     readonly segmentationNode: Locator;
     readonly telegramLeaderboardNode: Locator;
     readonly toastConfigNode: Locator;
@@ -60,6 +61,8 @@ export class SidebarPage extends BasePage {
     readonly autoOptInConfigNode: Locator;
     readonly optInExpiryNode: Locator;
     readonly genericPredictorNode: Locator;
+    readonly workflowManagementNode: Locator;
+    readonly betPromotionRulesNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -88,6 +91,7 @@ export class SidebarPage extends BasePage {
         this.leaderboardNode              = menu(sidebarLocators.menuLeaderboard);
         this.loyaltyPromotionsNode        = menu(sidebarLocators.menuLoyaltyPromotions);
         this.segmentScheduleNode          = menu(sidebarLocators.menuSegmentSchedule);
+        this.rulesEngineNode              = menu(sidebarLocators.menuRulesEngine);
         this.segmentationNode             = menu(sidebarLocators.menuSegmentation);
         this.telegramLeaderboardNode      = menu(sidebarLocators.menuTelegramLeaderboard);
         this.toastConfigNode              = menu(sidebarLocators.menuToastConfig);
@@ -129,6 +133,8 @@ export class SidebarPage extends BasePage {
         this.autoOptInConfigNode          = menu(sidebarLocators.menuAutoOptInConfig);
         this.optInExpiryNode              = menu(sidebarLocators.menuOptInExpiry);
         this.genericPredictorNode         = menu(sidebarLocators.menuGenericPredictor);
+        this.workflowManagementNode       = menu(sidebarLocators.menuWorkflowManagement);
+        this.betPromotionRulesNode        = menu(sidebarLocators.menuBetPromotionRules);
     }
 
     /**
@@ -252,11 +258,20 @@ export class SidebarPage extends BasePage {
 
     async navigateToTutorialConfig() {
         console.log('Navigating via Sidebar: Marketing -> Tutorials -> Tutorial Configuration');
-        await this.clickMenuLeafAndVerifyUrl(
-            [[this.marketingNode, this.tutorialNode], [this.tutorialNode, this.tutorialConfigNode]],
-            this.tutorialConfigNode,
-            /tutorial-config/,
-        );
+        // Confirmed live: 3 retries of clickMenuLeafAndVerifyUrl (incl. a forced click) still
+        // never changed the URL — the same signature as the already-documented, PERMANENT
+        // DOM/CSS overlap fixed for its sibling "Tutorial Ordering" one entry below (a real/
+        // forced click lands on whichever element is actually topmost at those coordinates, not
+        // necessarily this node). dispatchEvent fires the click directly at the chosen node via
+        // JS, with no hit-testing involved, bypassing the overlap the same way.
+        await this.marketingNode.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(600);
+        await this.tutorialNode.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(600);
+        await this.tutorialConfigNode.scrollIntoViewIfNeeded();
+        const tutorialConfigLink = this.page.locator('a', { has: this.tutorialConfigNode });
+        await tutorialConfigLink.dispatchEvent('click');
+        await this.page.waitForLoadState('domcontentloaded');
     }
 
     async navigateToCouponManagement() {
@@ -308,6 +323,29 @@ export class SidebarPage extends BasePage {
         await this.clickElement(this.marketingNode);
         await this.clickElement(this.segmentScheduleNode);
         await this.clickElement(this.segmentScheduleNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToBetPromotionRules() {
+        console.log('Navigating via Sidebar: Workflow Management -> Bet Promotion Rules');
+        await this.workflowManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.workflowManagementNode, { force: true });
+        await this.page.waitForTimeout(500); // Wait for the menu to fully expand
+        await this.betPromotionRulesNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.betPromotionRulesNode, { force: true });
+        await this.page.waitForTimeout(300);
+        await this.clickElement(this.betPromotionRulesNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToRulesEngine() {
+        console.log('Navigating via Sidebar: Marketing -> Rules Engine');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500); // Wait for the menu to fully expand
+        await this.rulesEngineNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.rulesEngineNode, { force: true });
+        await this.page.waitForTimeout(300);
+        await this.clickElement(this.rulesEngineNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

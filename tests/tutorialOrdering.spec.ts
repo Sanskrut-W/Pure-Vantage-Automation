@@ -16,9 +16,9 @@ test.describe('Tutorial Ordering Tests', () => {
         await tutorialOrderingPage.waitForPageLoad();
     });
 
-    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // //// // // // 
-    //  Page Verification Tests (Independent)
-    // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
+    // // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // //// // // // 
+    // //  Page Verification Tests (Independent)
+    // // // // // // // // // //  // // // // // // // // // // // // // // // // // //  // // // // // // // // /
 
     test('TC-1 Verify Tutorial Ordering Page is accessible', async ({ page }) => {
         await expect(page).toHaveURL(/.*tutorial-ordering/);
@@ -288,38 +288,38 @@ test.describe('Tutorial Ordering Tests', () => {
             await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_after_refresh');
         });
 
-        // test('TC-17 Verify Toggle off status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage, tutorialConfigPage }, testInfo) => {
-        //     await tutorialOrderingPage.selectRegion(REGION);
+        test('TC-17 Verify Toggle off status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage, tutorialConfigPage }, testInfo) => {
+            await tutorialOrderingPage.selectRegion(REGION);
 
-        //     const activeTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedIn');
-        //     expect(activeTutorial).toBeTruthy();
+            const activeTutorial = await tutorialOrderingPage.getFirstActiveTutorial('LoggedIn');
+            expect(activeTutorial).toBeTruthy();
 
-        //     // Switch OFF the Logged In toggle for this tutorial and save
-        //     await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', false);
-        //     await tutorialOrderingPage.clickUpdate();
-        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_toggle_off_and_save');
+            // Switch OFF the Logged In toggle for this tutorial and save
+            await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', false);
+            await tutorialOrderingPage.clickUpdate();
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_toggle_off_and_save');
 
-        //     // Navigate away to Tutorial Config, then return
-        //     await sidebarPage.navigateToTutorialConfig();
-        //     await page.waitForLoadState('networkidle');
-        //     await sidebarPage.navigateToTutorialOrdering();
-        //     await page.waitForLoadState('networkidle');
+            // Navigate away to Tutorial Config, then return
+            await sidebarPage.navigateToTutorialConfig();
+            await page.waitForLoadState('networkidle');
+            await sidebarPage.navigateToTutorialOrdering();
+            await page.waitForLoadState('networkidle');
 
-        //     await tutorialOrderingPage.selectRegion(REGION);
+            await tutorialOrderingPage.selectRegion(REGION);
 
-        //     // Read the persisted state BEFORE asserting, so the restore below always runs —
-        //     // this data is live, the toggle must never be left off even if verification fails.
-        //     const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(activeTutorial, 'LoggedIn');
-        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_return');
+            // Read the persisted state BEFORE asserting, so the restore below always runs —
+            // this data is live, the toggle must never be left off even if verification fails.
+            const isToggleOn = await tutorialOrderingPage.isTutorialToggleOn(activeTutorial, 'LoggedIn');
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_return');
 
-        //     // Restore: switch the toggle back ON and save
-        //     await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', true);
-        //     await tutorialOrderingPage.clickUpdate();
-        //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_restore_toggle_on');
+            // Restore: switch the toggle back ON and save
+            await tutorialOrderingPage.setTutorialToggleStatus(activeTutorial, 'LoggedIn', true);
+            await tutorialOrderingPage.clickUpdate();
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-17_after_restore_toggle_on');
 
-        //     // Verify the OFF state had persisted across the navigation round-trip
-        //     expect(isToggleOn, `'${activeTutorial}' LoggedIn toggle should still be OFF after navigating away and back`).toBe(false);
-        // });
+            // Verify the OFF state had persisted across the navigation round-trip
+            expect(isToggleOn, `'${activeTutorial}' LoggedIn toggle should still be OFF after navigating away and back`).toBe(false);
+        });
 
         test('TC-18 Verify Toggle on status persists across sessions', async ({ page, sidebarPage, tutorialOrderingPage }, testInfo) => {
             await tutorialOrderingPage.selectRegion(REGION);
@@ -380,7 +380,7 @@ test.describe('Tutorial Ordering Tests', () => {
     });
 
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    //  Search / Filter Tests (Independent)
+    // //  Search / Filter Tests (Independent)
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
     test('TC-16 Verify Search bar functionality (Filtering Tutorials List)', async ({ page, tutorialOrderingPage }, testInfo) => {

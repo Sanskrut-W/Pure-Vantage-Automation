@@ -45,10 +45,14 @@ export class TutorialOrderingPage extends BasePage {
         await this.selectDropdown(this.regionDropdown, regionName);
         // Wait for all region-data API calls to complete before continuing
         await this.page.waitForLoadState('networkidle');
-        // Then wait until both ordering tables actually have rows — this is the
-        // true signal that the page content has finished loading for the region.
-        // Waiting on LoggedIn alone left LoggedOut's own load race unguarded.
+        // Then wait until the Tutorials table and both ordering tables actually have rows —
+        // this is the true signal that the page content has finished loading for the region.
+        // Confirmed live (TC-17): the Tutorials table has its own separate load race from the
+        // two ordering tables — waiting on only those left isTutorialToggleOn/
+        // setTutorialToggleStatus querying a still-"No Data Found" Tutorials table after
+        // navigating away and back, hanging for the full actionTimeout instead of failing fast.
         for (const [label, table] of [
+            ['Tutorials', this.tutorialsTable],
             ['LoggedIn', this.loggedInTable],
             ['LoggedOut', this.loggedOutTable],
         ] as const) {
@@ -190,12 +194,17 @@ export class TutorialOrderingPage extends BasePage {
     async isTutorialToggleOn(tutorialName: string, type: 'LoggedIn' | 'LoggedOut'): Promise<boolean> {
         const toggleColIndex = type === 'LoggedIn' ? 1 : 2;
         const row = this.tutorialsRowByName(tutorialName).first();
+        // Fail fast with a clear error instead of hanging the full actionTimeout — confirmed
+        // live (TC-17) this row can still be missing right after a region reselect if the
+        // Tutorials table's own load race hasn't finished yet.
+        await row.waitFor({ state: 'visible', timeout: 15000 });
         const toggle = row.locator('td').nth(toggleColIndex).locator('.p-inputswitch');
         return (await toggle.getAttribute('aria-checked')) === 'true';
     }
 
     async setTutorialToggleStatus(tutorialName: string, type: 'LoggedIn' | 'LoggedOut', targetState: boolean) {
         const targetRow = this.tutorialsRowByName(tutorialName).first();
+        await targetRow.waitFor({ state: 'visible', timeout: 15000 });
         const toggleColIndex = type === 'LoggedIn' ? 1 : 2;
         const toggleContainer = targetRow.locator('td').nth(toggleColIndex).locator('.p-inputswitch');
 
