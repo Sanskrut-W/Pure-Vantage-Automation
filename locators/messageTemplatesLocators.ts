@@ -32,6 +32,23 @@ export const messageTemplatesLocators = {
     configPreviewBtn:   'div.p-dialog button[aria-label="Preview"], div.p-dialog button:has-text("Preview")',
     richTextEditor:     'div.p-dialog .ql-editor, div.p-dialog [contenteditable="true"]',
     cultureDropdown:    'div.p-dialog div.p-dropdown',
+    // Confirmed live (snapshot): an SMS template's Configure popup has a plain textarea instead
+    // of the Quill editor, and it stays disabled until a Culture is selected.
+    smsBodyTextarea:    'div.p-dialog textarea.p-inputtextarea',
+    configCultureDropdown: '#cultureDropdown',
+
+    // Create / Update popup fields (ids confirmed live — "notigicationDelivery" is the app's own typo)
+    templateNameInput:      'input#templateName',
+    notificationTypeDropdown: '#notificationType',
+    regionCodeDropdown:     '#regionCode',
+    notificationDeliveryDropdown: '#notigicationDelivery',
+    notificationCampaignDropdown: '#notificationCampaign',
+    notificationStyleDropdown: '#notificationStyle',
+    notificationCategoryDropdown: '#notificationCategory',
+    dropdownItem:           '.p-dropdown-panel .p-dropdown-item',
+
+    // Toast
+    toastMessage:       '.p-toast-message',
 
     // Delete confirmation
     confirmDialog:      'div.p-confirmdialog, div.p-dialog',

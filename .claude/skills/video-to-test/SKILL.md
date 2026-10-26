@@ -79,6 +79,12 @@ It uses the saved SSO session (`auth.json` + `session.json`) and prints the acce
 every visible element's id / aria-label / placeholder / PrimeNG class. `--click` is read-only (it
 refuses Save/Delete/Yes/…), so use it only to open popups, tabs and menus.
 
+- Popups that need a region filter or a specific row (e.g. Config on an SMS-type template) can't be
+  reached with `--click`. Write a **read-only** probe as `tests/zz-probe-tmp.spec.ts` (playwright.config
+  only picks up `tests/`) using the fixtures to navigate, open the popup, print `ariaSnapshot()` /
+  dropdown options, then Cancel. Run it with `--retries 0 --workers 1` and delete it afterwards.
+- The recording may start from a state a fresh test won't have (e.g. a culture already configured).
+  Probe what a brand-new record looks like before writing the steps.
 - "Can't reach … connect to the VPN" → ask the user to connect, or continue with locators read from
   the frames and mark each one `// UNCONFIRMED (from recording) — verify live`.
 - "session has expired" → ask the user to run `npm run auth` (Microsoft SSO, they must do it themselves).
@@ -168,6 +174,12 @@ Rules:
   highest number; never renumber or edit existing (or commented-out) tests. New module → prefix from
   its initials, confirm with the user if it could clash.
 - Every `expect` has a message string. Every check the tester made becomes an `expect`.
+- Toasts: assert the specific one with `expect(page.locator('.p-toast-message').filter({ hasText: '<text>' })).toBeVisible()`.
+  Don't read "the first toast", because an earlier info/error toast is often still on screen.
+- PrimeNG dropdown filters may not match full labels with parentheses (e.g. "English (en-US)"). Filter on
+  the first word, then click the exact option.
+- If the recording edits an existing shared record, the test creates its own `Auto…` record for the
+  same flow and deletes it. Never modify shared records.
 - Any data the test creates gets a `Auto<Module>_${Date.now()}` name and is deleted in `afterEach`.
 - Popup-only tests end with `clickCancel()` so nothing is saved.
 - Fixed values seen in the recording that matter (amounts, frequencies, options) go in constants or

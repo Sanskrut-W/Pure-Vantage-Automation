@@ -93,6 +93,12 @@ function resolvePath(target: string): string {
             throw new Error(`Redirected to sign-in (${page.url()}) — the saved session has expired. Run \`npm run auth\` and retry.`);
         }
 
+        // Confirmed live: the component's own content can render well after the shell's loader
+        // clears — wait for it before clicking anything inside it.
+        const content = page.locator('#component-container').first();
+        await content.waitFor({ state: 'visible', timeout: 60000 });
+        await content.locator('button, table, input').first().waitFor({ state: 'visible', timeout: 60000 }).catch(() => {});
+
         for (const text of clicks) {
             const candidate = page
                 .getByRole('button', { name: text, exact: true })
@@ -100,14 +106,16 @@ function resolvePath(target: string): string {
                 .or(page.getByRole('link', { name: text, exact: true }))
                 .or(page.locator(`span.menuitem-text:text-is("${text}")`))
                 .first();
-            await candidate.click({ timeout: 15000 });
+            await candidate.click({ timeout: 45000 });
             await page.waitForTimeout(800);
             console.log(`(clicked "${text}")`);
         }
 
         const container = scope === 'dialog'
             ? page.locator('div[role="dialog"]').last()
-            : page.locator('main').first().or(page.locator('body')).first();
+            // Confirmed live: #component-container holds the page content only — a bare `main`
+            // matches the sidebar menu first and buries the page under ~100 menu items.
+            : content;
         await container.waitFor({ state: 'visible', timeout: 15000 });
 
         console.log(`# ${page.url()}\n`);

@@ -637,4 +637,89 @@ test.describe('Message Templates Tests', () => {
         await messageTemplatesPage.closeDialogWithCancel();
     });
 
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // TC-28 — generated from recordings/screen-recording-2026-10-23.mp4
+    // (steps: recordings/work/screen-recording-2026-10-23/steps.md)
+    //
+    // Flagged assumptions:
+    //  - The recording edits an existing shared template ("TANAY"). This test creates its own
+    //    AutoTest_TC28_ template instead and deletes it in afterEach, so shared data is untouched.
+    //  - The recording's template already had English (en-US) configured. A brand-new template
+    //    has no culture, and its SMS textarea stays disabled until one is picked (confirmed live),
+    //    so the test selects English (en-US) first.
+    //  - Body text is what the tester meant to type; the recording has a stray cursor jump
+    //    ("I w</p>ork at Zensar.").
+    // ═══════════════════════════════════════════════════════════════════════════════
+    test.describe('Message Templates - SMS to Push Delivery Switch', () => {
+        const SMS_BODY = 'Hi, I am Tanay. I work at Zensar.';
+        const CULTURE = 'English (en-US)';
+        let templateNameToCleanup: string | null = null;
+
+        test.afterEach(async ({ messageTemplatesPage }) => {
+            if (templateNameToCleanup) {
+                await messageTemplatesPage.deleteTemplateIfPresent(templateNameToCleanup);
+                templateNameToCleanup = null;
+            }
+        });
+
+        test('TC-28 Verify SMS template body is kept when Notification Delivery is switched to Push', async ({ page, messageTemplatesPage }, testInfo) => {
+            await messageTemplatesPage.selectRegion(REGION);
+
+            // 1. Create an SMS template to work on
+            const templateName = `AutoTest_TC28_Template_${CommonUtils.generateRandomString(8)}`;
+            await messageTemplatesPage.createTemplate(templateName, REGION, 'SMS Notification');
+            templateNameToCleanup = templateName;
+            await messageTemplatesPage.waitForToastToClear();
+
+            await messageTemplatesPage.searchFor(templateName);
+            await expect(messageTemplatesPage.getRowByTemplateName(templateName), 'Expected the new template to be listed').toBeVisible({ timeout: 15000 });
+            expect(await messageTemplatesPage.getTypeForTemplate(templateName), 'Expected the new template to be an SMS template').toBe('SMS');
+
+            // 2. Config → write the SMS body → Save
+            await messageTemplatesPage.clickConfigForTemplate(templateName);
+            await messageTemplatesPage.selectConfigCulture(CULTURE);
+            const smsTextarea = page.locator('div.p-dialog textarea.p-inputtextarea').first();
+            await expect(smsTextarea, 'Expected the SMS body textarea to be enabled once a Culture is selected').toBeEnabled({ timeout: 10000 });
+            await messageTemplatesPage.fillSmsBody(SMS_BODY);
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_sms_body_filled');
+
+            await messageTemplatesPage.clickDialogSave();
+            // Confirmed live: picking a culture on a brand-new template first raises an "Error — No
+            // template data found for culture: en-US" toast (nothing saved for it yet), which can
+            // still be on screen here — wait for the specific success toast, not just the first one.
+            await expect(page.locator('.p-toast-message').filter({ hasText: 'Config saved in template successfully' }),
+                'Expected the Config save success toast').toBeVisible({ timeout: 15000 });
+            await expect(page.locator('div.p-dialog').first(), 'Expected the Configure popup to close after Save').not.toBeVisible({ timeout: 10000 });
+            await messageTemplatesPage.waitForToastToClear();
+
+            // 3. Edit → switch Notification Delivery from SMS to Push → Save
+            await messageTemplatesPage.clickEditForTemplate(templateName);
+            await messageTemplatesPage.selectNotificationDelivery('Push Notification');
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_delivery_switched_to_push');
+
+            await messageTemplatesPage.clickDialogSave();
+            await expect(page.locator('.p-toast-message').filter({ hasText: 'Template saved successfully' }),
+                'Expected the Template save success toast').toBeVisible({ timeout: 15000 });
+            await expect(page.locator('div.p-dialog').first(), 'Expected the Update popup to close after Save').not.toBeVisible({ timeout: 10000 });
+            await page.waitForLoadState('networkidle');
+
+            await expect.poll(() => messageTemplatesPage.getTypeForTemplate(templateName), {
+                message: 'Expected the Type column to change to Push',
+                timeout: 15000,
+            }).toBe('Push');
+
+            // 4. Config again → the Push editor must still hold the SMS body
+            await messageTemplatesPage.clickConfigForTemplate(templateName);
+            const dialog = page.locator('div.p-dialog').first();
+            // Quill mounts asynchronously — same wait as TC-23 before reading the editor
+            await expect(dialog.locator('.ql-toolbar'), 'Expected the Push rich text editor to load').toBeVisible({ timeout: 20000 });
+            await expect(dialog.locator('.ql-editor'), 'Expected the SMS body to carry over into the Push editor').toContainText(SMS_BODY, { timeout: 10000 });
+
+            await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-28_push_editor_keeps_body');
+            console.log(`✅ TC-28 PASSED — "${templateName}" switched from SMS to Push and kept its body "${SMS_BODY}".`);
+
+            await messageTemplatesPage.closeDialogWithCancel();
+        });
+    });
+
 });
