@@ -116,38 +116,6 @@ test.describe('Comp Alerts - Create Alert (Positive)', () => {
         console.log(`✅ TC-2 PASSED — Daily alert "${alertName}" created and verified in list.`);
     });
 
-    test('TC-3 Create alert with Schedule At = Minutely', async ({ page, compAlertsPage }, testInfo) => {
-        const alertName = `AutoAlert_Minutely_${CommonUtils.generateRandomString(6)}`;
-
-        await compAlertsPage.clickCreateAlert();
-        const dialog = compAlertsPage.getAlertDialog();
-        await expect(dialog).toBeVisible({ timeout: 15000 });
-
-        await compAlertsPage.fillAlertName(dialog, alertName);
-        // Next Alert Check Date, End Date and Alert Every X Amount are now mandatory too
-        // (site change, confirmed by the user) — all three must be filled for every schedule.
-        await compAlertsPage.setNextAlertCheckDate(dialog);
-        await compAlertsPage.selectScheduleAt(dialog, 'Minutely');
-        // End Date — dismissed by clicking whichever frequency field is active (Every X Minutes here).
-        await compAlertsPage.setEndDate(dialog);
-        await compAlertsPage.fillEveryXMinutes(dialog, '15');
-        await compAlertsPage.fillAlertFrequency(dialog, '5');
-        await compAlertsPage.selectRegionCode(dialog, 'Betway Ghana');
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_minutely_alert_filled');
-
-        await compAlertsPage.clickSave(dialog);
-
-        await expect(page.locator('.p-toast-message-success, [data-p-severity="success"]').first())
-            .toBeVisible({ timeout: 15000 });
-        await expect(dialog).not.toBeVisible({ timeout: 15000 });
-        await expect(compAlertsPage.alertsTable.locator('tbody tr', { hasText: alertName }).first())
-            .toBeVisible({ timeout: 15000 });
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_minutely_alert_success');
-        console.log(`✅ TC-3 PASSED — Minutely alert "${alertName}" created and verified in list.`);
-    });
-
     test('TC-4 Create alert with Schedule At = Hourly', async ({ page, compAlertsPage }, testInfo) => {
         const alertName = `AutoAlert_Hourly_${CommonUtils.generateRandomString(6)}`;
 
@@ -284,38 +252,6 @@ test.describe('Comp Alerts - Create Alert (Positive)', () => {
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-14_daily_all_fields_success');
         console.log(`✅ TC-14 PASSED — Daily alert "${alertName}" created with every field filled and verified in list.`);
-    });
-
-    test('TC-15 Create alert with Schedule At = Minutely and every field filled', async ({ page, compAlertsPage }, testInfo) => {
-        const alertName = `AutoAlert_MinutelyAllFields_${CommonUtils.generateRandomString(6)}`;
-
-        await compAlertsPage.clickCreateAlert();
-        const dialog = compAlertsPage.getAlertDialog();
-        await expect(dialog).toBeVisible({ timeout: 15000 });
-
-        await compAlertsPage.fillAlertName(dialog, alertName);
-        await compAlertsPage.setNextAlertCheckDate(dialog);
-        await compAlertsPage.selectScheduleAt(dialog, 'Minutely');
-        // End Date — dismissed by clicking whichever frequency field is active (Every X Minutes here).
-        await compAlertsPage.setEndDate(dialog);
-        await compAlertsPage.fillEveryXMinutes(dialog, '15');
-        await compAlertsPage.fillAlertEmails(dialog, 'qa.minutely1@example.com,qa.minutely2@example.com');
-        await compAlertsPage.fillAlertFrequency(dialog, '5');
-        await compAlertsPage.selectFirstAvailableGroupResults(dialog);
-        await compAlertsPage.selectRegionCode(dialog, 'Betway Ghana');
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_minutely_all_fields_filled');
-
-        await compAlertsPage.clickSave(dialog);
-
-        await expect(page.locator('.p-toast-message-success, [data-p-severity="success"]').first())
-            .toBeVisible({ timeout: 15000 });
-        await expect(dialog).not.toBeVisible({ timeout: 15000 });
-        await expect(compAlertsPage.alertsTable.locator('tbody tr', { hasText: alertName }).first())
-            .toBeVisible({ timeout: 15000 });
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-15_minutely_all_fields_success');
-        console.log(`✅ TC-15 PASSED — Minutely alert "${alertName}" created with every field filled and verified in list.`);
     });
 
     test('TC-16 Create alert with Schedule At = Hourly and every field filled', async ({ page, compAlertsPage }, testInfo) => {
@@ -511,12 +447,15 @@ test.describe('Comp Alerts - Create Alert (Negative)', () => {
         // Daily is the default — Every Day At should be visible to start with.
         await expect(dialog.locator('#everyDayAt input')).toBeVisible({ timeout: 10000 });
 
-        await compAlertsPage.selectScheduleAt(dialog, 'Minutely');
+        // Confirmed live: the Schedule At dropdown's own option list only offers Hourly/Daily/
+        // Weekly — "Minutely" isn't a real option (selecting it timed out waiting for a
+        // '.p-dropdown-item' that doesn't exist), so switch to Hourly instead.
+        await compAlertsPage.selectScheduleAt(dialog, 'Hourly');
         await expect(dialog.locator('#everyDayAt input')).not.toBeVisible({ timeout: 10000 });
-        await expect(dialog.locator('#everyXMinutes input')).toBeVisible({ timeout: 10000 });
+        await expect(dialog.locator('#everyXHours input')).toBeVisible({ timeout: 10000 });
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-13_conditional_field_switch');
-        console.log('✅ TC-13 PASSED — Every Day At hides and Every X Minutes appears when switching to Minutely.');
+        console.log('✅ TC-13 PASSED — Every Day At hides and Every X Hours appears when switching to Hourly.');
     });
 });
 

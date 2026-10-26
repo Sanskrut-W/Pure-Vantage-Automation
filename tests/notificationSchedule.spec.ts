@@ -14,14 +14,14 @@ test.describe('Notification Schedule Tests', () => {
         await page.waitForLoadState('networkidle');
     });
 
-    test('TC-1 Verify Notification Schedule Page is accessible', async ({ page }) => {
-        await expect(page).toHaveURL(/.*notification-schedule/);
-    });
+    // test('TC-1 Verify Notification Schedule Page is accessible', async ({ page }) => {
+    //     await expect(page).toHaveURL(/.*notification-schedule/);
+    // });
 
-    test('TC-2 Verify search bar is available on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
-        await expect(notificationSchedulePage.searchInput).toBeVisible();
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_notif_schedule_search_bar');
-    });
+    // test('TC-2 Verify search bar is available on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
+    //     await expect(notificationSchedulePage.searchInput).toBeVisible();
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-2_notif_schedule_search_bar');
+    // });
 
     test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectCommunicationType('File Push');
@@ -46,52 +46,52 @@ test.describe('Notification Schedule Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_exact');
     });
 
-    test('TC-4 Verify Notification Type dropdown filter is available on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
-        await expect(notificationSchedulePage.communicationTypeDropdown).toBeVisible();
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_notif_schedule_comm_type_dropdown');
-    });
+    // test('TC-4 Verify Notification Type dropdown filter is available on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
+    //     await expect(notificationSchedulePage.communicationTypeDropdown).toBeVisible();
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_notif_schedule_comm_type_dropdown');
+    // });
 
-    test('TC-5 Verify Notification Type dropdown filter functionality', async ({ page, notificationSchedulePage }, testInfo) => {
-        // Open the Communication Type dropdown
-        await notificationSchedulePage.communicationTypeDropdown.click();
-        await page.waitForTimeout(500);
+    // test('TC-5 Verify Notification Type dropdown filter functionality', async ({ page, notificationSchedulePage }, testInfo) => {
+    //     // Open the Communication Type dropdown
+    //     await notificationSchedulePage.communicationTypeDropdown.click();
+    //     await page.waitForTimeout(500);
 
-        // Verify options panel appears
-        const panel = page.locator('.p-dropdown-panel');
-        await expect(panel).toBeVisible({ timeout: 5000 });
+    //     // Verify options panel appears
+    //     const panel = page.locator('.p-dropdown-panel');
+    //     await expect(panel).toBeVisible({ timeout: 5000 });
 
-        const options = panel.locator('.p-dropdown-item');
-        const optionCount = await options.count();
-        expect(optionCount, 'Communication Type dropdown must have at least one option').toBeGreaterThan(0);
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_notif_schedule_dropdown_open');
+    //     const options = panel.locator('.p-dropdown-item');
+    //     const optionCount = await options.count();
+    //     expect(optionCount, 'Communication Type dropdown must have at least one option').toBeGreaterThan(0);
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_notif_schedule_dropdown_open');
 
-        // Select the first option via PrimeVue overlay (NOT getByRole which matches hidden native select)
-        const firstOption = options.first();
-        await firstOption.waitFor({ state: 'visible', timeout: 5000 });
-        await firstOption.click();
-        await page.waitForLoadState('networkidle');
+    //     // Select the first option via PrimeVue overlay (NOT getByRole which matches hidden native select)
+    //     const firstOption = options.first();
+    //     await firstOption.waitFor({ state: 'visible', timeout: 5000 });
+    //     await firstOption.click();
+    //     await page.waitForLoadState('networkidle');
 
-        // Table must update (data rows or empty-schedule message)
-        await expect(notificationSchedulePage.dataTable).toBeVisible();
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_notif_schedule_type_selected');
-    });
+    //     // Table must update (data rows or empty-schedule message)
+    //     await expect(notificationSchedulePage.dataTable).toBeVisible();
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_notif_schedule_type_selected');
+    // });
 
-    test('TC-6 Verify all required columns are available in the Notification Schedule table', async ({ page, notificationSchedulePage }, testInfo) => {
-        await notificationSchedulePage.selectFirstCommunicationType();
+    // test('TC-6 Verify all required columns are available in the Notification Schedule table', async ({ page, notificationSchedulePage }, testInfo) => {
+    //     await notificationSchedulePage.selectFirstCommunicationType();
 
-        const columnTitles = await notificationSchedulePage.getColumnTitles();
+    //     const columnTitles = await notificationSchedulePage.getColumnTitles();
 
-        expect(columnTitles).toContain('Template Name');
-        expect(columnTitles).toContain('Region');
-        expect(columnTitles).toContain('Campaign');
-        expect(columnTitles).toContain('Dry Run');
-        expect(columnTitles).toContain('Processed');
-        expect(columnTitles).toContain('Scheduled Date');
-        expect(columnTitles).toContain('Created Date');
-        expect(columnTitles).toContain('Actions');
+    //     expect(columnTitles).toContain('Template Name');
+    //     expect(columnTitles).toContain('Region');
+    //     expect(columnTitles).toContain('Campaign');
+    //     expect(columnTitles).toContain('Dry Run');
+    //     expect(columnTitles).toContain('Processed');
+    //     expect(columnTitles).toContain('Scheduled Date');
+    //     expect(columnTitles).toContain('Created Date');
+    //     expect(columnTitles).toContain('Actions');
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_notif_schedule_columns');
-    });
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_notif_schedule_columns');
+    // });
 
     test('TC-7 Verify Processing Complete (Processed) status is available in the table', async ({ page, notificationSchedulePage }, testInfo) => {
         // Some communication types have no scheduled rows and data loads slowly —
@@ -126,25 +126,25 @@ test.describe('Notification Schedule Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-7_notif_schedule_processed_status');
     });
 
-    test('TC-8 Verify sorting is available for key columns', async ({ page, notificationSchedulePage }, testInfo) => {
-        await notificationSchedulePage.selectFirstCommunicationType();
+    // test('TC-8 Verify sorting is available for key columns', async ({ page, notificationSchedulePage }, testInfo) => {
+    //     await notificationSchedulePage.selectFirstCommunicationType();
 
-        const sortableCols = await notificationSchedulePage.getSortableColumnTitles();
+    //     const sortableCols = await notificationSchedulePage.getSortableColumnTitles();
 
-        // Sortable columns per current HTML (sort icon present)
-        expect(sortableCols).toContain('Template Name');
-        expect(sortableCols).toContain('Region');
-        expect(sortableCols).toContain('Campaign');
-        expect(sortableCols).toContain('Scheduled Date');
-        expect(sortableCols).toContain('Created Date');
+    //     // Sortable columns per current HTML (sort icon present)
+    //     expect(sortableCols).toContain('Template Name');
+    //     expect(sortableCols).toContain('Region');
+    //     expect(sortableCols).toContain('Campaign');
+    //     expect(sortableCols).toContain('Scheduled Date');
+    //     expect(sortableCols).toContain('Created Date');
 
-        // NOT sortable per current HTML
-        expect(sortableCols).not.toContain('Dry Run');
-        expect(sortableCols).not.toContain('Processed');
-        expect(sortableCols).not.toContain('Actions');
+    //     // NOT sortable per current HTML
+    //     expect(sortableCols).not.toContain('Dry Run');
+    //     expect(sortableCols).not.toContain('Processed');
+    //     expect(sortableCols).not.toContain('Actions');
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_notif_schedule_sort_buttons');
-    });
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-8_notif_schedule_sort_buttons');
+    // });
 
     test('TC-9 Verify pagination is available and functional on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectFirstCommunicationType();

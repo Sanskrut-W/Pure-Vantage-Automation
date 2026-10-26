@@ -13,3 +13,7 @@ session.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Video-to-test recordings (large, local only)
+recordings/*
+!recordings/.gitkeep

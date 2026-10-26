@@ -49,6 +49,7 @@ import { WhitelistTestAccountsPage } from '../pages/WhitelistTestAccountsPage';
 import { StencilConfigPage } from '../pages/StencilConfigPage';
 import { RulesEnginePage } from '../pages/RulesEnginePage';
 import { BetPromotionRulesPage } from '../pages/BetPromotionRulesPage';
+import { RecurringRewardsPage } from '../pages/RecurringRewardsPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -107,6 +108,7 @@ type MyFixtures = {
     stencilConfigPage: StencilConfigPage;
     rulesEnginePage: RulesEnginePage;
     betPromotionRulesPage: BetPromotionRulesPage;
+    recurringRewardsPage: RecurringRewardsPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -427,6 +429,12 @@ export const test = base.extend<MyFixtures>({
     betPromotionRulesPage: async ({ page, authenticatedSession }, use) => {
         const betPromotionRulesPage = new BetPromotionRulesPage(page);
         await use(betPromotionRulesPage);
+    },
+
+    // Instantiate and provide RecurringRewardsPage
+    recurringRewardsPage: async ({ page, authenticatedSession }, use) => {
+        const recurringRewardsPage = new RecurringRewardsPage(page);
+        await use(recurringRewardsPage);
     },
 });
 

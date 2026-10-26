@@ -63,6 +63,7 @@ export class SidebarPage extends BasePage {
     readonly genericPredictorNode: Locator;
     readonly workflowManagementNode: Locator;
     readonly betPromotionRulesNode: Locator;
+    readonly recurringRewardsNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -135,6 +136,7 @@ export class SidebarPage extends BasePage {
         this.genericPredictorNode         = menu(sidebarLocators.menuGenericPredictor);
         this.workflowManagementNode       = menu(sidebarLocators.menuWorkflowManagement);
         this.betPromotionRulesNode        = menu(sidebarLocators.menuBetPromotionRules);
+        this.recurringRewardsNode         = menu(sidebarLocators.menuRecurringRewards);
     }
 
     /**
@@ -323,6 +325,17 @@ export class SidebarPage extends BasePage {
         await this.clickElement(this.marketingNode);
         await this.clickElement(this.segmentScheduleNode);
         await this.clickElement(this.segmentScheduleNode);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToRecurringRewards() {
+        console.log('Navigating via Sidebar: Marketing -> Recurring Rewards');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500);
+        await this.recurringRewardsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.recurringRewardsNode, { force: true });
+        await this.page.waitForTimeout(300);
+        await this.clickElement(this.recurringRewardsNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

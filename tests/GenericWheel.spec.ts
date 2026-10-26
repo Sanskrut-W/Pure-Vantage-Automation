@@ -744,105 +744,105 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_21-GenericWheel-NumberOfSlicesNumericOnly_success');
   // });
 
-  // // TC_22: Verify minimum value validation
-  // // Fill ALL mandatory fields, enter 1 in Number of Slices, click Save → error toast expected
-  // test('TC_22 - Verify Number of Slices minimum value validation', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+  // TC_22: Verify minimum value validation
+  // Fill ALL mandatory fields, enter 1 in Number of Slices, click Save → error toast expected
+  test('TC_22 - Verify Number of Slices minimum value validation', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
 
-  //   const createBtn = container.locator('button[aria-label="Create Promotion"]');
-  //   await createBtn.waitFor({ state: 'visible', timeout: 10000 });
-  //   await createBtn.scrollIntoViewIfNeeded();
-  //   await createBtn.click();
+    const createBtn = container.locator('button[aria-label="Create Promotion"]');
+    await createBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await createBtn.scrollIntoViewIfNeeded();
+    await createBtn.click();
 
-  //   const dialog = page.locator('div[role="dialog"]').first();
-  //   await expect(dialog).toBeVisible({ timeout: 15000 });
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
 
-  //   // 1. Promotion Name
-  //   const name22 = dialog.locator('#promotionNameInput');
-  //   await name22.waitFor({ state: 'visible', timeout: 10000 });
-  //   await name22.click();
-  //   await name22.fill(`WheelPromo_TC22_${CommonUtils.generateRandomString(5)}`);
+    // 1. Promotion Name
+    const name22 = dialog.locator('#promotionNameInput');
+    await name22.waitFor({ state: 'visible', timeout: 10000 });
+    await name22.click();
+    await name22.fill(`WheelPromo_TC22_${CommonUtils.generateRandomString(5)}`);
 
-  //   // 2. Allocation Strategy
-  //   await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
-  //   const strategyPanel22 = page.locator('.p-dropdown-panel');
-  //   await expect(strategyPanel22).toBeVisible({ timeout: 5000 });
-  //   await strategyPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
-  //   await page.waitForTimeout(300);
+    // 2. Allocation Strategy
+    await dialog.locator('#allocationStrategyDropdown [data-pc-section="trigger"]').click();
+    const strategyPanel22 = page.locator('.p-dropdown-panel');
+    await expect(strategyPanel22).toBeVisible({ timeout: 5000 });
+    await strategyPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
+    await page.waitForTimeout(300);
 
-  //   // 3. Start Date — first enabled day in current month
-  //   await dialog.locator('#startDateCalendar input').click();
-  //   const startPanel22 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel22).toBeVisible({ timeout: 5000 });
-  //   await startPanel22.locator(
-  //     'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
-  //   ).first().click();
-  //   await page.waitForTimeout(200);
+    // 3. Start Date — first enabled day in current month
+    await dialog.locator('#startDateCalendar input').click();
+    const startPanel22 = page.locator('.p-datepicker').first();
+    await expect(startPanel22).toBeVisible({ timeout: 5000 });
+    await startPanel22.locator(
+      'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
+    ).first().click();
+    await page.waitForTimeout(200);
 
-  //   // 4. End Date — navigate to next month, pick first enabled day
-  //   await dialog.locator('#endDateCalendar input').click();
-  //   const endPanel22 = page.locator('.p-datepicker').first();
-  //   await expect(endPanel22).toBeVisible({ timeout: 5000 });
-  //   await endPanel22.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //   await page.waitForTimeout(200);
-  //   await endPanel22.locator(
-  //     'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
-  //   ).first().click();
-  //   await name22.click({ force: true }).catch(() => {});
-  //   await page.waitForTimeout(200);
+    // 4. End Date — navigate to next month, pick first enabled day
+    await dialog.locator('#endDateCalendar input').click();
+    const endPanel22 = page.locator('.p-datepicker').first();
+    await expect(endPanel22).toBeVisible({ timeout: 5000 });
+    await endPanel22.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+    await page.waitForTimeout(200);
+    await endPanel22.locator(
+      'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]'
+    ).first().click();
+    await name22.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(200);
 
-  //   // 5. Spins Per User
-  //   const spins22 = dialog.locator('#spinsPerUserInput input');
-  //   await spins22.click({ clickCount: 3 });
-  //   await spins22.pressSequentially('5');
-  //   await spins22.press('Tab');
+    // 5. Spins Per User
+    const spins22 = dialog.locator('#spinsPerUserInput input');
+    await spins22.click({ clickCount: 3 });
+    await spins22.pressSequentially('5');
+    await spins22.press('Tab');
 
-  //   // 6. Daily Spin Limit
-  //   const daily22 = dialog.locator('#dailySpinLimitInput input');
-  //   await daily22.click({ clickCount: 3 });
-  //   await daily22.pressSequentially('3');
-  //   await daily22.press('Tab');
+    // 6. Daily Spin Limit
+    const daily22 = dialog.locator('#dailySpinLimitInput input');
+    await daily22.click({ clickCount: 3 });
+    await daily22.pressSequentially('3');
+    await daily22.press('Tab');
 
-  //   // 7. Spin Validity Days
-  //   const validity22 = dialog.locator('#spinValidityDaysInput input');
-  //   await validity22.click({ clickCount: 3 });
-  //   await validity22.pressSequentially('7');
-  //   await validity22.press('Tab');
+    // 7. Spin Validity Days
+    const validity22 = dialog.locator('#spinValidityDaysInput input');
+    await validity22.click({ clickCount: 3 });
+    await validity22.pressSequentially('7');
+    await validity22.press('Tab');
 
-  //   // 8. Number of Slices = 1 (below the allowed minimum)
-  //   const slices22 = dialog.locator('#numberOfSlicesInput input');
-  //   await slices22.click({ clickCount: 3 });
-  //   await slices22.pressSequentially('1');
-  //   await slices22.press('Tab');
-  //   await page.waitForTimeout(200);
+    // 8. Number of Slices = 1 (below the allowed minimum)
+    const slices22 = dialog.locator('#numberOfSlicesInput input');
+    await slices22.click({ clickCount: 3 });
+    await slices22.pressSequentially('1');
+    await slices22.press('Tab');
+    await page.waitForTimeout(200);
 
-  //   // 9. Region — select Betway Botswana or Betway Ghana (avoid Betway Agents)
-  //   await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
-  //   const regionPanel22 = page.locator('.p-dropdown-panel');
-  //   await expect(regionPanel22).toBeVisible({ timeout: 5000 });
-  //   await regionPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]')
-  //     .filter({ hasText: /Betway Botswana|Betway Ghana/ }).first().click();
-  //   await page.waitForTimeout(300);
+    // 9. Region — select Betway Botswana or Betway Ghana (avoid Betway Agents)
+    await dialog.locator('#regionDropdown [data-pc-section="trigger"]').click();
+    const regionPanel22 = page.locator('.p-dropdown-panel');
+    await expect(regionPanel22).toBeVisible({ timeout: 5000 });
+    await regionPanel22.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]')
+      .filter({ hasText: /Betway Botswana|Betway Ghana/ }).first().click();
+    await page.waitForTimeout(300);
 
-  //   // 10. Redirect URL
-  //   await dialog.locator('#redirectUrlInput').click();
-  //   await dialog.locator('#redirectUrlInput').fill('https://example.com');
-  //   await page.waitForTimeout(200);
+    // 10. Redirect URL
+    await dialog.locator('#redirectUrlInput').click();
+    await dialog.locator('#redirectUrlInput').fill('https://example.com');
+    await page.waitForTimeout(200);
 
-  //   // Click Save
-  //   const saveBtn22 = dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
-  //   await saveBtn22.waitFor({ state: 'visible', timeout: 5000 });
-  //   await saveBtn22.click();
+    // Click Save
+    const saveBtn22 = dialog.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
+    await saveBtn22.waitFor({ state: 'visible', timeout: 5000 });
+    await saveBtn22.click();
 
-  //   // Error toast must appear — Number of Slices is below the allowed minimum
-  //   const errorToast22 = page.locator(
-  //     '.p-toast-message-error, [data-p-severity="error"], .p-toast-message[class*="error"]'
-  //   ).first();
-  //   await expect(errorToast22).toBeVisible({ timeout: 10000 });
+    // Error toast must appear — Number of Slices is below the allowed minimum
+    const errorToast22 = page.locator(
+      '.p-toast-message-error, [data-p-severity="error"], .p-toast-message[class*="error"]'
+    ).first();
+    await expect(errorToast22).toBeVisible({ timeout: 10000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_22-GenericWheel-SlicesMinValidation_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_22-GenericWheel-SlicesMinValidation_success');
+  });
 
   // // TC_23: Verify maximum value validation
   // // Fill ALL mandatory fields, enter 9 in Number of Slices, click Save → error toast expected
@@ -2681,62 +2681,62 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_50-GenericWheel-ExistingDataPopulated_success');
   // });
 
-  // // ─── Edit-popup helpers (TC_51 – TC_69, TC_76, TC_77) ───────────────────────
-  // // Business rule: a promotion can only be edited while it is INACTIVE — for
-  // // active promotions the Save button stays disabled. So: switch ON the
-  // // "Include inactive" toolbar toggle, then open Edit on an inactive row.
-  // async function openEditOnInactivePromo(page: Page): Promise<{ dialog: Locator; promoName: string }> {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // ─── Edit-popup helpers (TC_51 – TC_69, TC_76, TC_77) ───────────────────────
+  // Business rule: a promotion can only be edited while it is INACTIVE — for
+  // active promotions the Save button stays disabled. So: switch ON the
+  // "Include inactive" toolbar toggle, then open Edit on an inactive row.
+  async function openEditOnInactivePromo(page: Page): Promise<{ dialog: Locator; promoName: string }> {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-  //   // Toolbar "Include inactive" toggle has data-p-disabled="false"; the
-  //   // per-row status switches are disabled (data-p-disabled="true")
-  //   const inactiveToggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
-  //   await inactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
-  //   if (await inactiveToggle.getAttribute('aria-checked') === 'false') {
-  //     await inactiveToggle.click();
-  //     await page.waitForTimeout(800);
-  //     await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
-  //   }
+    // Toolbar "Include inactive" toggle has data-p-disabled="false"; the
+    // per-row status switches are disabled (data-p-disabled="true")
+    const inactiveToggle = container.locator('[data-pc-name="inputswitch"][data-p-disabled="false"]');
+    await inactiveToggle.waitFor({ state: 'visible', timeout: 10000 });
+    if (await inactiveToggle.getAttribute('aria-checked') === 'false') {
+      await inactiveToggle.click();
+      await page.waitForTimeout(800);
+      await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 20000 });
+    }
 
-  //   // Prefer a row whose status switch is OFF (inactive promotion — editable);
-  //   // fall back to the first row if no inactive one is listed
-  //   const rows = container.locator('tbody tr[data-pc-section="bodyrow"]');
-  //   const inactiveRow = rows.filter({ has: page.locator('[data-pc-name="inputswitch"][aria-checked="false"]') }).first();
-  //   const targetRow = (await inactiveRow.count()) > 0 ? inactiveRow : rows.first();
+    // Prefer a row whose status switch is OFF (inactive promotion — editable);
+    // fall back to the first row if no inactive one is listed
+    const rows = container.locator('tbody tr[data-pc-section="bodyrow"]');
+    const inactiveRow = rows.filter({ has: page.locator('[data-pc-name="inputswitch"][aria-checked="false"]') }).first();
+    const targetRow = (await inactiveRow.count()) > 0 ? inactiveRow : rows.first();
 
-  //   await targetRow.locator('button.pure__table-menu-trigger').click();
-  //   const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
-  //   await editItem.waitFor({ state: 'visible', timeout: 5000 });
-  //   await editItem.click();
+    await targetRow.locator('button.pure__table-menu-trigger').click();
+    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+    await editItem.waitFor({ state: 'visible', timeout: 5000 });
+    await editItem.click();
 
-  //   const dialog = page.locator('div[role="dialog"]').first();
-  //   await expect(dialog).toBeVisible({ timeout: 15000 });
-  //   const promoName = (await dialog.locator('#promotionNameInput').inputValue()).trim();
-  //   return { dialog, promoName };
-  // }
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+    const promoName = (await dialog.locator('#promotionNameInput').inputValue()).trim();
+    return { dialog, promoName };
+  }
 
-  // // Re-find the same promotion by name (row order can change after Save) and
-  // // reopen its Edit popup. "Include inactive" is still ON from the first open.
-  // async function reopenEditForPromo(page: Page, promoName: string): Promise<Locator> {
-  //   const container = page.locator('generic-wheel');
-  //   const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
-  //   await searchInput.waitFor({ state: 'visible', timeout: 10000 });
-  //   await searchInput.click({ clickCount: 3 });
-  //   await searchInput.fill(promoName);
-  //   await page.waitForTimeout(800);
+  // Re-find the same promotion by name (row order can change after Save) and
+  // reopen its Edit popup. "Include inactive" is still ON from the first open.
+  async function reopenEditForPromo(page: Page, promoName: string): Promise<Locator> {
+    const container = page.locator('generic-wheel');
+    const searchInput = container.locator('input.pure-input.w-20r[placeholder="Search"]');
+    await searchInput.waitFor({ state: 'visible', timeout: 10000 });
+    await searchInput.click({ clickCount: 3 });
+    await searchInput.fill(promoName);
+    await page.waitForTimeout(800);
 
-  //   const row = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
-  //   await row.waitFor({ state: 'visible', timeout: 20000 });
-  //   await row.locator('button.pure__table-menu-trigger').click();
-  //   const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
-  //   await editItem.waitFor({ state: 'visible', timeout: 5000 });
-  //   await editItem.click();
+    const row = container.locator('tbody tr[data-pc-section="bodyrow"]').first();
+    await row.waitFor({ state: 'visible', timeout: 20000 });
+    await row.locator('button.pure__table-menu-trigger').click();
+    const editItem = page.locator('li[role="menuitem"][aria-label="Edit"]');
+    await editItem.waitFor({ state: 'visible', timeout: 5000 });
+    await editItem.click();
 
-  //   const dialog = page.locator('div[role="dialog"]').first();
-  //   await expect(dialog).toBeVisible({ timeout: 15000 });
-  //   return dialog;
-  // }
+    const dialog = page.locator('div[role="dialog"]').first();
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+    return dialog;
+  }
 
   // // TC_51: Verify Promotion Name update in Edit popup
   // test('TC_51 - Verify Promotion Name update in Edit popup', async ({ page }, testInfo) => {
@@ -3212,36 +3212,36 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_64-GenericWheel-NotificationTemplateUpdated_success');
   // });
 
-  // // TC_65: Verify toggle "Spin Again" update persists after Save
-  // test('TC_65 - Verify Spin Again toggle update persists after Save', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // TC_65: Verify toggle "Spin Again" update persists after Save
+  test('TC_65 - Verify Spin Again toggle update persists after Save', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-  //   // Active promotions can't be edited (Save stays disabled) — open an inactive one
-  //   const { dialog: dialog65, promoName: promoName65 } = await openEditOnInactivePromo(page);
+    // Active promotions can't be edited (Save stays disabled) — open an inactive one
+    const { dialog: dialog65, promoName: promoName65 } = await openEditOnInactivePromo(page);
 
-  //   // Read current state of Spin Again toggle, then flip it
-  //   const spinSwitch65 = dialog65.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
-  //   await spinSwitch65.scrollIntoViewIfNeeded();
-  //   const stateBefore65 = await spinSwitch65.getAttribute('aria-checked');
-  //   await dialog65.locator('label[for="hasSpinAgain"]').click();
-  //   await page.waitForTimeout(200);
-  //   const stateAfter65 = stateBefore65 === 'true' ? 'false' : 'true';
-  //   await expect(spinSwitch65).toHaveAttribute('aria-checked', stateAfter65);
+    // Read current state of Spin Again toggle, then flip it
+    const spinSwitch65 = dialog65.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
+    await spinSwitch65.scrollIntoViewIfNeeded();
+    const stateBefore65 = await spinSwitch65.getAttribute('aria-checked');
+    await dialog65.locator('label[for="hasSpinAgain"]').click();
+    await page.waitForTimeout(200);
+    const stateAfter65 = stateBefore65 === 'true' ? 'false' : 'true';
+    await expect(spinSwitch65).toHaveAttribute('aria-checked', stateAfter65);
 
-  //   // Click Save
-  //   const saveBtn65 = dialog65.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
-  //   await saveBtn65.click();
-  //   await expect(dialog65).toBeHidden({ timeout: 15000 });
+    // Click Save
+    const saveBtn65 = dialog65.locator('button[aria-label="Save Promotion"], button:has-text("Save")').first();
+    await saveBtn65.click();
+    await expect(dialog65).toBeHidden({ timeout: 15000 });
 
-  //   // Reopen via three-dots → Edit and verify toggle persisted
-  //   const dialog65b = await reopenEditForPromo(page, promoName65);
-  //   const spinSwitch65b = dialog65b.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
-  //   await spinSwitch65b.scrollIntoViewIfNeeded();
-  //   await expect(spinSwitch65b).toHaveAttribute('aria-checked', stateAfter65);
+    // Reopen via three-dots → Edit and verify toggle persisted
+    const dialog65b = await reopenEditForPromo(page, promoName65);
+    const spinSwitch65b = dialog65b.locator('[data-pc-name="inputswitch"]:has(#hasSpinAgain)');
+    await spinSwitch65b.scrollIntoViewIfNeeded();
+    await expect(spinSwitch65b).toHaveAttribute('aria-checked', stateAfter65);
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_65-GenericWheel-SpinAgainTogglePersisted_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_65-GenericWheel-SpinAgainTogglePersisted_success');
+  });
 
   // // TC_66: Verify toggle "Requires Opt In" update persists after Save
   // test('TC_66 - Verify Requires Opt In toggle update persists after Save', async ({ page }, testInfo) => {
@@ -3882,51 +3882,51 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_82-GenericWheel-WinningChanceAlphaRejected_success');
   // });
 
-  // // TC_83: Verify date range validation — End Date before Start Date shows no clickable dates
-  // test('TC_83 - Verify End Date before Start Date shows no clickable dates in Add Prize popup', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // TC_83: Verify date range validation — End Date before Start Date shows no clickable dates
+  test('TC_83 - Verify End Date before Start Date shows no clickable dates in Add Prize popup', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-  //   const viewPrizesItem83 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
-  //   await viewPrizesItem83.waitFor({ state: 'visible', timeout: 5000 });
-  //   await viewPrizesItem83.click();
-  //   await page.locator('generic-wheel-promotion-prizes').waitFor({ state: 'visible', timeout: 20000 });
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+    const viewPrizesItem83 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
+    await viewPrizesItem83.waitFor({ state: 'visible', timeout: 5000 });
+    await viewPrizesItem83.click();
+    await page.locator('generic-wheel-promotion-prizes').waitFor({ state: 'visible', timeout: 20000 });
 
-  //   await page.locator('button[aria-label="Create Prize"]').click();
-  //   const prizeDialog83 = page.locator('div[role="dialog"]').first();
-  //   await expect(prizeDialog83).toBeVisible({ timeout: 10000 });
+    await page.locator('button[aria-label="Create Prize"]').click();
+    const prizeDialog83 = page.locator('div[role="dialog"]').first();
+    await expect(prizeDialog83).toBeVisible({ timeout: 10000 });
 
-  //   // Select a Start Date
-  //   await prizeDialog83.locator('#startDateCalendar input').click();
-  //   const startPanel83 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel83).toBeVisible({ timeout: 5000 });
-  //   const startEnabled83 = startPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]');
-  //   if (await startEnabled83.count() > 0) {
-  //     await startEnabled83.first().click();
-  //   } else {
-  //     await startPanel83.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //     await startPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]').first().click();
-  //   }
-  //   await page.waitForTimeout(300);
+    // Select a Start Date
+    await prizeDialog83.locator('#startDateCalendar input').click();
+    const startPanel83 = page.locator('.p-datepicker').first();
+    await expect(startPanel83).toBeVisible({ timeout: 5000 });
+    const startEnabled83 = startPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]');
+    if (await startEnabled83.count() > 0) {
+      await startEnabled83.first().click();
+    } else {
+      await startPanel83.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+      await startPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]').first().click();
+    }
+    await page.waitForTimeout(300);
 
-  //   // Click Display Text to close Start Date calendar panel
-  //   await prizeDialog83.locator('#displayTextInput').click();
-  //   await page.waitForTimeout(300);
+    // Click Display Text to close Start Date calendar panel
+    await prizeDialog83.locator('#displayTextInput').click();
+    await page.waitForTimeout(300);
 
-  //   // Open End Date calendar and navigate backward (before start date)
-  //   await prizeDialog83.locator('#endDateCalendar input').click();
-  //   const endPanel83 = page.locator('.p-datepicker').first();
-  //   await expect(endPanel83).toBeVisible({ timeout: 5000 });
-  //   await endPanel83.locator('[data-pc-section="prevbutton"], .p-datepicker-prev').first().click();
-  //   await page.waitForTimeout(200);
+    // Open End Date calendar and navigate backward (before start date)
+    await prizeDialog83.locator('#endDateCalendar input').click();
+    const endPanel83 = page.locator('.p-datepicker').first();
+    await expect(endPanel83).toBeVisible({ timeout: 5000 });
+    await endPanel83.locator('[data-pc-section="prevbutton"], .p-datepicker-prev').first().click();
+    await page.waitForTimeout(200);
 
-  //   // All dates in the previous month should be disabled — calendar validation working
-  //   const endEnabled83 = endPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]');
-  //   expect(await endEnabled83.count()).toBe(0);
+    // All dates in the previous month should be disabled — calendar validation working
+    const endEnabled83 = endPanel83.locator('td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]');
+    expect(await endEnabled83.count()).toBe(0);
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_83-GenericWheel-PrizeDateRangeValidation_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_83-GenericWheel-PrizeDateRangeValidation_success');
+  });
 
   // // TC_84: Verify Cancel button closes Add Prize popup without creating a prize
   // test('TC_84 - Verify Cancel button closes Add Prize popup without creating prize', async ({ page }, testInfo) => {
@@ -4027,225 +4027,225 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_86-GenericWheel-BackButton_success');
   // });
 
-  // // TC_87: Verify creation of a Promotion Prize
-  // test('TC_87 - Verify creation of Promotion Prize', async ({ page }, testInfo) => {
-  //   const container = page.locator('generic-wheel');
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // TC_87: Verify creation of a Promotion Prize
+  test('TC_87 - Verify creation of Promotion Prize', async ({ page }, testInfo) => {
+    const container = page.locator('generic-wheel');
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-  //   // Read the promotion start AND end dates from the first row (DD/MM/YYYY HH:mm).
-  //   // The prize's availability window must fall INSIDE the promotion window —
-  //   // the calendars don't grey out out-of-range days; the backend rejects them
-  //   // on Save ("Prize end date is after promotion end date").
-  //   const rowText87 = await container.locator('tbody tr[data-pc-section="bodyrow"]').first().innerText();
-  //   const rowDates87 = (rowText87.match(/\d{2}\/\d{2}\/\d{4}/g) || []).map((s) => {
-  //     const parts = s.split('/').map((x) => parseInt(x));
-  //     return new Date(parts[2], parts[1] - 1, parts[0]);
-  //   });
-  //   const promoStart87 = rowDates87.length > 0 ? rowDates87[0] : null;
-  //   const promoEnd87   = rowDates87.length > 1 ? rowDates87[1] : null;
+    // Read the promotion start AND end dates from the first row (DD/MM/YYYY HH:mm).
+    // The prize's availability window must fall INSIDE the promotion window —
+    // the calendars don't grey out out-of-range days; the backend rejects them
+    // on Save ("Prize end date is after promotion end date").
+    const rowText87 = await container.locator('tbody tr[data-pc-section="bodyrow"]').first().innerText();
+    const rowDates87 = (rowText87.match(/\d{2}\/\d{2}\/\d{4}/g) || []).map((s) => {
+      const parts = s.split('/').map((x) => parseInt(x));
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+    });
+    const promoStart87 = rowDates87.length > 0 ? rowDates87[0] : null;
+    const promoEnd87   = rowDates87.length > 1 ? rowDates87[1] : null;
 
-  //   await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-  //   const viewPrizesItem87 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
-  //   await viewPrizesItem87.waitFor({ state: 'visible', timeout: 5000 });
-  //   await viewPrizesItem87.click();
-  //   const prizeContainer87 = page.locator('generic-wheel-promotion-prizes');
-  //   await prizeContainer87.waitFor({ state: 'visible', timeout: 20000 });
+    await container.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+    const viewPrizesItem87 = page.locator('li[role="menuitem"][aria-label="View Promotion Prizes"], li[role="menuitem"]:has-text("View Promotion Prizes")').first();
+    await viewPrizesItem87.waitFor({ state: 'visible', timeout: 5000 });
+    await viewPrizesItem87.click();
+    const prizeContainer87 = page.locator('generic-wheel-promotion-prizes');
+    await prizeContainer87.waitFor({ state: 'visible', timeout: 20000 });
 
-  //   await page.locator('button[aria-label="Create Prize"]').click();
-  //   const prizeDialog87 = page.locator('div[role="dialog"]').first();
-  //   await expect(prizeDialog87).toBeVisible({ timeout: 10000 });
+    await page.locator('button[aria-label="Create Prize"]').click();
+    const prizeDialog87 = page.locator('div[role="dialog"]').first();
+    await expect(prizeDialog87).toBeVisible({ timeout: 10000 });
 
-  //   // 1. Select Prize Type
-  //   await prizeDialog87.locator('#prizeTypeDropdown [data-pc-section="trigger"]').click();
-  //   const prizeTypePanel87 = page.locator('.p-dropdown-panel');
-  //   await expect(prizeTypePanel87).toBeVisible({ timeout: 5000 });
-  //   await prizeTypePanel87.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
-  //   await page.waitForTimeout(300);
+    // 1. Select Prize Type
+    await prizeDialog87.locator('#prizeTypeDropdown [data-pc-section="trigger"]').click();
+    const prizeTypePanel87 = page.locator('.p-dropdown-panel');
+    await expect(prizeTypePanel87).toBeVisible({ timeout: 5000 });
+    await prizeTypePanel87.locator('[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]').first().click();
+    await page.waitForTimeout(300);
 
-  //   // 2. Enter Display Text
-  //   const displayText87 = `Prize_${CommonUtils.generateRandomString(5)}`;
-  //   await prizeDialog87.locator('#displayTextInput').fill(displayText87);
-  //   await page.waitForTimeout(200);
+    // 2. Enter Display Text
+    const displayText87 = `Prize_${CommonUtils.generateRandomString(5)}`;
+    await prizeDialog87.locator('#displayTextInput').fill(displayText87);
+    await page.waitForTimeout(200);
 
-  //   // 3. Enter Winning Chance (numeric)
-  //   const winningInput87 = prizeDialog87.locator('#winningChanceInput input');
-  //   await winningInput87.click({ clickCount: 3 });
-  //   await winningInput87.pressSequentially('10');
-  //   await winningInput87.press('Tab');
-  //   await page.waitForTimeout(200);
+    // 3. Enter Winning Chance (numeric)
+    const winningInput87 = prizeDialog87.locator('#winningChanceInput input');
+    await winningInput87.click({ clickCount: 3 });
+    await winningInput87.pressSequentially('10');
+    await winningInput87.press('Tab');
+    await page.waitForTimeout(200);
 
-  //   const startDaySelector87 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
+    const startDaySelector87 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 
-  //   // Signed month distance from the current month (negative = past month)
-  //   const monthDiff87 = (d: Date) => {
-  //     const now = new Date();
-  //     return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
-  //   };
-  //   const navForward87 = async (panel: import('@playwright/test').Locator, months: number) => {
-  //     for (let m = 0; m < months; m++) {
-  //       await panel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //       await page.waitForTimeout(100);
-  //     }
-  //   };
-  //   // Click the smallest enabled day within [minDay, maxDay] in the shown month;
-  //   // falls back to the first/last enabled day if none is in range.
-  //   const pickEnabledDay87 = async (panel: import('@playwright/test').Locator, minDay: number, maxDay: number, fallback: 'first' | 'last'): Promise<number> => {
-  //     const enabled = panel.locator(startDaySelector87);
-  //     const labels = await enabled.allInnerTexts();
-  //     if (labels.length === 0) throw new Error('No selectable days in the calendar month');
-  //     let idx = -1;
-  //     let best = 32;
-  //     labels.forEach((t, i) => {
-  //       const v = parseInt(t.trim());
-  //       if (v >= minDay && v <= maxDay && v < best) { best = v; idx = i; }
-  //     });
-  //     if (idx < 0) idx = fallback === 'first' ? 0 : labels.length - 1;
-  //     await enabled.nth(idx).click();
-  //     return parseInt(labels[idx].trim());
-  //   };
+    // Signed month distance from the current month (negative = past month)
+    const monthDiff87 = (d: Date) => {
+      const now = new Date();
+      return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
+    };
+    const navForward87 = async (panel: import('@playwright/test').Locator, months: number) => {
+      for (let m = 0; m < months; m++) {
+        await panel.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+        await page.waitForTimeout(100);
+      }
+    };
+    // Click the smallest enabled day within [minDay, maxDay] in the shown month;
+    // falls back to the first/last enabled day if none is in range.
+    const pickEnabledDay87 = async (panel: import('@playwright/test').Locator, minDay: number, maxDay: number, fallback: 'first' | 'last'): Promise<number> => {
+      const enabled = panel.locator(startDaySelector87);
+      const labels = await enabled.allInnerTexts();
+      if (labels.length === 0) throw new Error('No selectable days in the calendar month');
+      let idx = -1;
+      let best = 32;
+      labels.forEach((t, i) => {
+        const v = parseInt(t.trim());
+        if (v >= minDay && v <= maxDay && v < best) { best = v; idx = i; }
+      });
+      if (idx < 0) idx = fallback === 'first' ? 0 : labels.length - 1;
+      await enabled.nth(idx).click();
+      return parseInt(labels[idx].trim());
+    };
 
-  //   // 4. Select Available Start Date — inside the promotion window, from today onward
-  //   await prizeDialog87.locator('#startDateCalendar input').click();
-  //   const startPanel87 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel87).toBeVisible({ timeout: 5000 });
+    // 4. Select Available Start Date — inside the promotion window, from today onward
+    await prizeDialog87.locator('#startDateCalendar input').click();
+    const startPanel87 = page.locator('.p-datepicker').first();
+    await expect(startPanel87).toBeVisible({ timeout: 5000 });
 
-  //   const now87 = new Date();
-  //   // Latest safe prize-end day: one full day before the promotion end, so the
-  //   // time-of-day component can never push the prize past the promotion end
-  //   const endTarget87 = promoEnd87
-  //     ? new Date(promoEnd87.getFullYear(), promoEnd87.getMonth(), promoEnd87.getDate() - 1)
-  //     : null;
+    const now87 = new Date();
+    // Latest safe prize-end day: one full day before the promotion end, so the
+    // time-of-day component can never push the prize past the promotion end
+    const endTarget87 = promoEnd87
+      ? new Date(promoEnd87.getFullYear(), promoEnd87.getMonth(), promoEnd87.getDate() - 1)
+      : null;
 
-  //   // Land on the month of max(today, promotion start), never past the end-target month
-  //   let startNav87 = promoStart87 ? Math.max(0, monthDiff87(promoStart87)) : 0;
-  //   if (endTarget87) startNav87 = Math.min(startNav87, Math.max(0, monthDiff87(endTarget87)));
-  //   await navForward87(startPanel87, startNav87);
-  //   // Earliest pickable day: today (the calendar does NOT disable past days) and
-  //   // no earlier than the promotion start day when in that month
-  //   let startMinDay87 = startNav87 === 0 ? now87.getDate() : 1;
-  //   if (promoStart87 && monthDiff87(promoStart87) === startNav87) {
-  //     startMinDay87 = Math.max(startMinDay87, promoStart87.getDate());
-  //   }
-  //   // Leave at least one day of room for the prize end date
-  //   const startMaxDay87 = endTarget87 && monthDiff87(endTarget87) === startNav87
-  //     ? Math.max(startMinDay87, endTarget87.getDate() - 1)
-  //     : 31;
-  //   const startDay87 = await pickEnabledDay87(startPanel87, startMinDay87, startMaxDay87, 'first');
-  //   await page.waitForTimeout(300);
+    // Land on the month of max(today, promotion start), never past the end-target month
+    let startNav87 = promoStart87 ? Math.max(0, monthDiff87(promoStart87)) : 0;
+    if (endTarget87) startNav87 = Math.min(startNav87, Math.max(0, monthDiff87(endTarget87)));
+    await navForward87(startPanel87, startNav87);
+    // Earliest pickable day: today (the calendar does NOT disable past days) and
+    // no earlier than the promotion start day when in that month
+    let startMinDay87 = startNav87 === 0 ? now87.getDate() : 1;
+    if (promoStart87 && monthDiff87(promoStart87) === startNav87) {
+      startMinDay87 = Math.max(startMinDay87, promoStart87.getDate());
+    }
+    // Leave at least one day of room for the prize end date
+    const startMaxDay87 = endTarget87 && monthDiff87(endTarget87) === startNav87
+      ? Math.max(startMinDay87, endTarget87.getDate() - 1)
+      : 31;
+    const startDay87 = await pickEnabledDay87(startPanel87, startMinDay87, startMaxDay87, 'first');
+    await page.waitForTimeout(300);
 
-  //   // 5. With the start date selected, click on Available End Date — this closes
-  //   // the still-open start calendar and opens the end calendar — then pick a day
-  //   // after the start but BEFORE the promotion end date
-  //   const endInput87 = prizeDialog87.locator('#endDateCalendar input');
-  //   await endInput87.click();
-  //   await page.waitForTimeout(300);
-  //   const endPanel87 = page.locator('.p-datepicker:visible').first();
-  //   if (!(await endPanel87.isVisible().catch(() => false))) {
-  //     // The first click only dismissed the start-date overlay — click again to open
-  //     await endInput87.click();
-  //   }
-  //   await expect(endPanel87).toBeVisible({ timeout: 5000 });
-  //   const endNav87 = endTarget87 ? Math.max(startNav87, Math.max(0, monthDiff87(endTarget87))) : startNav87;
-  //   await navForward87(endPanel87, endNav87);
-  //   const endMinDay87 = endNav87 === startNav87 ? startDay87 + 1 : 1;
-  //   const endMaxDay87 = endTarget87 && monthDiff87(endTarget87) === endNav87
-  //     ? Math.max(endMinDay87, endTarget87.getDate())
-  //     : 31;
-  //   await pickEnabledDay87(endPanel87, endMinDay87, endMaxDay87, 'first');
-  //   await page.waitForTimeout(300);
-  //   // Click Display Text to close the End Date calendar before clicking Save
-  //   await prizeDialog87.locator('#displayTextInput').click();
-  //   await page.waitForTimeout(300);
+    // 5. With the start date selected, click on Available End Date — this closes
+    // the still-open start calendar and opens the end calendar — then pick a day
+    // after the start but BEFORE the promotion end date
+    const endInput87 = prizeDialog87.locator('#endDateCalendar input');
+    await endInput87.click();
+    await page.waitForTimeout(300);
+    const endPanel87 = page.locator('.p-datepicker:visible').first();
+    if (!(await endPanel87.isVisible().catch(() => false))) {
+      // The first click only dismissed the start-date overlay — click again to open
+      await endInput87.click();
+    }
+    await expect(endPanel87).toBeVisible({ timeout: 5000 });
+    const endNav87 = endTarget87 ? Math.max(startNav87, Math.max(0, monthDiff87(endTarget87))) : startNav87;
+    await navForward87(endPanel87, endNav87);
+    const endMinDay87 = endNav87 === startNav87 ? startDay87 + 1 : 1;
+    const endMaxDay87 = endTarget87 && monthDiff87(endTarget87) === endNav87
+      ? Math.max(endMinDay87, endTarget87.getDate())
+      : 31;
+    await pickEnabledDay87(endPanel87, endMinDay87, endMaxDay87, 'first');
+    await page.waitForTimeout(300);
+    // Click Display Text to close the End Date calendar before clicking Save
+    await prizeDialog87.locator('#displayTextInput').click();
+    await page.waitForTimeout(300);
 
-  //   // Click Save, then observe the outcome: dialog closing = saved; an error
-  //   // toast = the backend rejected the prize (capture its text before it fades)
-  //   const saveBtn87 = prizeDialog87.locator('button[aria-label="Save"], button:has-text("Save")').first();
-  //   await saveBtn87.click();
-  //   const errorToast87 = page.locator('.p-toast-message-error').first();
-  //   let outcome87: 'saved' | 'error' | 'timeout' = 'timeout';
-  //   for (let t = 0; t < 30; t++) {
-  //     if (!(await prizeDialog87.isVisible().catch(() => true))) { outcome87 = 'saved'; break; }
-  //     if (await errorToast87.isVisible().catch(() => false)) { outcome87 = 'error'; break; }
-  //     await page.waitForTimeout(500);
-  //   }
-  //   if (outcome87 === 'error') {
-  //     throw new Error(`Prize creation rejected — error toast: ${(await errorToast87.innerText().catch(() => '')).trim()}`);
-  //   }
-  //   if (outcome87 === 'timeout') {
-  //     throw new Error('Save did not close the Add Prize dialog and no error toast appeared');
-  //   }
+    // Click Save, then observe the outcome: dialog closing = saved; an error
+    // toast = the backend rejected the prize (capture its text before it fades)
+    const saveBtn87 = prizeDialog87.locator('button[aria-label="Save"], button:has-text("Save")').first();
+    await saveBtn87.click();
+    const errorToast87 = page.locator('.p-toast-message-error').first();
+    let outcome87: 'saved' | 'error' | 'timeout' = 'timeout';
+    for (let t = 0; t < 30; t++) {
+      if (!(await prizeDialog87.isVisible().catch(() => true))) { outcome87 = 'saved'; break; }
+      if (await errorToast87.isVisible().catch(() => false)) { outcome87 = 'error'; break; }
+      await page.waitForTimeout(500);
+    }
+    if (outcome87 === 'error') {
+      throw new Error(`Prize creation rejected — error toast: ${(await errorToast87.innerText().catch(() => '')).trim()}`);
+    }
+    if (outcome87 === 'timeout') {
+      throw new Error('Save did not close the Add Prize dialog and no error toast appeared');
+    }
 
-  //   // Saved: a success toast or the new prize appearing in the list confirms creation
-  //   const successToast87 = page.locator('.p-toast-message-success').first();
-  //   if (!(await successToast87.isVisible().catch(() => false))) {
-  //     await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').filter({ hasText: displayText87 }).first().waitFor({ state: 'visible', timeout: 10000 });
-  //   }
+    // Saved: a success toast or the new prize appearing in the list confirms creation
+    const successToast87 = page.locator('.p-toast-message-success').first();
+    if (!(await successToast87.isVisible().catch(() => false))) {
+      await prizeContainer87.locator('tbody tr[data-pc-section="bodyrow"]').filter({ hasText: displayText87 }).first().waitFor({ state: 'visible', timeout: 10000 });
+    }
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_87-GenericWheel-PrizeCreated_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_87-GenericWheel-PrizeCreated_success');
+  });
 
-  // // ─── TC_88 ───────────────────────────────────────────────────────────────────
-  // test('TC_88 - Verify mandatory field validation on Duplicate Promotion popup', async ({ page }, testInfo) => {
-  //   const container88 = page.locator('generic-wheel');
-  //   await container88.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+  // ─── TC_88 ───────────────────────────────────────────────────────────────────
+  test('TC_88 - Verify mandatory field validation on Duplicate Promotion popup', async ({ page }, testInfo) => {
+    const container88 = page.locator('generic-wheel');
+    await container88.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
 
-  //   await container88.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-  //   const duplicateItem88 = page.locator('li[role="menuitem"][aria-label="Duplicate"], li[role="menuitem"]:has-text("Duplicate")').first();
-  //   await duplicateItem88.waitFor({ state: 'visible', timeout: 5000 });
-  //   await duplicateItem88.click();
+    await container88.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+    const duplicateItem88 = page.locator('li[role="menuitem"][aria-label="Duplicate"], li[role="menuitem"]:has-text("Duplicate")').first();
+    await duplicateItem88.waitFor({ state: 'visible', timeout: 5000 });
+    await duplicateItem88.click();
 
-  //   const dupDialog88 = page.locator('div[role="dialog"]').first();
-  //   await expect(dupDialog88).toBeVisible({ timeout: 15000 });
+    const dupDialog88 = page.locator('div[role="dialog"]').first();
+    await expect(dupDialog88).toBeVisible({ timeout: 15000 });
 
-  //   // Clear Promotion Name — leave blank
-  //   const nameInput88 = dupDialog88.locator('input#promotionName');
-  //   await nameInput88.waitFor({ state: 'visible', timeout: 10000 });
-  //   await nameInput88.click({ clickCount: 3 });
-  //   await nameInput88.fill('');
-  //   await nameInput88.press('Tab');
-  //   await page.waitForTimeout(300);
+    // Clear Promotion Name — leave blank
+    const nameInput88 = dupDialog88.locator('input#promotionName');
+    await nameInput88.waitFor({ state: 'visible', timeout: 10000 });
+    await nameInput88.click({ clickCount: 3 });
+    await nameInput88.fill('');
+    await nameInput88.press('Tab');
+    await page.waitForTimeout(300);
 
-  //   const dupBtn88 = dupDialog88.locator('button[aria-label="Duplicate"], button:has-text("Duplicate")').first();
-  //   await dupBtn88.waitFor({ state: 'visible', timeout: 5000 });
-  //   const daySelector88 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
+    const dupBtn88 = dupDialog88.locator('button[aria-label="Duplicate"], button:has-text("Duplicate")').first();
+    await dupBtn88.waitFor({ state: 'visible', timeout: 5000 });
+    const daySelector88 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 
-  //   // Select Start Date — then click Duplicate (disabled) to close the calendar
-  //   await dupDialog88.locator('span#startDate input').click();
-  //   const startPanel88 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel88).toBeVisible({ timeout: 5000 });
-  //   for (let m = 0; m < 12; m++) {
-  //     if (await startPanel88.locator(daySelector88).count() > 0) break;
-  //     await startPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //     await page.waitForTimeout(100);
-  //   }
-  //   await startPanel88.locator(daySelector88).first().click();
-  //   await page.waitForTimeout(300);
-  //   await dupBtn88.click({ force: true });
-  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-  //   await page.waitForTimeout(300);
+    // Select Start Date — then click Duplicate (disabled) to close the calendar
+    await dupDialog88.locator('span#startDate input').click();
+    const startPanel88 = page.locator('.p-datepicker').first();
+    await expect(startPanel88).toBeVisible({ timeout: 5000 });
+    for (let m = 0; m < 12; m++) {
+      if (await startPanel88.locator(daySelector88).count() > 0) break;
+      await startPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+      await page.waitForTimeout(100);
+    }
+    await startPanel88.locator(daySelector88).first().click();
+    await page.waitForTimeout(300);
+    await dupBtn88.click({ force: true });
+    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
 
-  //   // Select End Date — then click Duplicate (still disabled because name is empty)
-  //   await dupDialog88.locator('span#endDate input').click();
-  //   const endPanel88 = page.locator('.p-datepicker').first();
-  //   await expect(endPanel88).toBeVisible({ timeout: 5000 });
-  //   await endPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //   await page.waitForTimeout(100);
-  //   for (let m = 0; m < 12; m++) {
-  //     if (await endPanel88.locator(daySelector88).count() > 0) break;
-  //     await endPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //     await page.waitForTimeout(100);
-  //   }
-  //   await endPanel88.locator(daySelector88).first().click();
-  //   await page.waitForTimeout(300);
-  //   await dupBtn88.click({ force: true });
-  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-  //   await page.waitForTimeout(300);
+    // Select End Date — then click Duplicate (still disabled because name is empty)
+    await dupDialog88.locator('span#endDate input').click();
+    const endPanel88 = page.locator('.p-datepicker').first();
+    await expect(endPanel88).toBeVisible({ timeout: 5000 });
+    await endPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+    await page.waitForTimeout(100);
+    for (let m = 0; m < 12; m++) {
+      if (await endPanel88.locator(daySelector88).count() > 0) break;
+      await endPanel88.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+      await page.waitForTimeout(100);
+    }
+    await endPanel88.locator(daySelector88).first().click();
+    await page.waitForTimeout(300);
+    await dupBtn88.click({ force: true });
+    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
 
-  //   // Duplicate button must remain disabled — name is still empty
-  //   await expect(dupBtn88).toBeDisabled({ timeout: 5000 });
+    // Duplicate button must remain disabled — name is still empty
+    await expect(dupBtn88).toBeDisabled({ timeout: 5000 });
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_88-GenericWheel-DupMandatoryValidation_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_88-GenericWheel-DupMandatoryValidation_success');
+  });
 
   // // ─── TC_89 ───────────────────────────────────────────────────────────────────
   // test('TC_89 - Verify successful promotion duplication', async ({ page }, testInfo) => {
@@ -4380,73 +4380,73 @@ test.describe('Marketing - Generic Wheel', () => {
   //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_90-GenericWheel-DupCancelButton_success');
   // });
 
-  // // ─── TC_91 ───────────────────────────────────────────────────────────────────
-  // test('TC_91 - Verify Close (X) icon on Duplicate Promotion popup', async ({ page }, testInfo) => {
-  //   const container91 = page.locator('generic-wheel');
-  //   await container91.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
-  //   const rowsBefore91 = await container91.locator('tbody tr[data-pc-section="bodyrow"]').count();
+  // ─── TC_91 ───────────────────────────────────────────────────────────────────
+  test('TC_91 - Verify Close (X) icon on Duplicate Promotion popup', async ({ page }, testInfo) => {
+    const container91 = page.locator('generic-wheel');
+    await container91.locator('tbody tr[data-pc-section="bodyrow"]').first().waitFor({ state: 'visible', timeout: 30000 });
+    const rowsBefore91 = await container91.locator('tbody tr[data-pc-section="bodyrow"]').count();
 
-  //   // Open three-dots menu and click Duplicate
-  //   await container91.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
-  //   const duplicateItem91 = page.locator('li[role="menuitem"][aria-label="Duplicate"], li[role="menuitem"]:has-text("Duplicate")').first();
-  //   await duplicateItem91.waitFor({ state: 'visible', timeout: 5000 });
-  //   await duplicateItem91.click();
+    // Open three-dots menu and click Duplicate
+    await container91.locator('tbody tr[data-pc-section="bodyrow"]').first().locator('button.pure__table-menu-trigger').click();
+    const duplicateItem91 = page.locator('li[role="menuitem"][aria-label="Duplicate"], li[role="menuitem"]:has-text("Duplicate")').first();
+    await duplicateItem91.waitFor({ state: 'visible', timeout: 5000 });
+    await duplicateItem91.click();
 
-  //   const dupDialog91 = page.locator('div[role="dialog"]').first();
-  //   await expect(dupDialog91).toBeVisible({ timeout: 15000 });
+    const dupDialog91 = page.locator('div[role="dialog"]').first();
+    await expect(dupDialog91).toBeVisible({ timeout: 15000 });
 
-  //   // Enter a unique Promotion Name
-  //   const nameInput91 = dupDialog91.locator('input#promotionName');
-  //   await nameInput91.waitFor({ state: 'visible', timeout: 10000 });
-  //   await nameInput91.click({ clickCount: 3 });
-  //   await nameInput91.fill(`DupPromo_TC91_${CommonUtils.generateRandomString(5)}`);
-  //   await page.waitForTimeout(200);
+    // Enter a unique Promotion Name
+    const nameInput91 = dupDialog91.locator('input#promotionName');
+    await nameInput91.waitFor({ state: 'visible', timeout: 10000 });
+    await nameInput91.click({ clickCount: 3 });
+    await nameInput91.fill(`DupPromo_TC91_${CommonUtils.generateRandomString(5)}`);
+    await page.waitForTimeout(200);
 
-  //   const dupBtn91 = dupDialog91.locator('button[aria-label="Duplicate"], button:has-text("Duplicate")').first();
-  //   await dupBtn91.waitFor({ state: 'visible', timeout: 5000 });
-  //   const daySelector91 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
+    const dupBtn91 = dupDialog91.locator('button[aria-label="Duplicate"], button:has-text("Duplicate")').first();
+    await dupBtn91.waitFor({ state: 'visible', timeout: 5000 });
+    const daySelector91 = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 
-  //   // Select Start Date — click Duplicate (disabled, end date not set) to close calendar
-  //   await dupDialog91.locator('span#startDate input').click();
-  //   const startPanel91 = page.locator('.p-datepicker').first();
-  //   await expect(startPanel91).toBeVisible({ timeout: 5000 });
-  //   for (let m = 0; m < 12; m++) {
-  //     if (await startPanel91.locator(daySelector91).count() > 0) break;
-  //     await startPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //     await page.waitForTimeout(100);
-  //   }
-  //   await startPanel91.locator(daySelector91).first().click();
-  //   await page.waitForTimeout(300);
-  //   await dupBtn91.click({ force: true });
-  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-  //   await page.waitForTimeout(300);
+    // Select Start Date — click Duplicate (disabled, end date not set) to close calendar
+    await dupDialog91.locator('span#startDate input').click();
+    const startPanel91 = page.locator('.p-datepicker').first();
+    await expect(startPanel91).toBeVisible({ timeout: 5000 });
+    for (let m = 0; m < 12; m++) {
+      if (await startPanel91.locator(daySelector91).count() > 0) break;
+      await startPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+      await page.waitForTimeout(100);
+    }
+    await startPanel91.locator(daySelector91).first().click();
+    await page.waitForTimeout(300);
+    await dupBtn91.click({ force: true });
+    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
 
-  //   // Select End Date — close calendar via Promotion Name click (Duplicate is now enabled; avoid submitting)
-  //   await dupDialog91.locator('span#endDate input').click();
-  //   const endPanel91 = page.locator('.p-datepicker').first();
-  //   await expect(endPanel91).toBeVisible({ timeout: 5000 });
-  //   await endPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //   await page.waitForTimeout(100);
-  //   for (let m = 0; m < 12; m++) {
-  //     if (await endPanel91.locator(daySelector91).count() > 0) break;
-  //     await endPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
-  //     await page.waitForTimeout(100);
-  //   }
-  //   await endPanel91.locator(daySelector91).first().click();
-  //   await page.waitForTimeout(300);
-  //   await nameInput91.click({ force: true });
-  //   await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
-  //   await page.waitForTimeout(300);
+    // Select End Date — close calendar via Promotion Name click (Duplicate is now enabled; avoid submitting)
+    await dupDialog91.locator('span#endDate input').click();
+    const endPanel91 = page.locator('.p-datepicker').first();
+    await expect(endPanel91).toBeVisible({ timeout: 5000 });
+    await endPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+    await page.waitForTimeout(100);
+    for (let m = 0; m < 12; m++) {
+      if (await endPanel91.locator(daySelector91).count() > 0) break;
+      await endPanel91.locator('[data-pc-section="nextbutton"], .p-datepicker-next').first().click();
+      await page.waitForTimeout(100);
+    }
+    await endPanel91.locator(daySelector91).first().click();
+    await page.waitForTimeout(300);
+    await nameInput91.click({ force: true });
+    await page.locator('.p-datepicker').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
 
-  //   // Click X icon — popup must close, no new promotion created
-  //   const closeBtn91 = dupDialog91.locator('[data-pc-section="closebutton"], button[aria-label="Close"]').first();
-  //   await closeBtn91.waitFor({ state: 'visible', timeout: 5000 });
-  //   await closeBtn91.click();
-  //   await expect(dupDialog91).toBeHidden({ timeout: 10000 });
-  //   expect(await container91.locator('tbody tr[data-pc-section="bodyrow"]').count()).toBe(rowsBefore91);
+    // Click X icon — popup must close, no new promotion created
+    const closeBtn91 = dupDialog91.locator('[data-pc-section="closebutton"], button[aria-label="Close"]').first();
+    await closeBtn91.waitFor({ state: 'visible', timeout: 5000 });
+    await closeBtn91.click();
+    await expect(dupDialog91).toBeHidden({ timeout: 10000 });
+    expect(await container91.locator('tbody tr[data-pc-section="bodyrow"]').count()).toBe(rowsBefore91);
 
-  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_91-GenericWheel-DupXIconClose_success');
-  // });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_91-GenericWheel-DupXIconClose_success');
+  });
 
   // ─── shared helpers (inline) ────────────────────────────────────────────────
   // createPromoForTest: creates a brand-new promotion and returns its unique name
