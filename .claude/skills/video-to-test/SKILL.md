@@ -1,7 +1,7 @@
 ---
 name: video-to-test
 description: Turn a screen recording (MP4) of a manual PureVantage test into Playwright + TypeScript code in this framework's format (locators file → page object → baseFixture → spec with TC_ ids). Use when the user drops a recording in recordings/ or points at one and wants test code from it.
-argument-hint: "recordings/<file>.mp4 [module name] [TC prefix]"
+argument-hint: "recordings/<file>.mp4 [--spec tests/<file>.spec.ts] [--tc <TC id>] [--write-only] [notes: ...]"
 ---
 
 # Recording → PureVantage Playwright test
@@ -14,6 +14,20 @@ Read one existing module before writing anything (e.g. `locators/recurringReward
 
 `$ARGUMENTS` = recording path, optionally followed by the module name and TC prefix.
 No path → newest `.mp4` in `recordings/`. `<name>` = file name without extension.
+
+- `--spec tests/<file>.spec.ts` → the user chose this spec file. Put the test **there**, even if another
+  spec looks like a better fit (mention that in the report instead). If the file doesn't exist, create it
+  in the repo's spec format (step 7) and reuse the existing page object/locators for the module when
+  there are any.
+- `--tc <id>` → the user chose this exact test id (e.g. `TC-29`, `TC_RR_24`). The test title starts with
+  it verbatim: `test('<id> Verify …'`. Write **one** test. If the recording covers several checks, make
+  them steps of that one test. Screenshot names use the same id (`'<id>_<slug>'`).
+  If the id already exists in the spec, stop and report it rather than renumbering anything.
+- `--write-only` → write the code but **don't run the generated test** (the user runs it). Still do the
+  read-only live checks (step 6) and `npx tsc --noEmit` in step 8.
+- `notes: …` → the tester's own description of what the recording checks. Treat it as the intent; the
+  frames still decide the exact steps.
+- Never commit, push or switch branches. Leave the changes for the user to review.
 
 ## 2. Extract key frames
 
@@ -170,7 +184,7 @@ test.describe('<Sidebar parent> - <Module> - <Group> Tests', () => {
 
 Rules:
 - Never hardcode the host: navigation is `page.goto('/main/home')` + sidebar; `baseURL` comes from `config/envConfig.ts` (ENV=dev|staging|prod).
-- Test ids: reuse the spec's existing prefix (`grep -o "TC_[A-Z]*_" tests/<spec>`) and continue from the
+- Test ids: with `--tc`, use exactly that id. Otherwise reuse the spec's existing prefix (`grep -o "TC_[A-Z]*_" tests/<spec>`) and continue from the
   highest number; never renumber or edit existing (or commented-out) tests. New module → prefix from
   its initials, confirm with the user if it could clash.
 - Every `expect` has a message string. Every check the tester made becomes an `expect`.
@@ -187,6 +201,9 @@ Rules:
 - Never put credentials or tokens in code; auth comes from the fixture.
 
 ## 8. Run and fix
+
+With `--write-only`: run only `npx tsc --noEmit -p .` and fix type errors, then go to step 9. In the
+report, give the exact command the user should run.
 
 ```bash
 npx tsc --noEmit -p .
@@ -207,3 +224,18 @@ approve/pay out to real players without asking the user first.
 - Files created/changed (spec, page, locators, fixture, sidebar)
 - Test ids + titles and pass/fail
 - Every UNCONFIRMED locator and uncertainty, plus anything the user must do (VPN, `npm run auth`)
+
+Also write `recordings/work/<name>/result.json` (the Recording Dashboard reads it to open the files in VS Code):
+
+```json
+{
+  "title": "<test case title>",
+  "specFile": "tests/<spec>.spec.ts",
+  "testIds": ["TC-28"],
+  "files": ["tests/<spec>.spec.ts", "pages/<X>Page.ts", "locators/<x>Locators.ts"],
+  "runCommand": "npx playwright test tests/<spec>.spec.ts -g \"TC-28\" --headed",
+  "uncertainties": ["…"],
+  "status": "generated" | "failed",
+  "error": "<only when failed: what blocked it, e.g. VPN or expired session>"
+}
+```

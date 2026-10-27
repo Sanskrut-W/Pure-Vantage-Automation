@@ -49,6 +49,11 @@ export const compsBulkLocators = {
 
     toastSuccess: '.p-toast-message-success, [data-p-severity="success"]',
     toastError: '.p-toast-message-error, [data-p-severity="error"]',
+    // UNCONFIRMED (from recording) — error toast text shown when Edit's POST /Bulk/Edit returns 400.
+    toastErrorSavingText: 'Error saving bulk comp',
+
+    // Confirmed live (snapshot) — list page search box.
+    searchInput: '#search-input',
 
     // Row-level kebab menu (each table row's "⋮" trigger) and its Edit/Review items — the items
     // render in a PrimeNG overlay appended elsewhere in the DOM, not nested inside the row, so

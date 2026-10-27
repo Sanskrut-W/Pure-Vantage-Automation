@@ -42,4 +42,30 @@ export const recurringRewardsLocators = {
     menuItemDelete: 'Delete',
     confirmYesBtn: 'button[aria-label="Yes"]',
     confirmNoBtn: 'button[aria-label="No"]',
+    toastMessage: '.p-toast-message',
+
+    // ─── Sports Requirements sub-page (row ⋯ -> "Sports Requirements") — confirmed live (probe)
+    menuItemSportsRequirements: 'Sports Requirements',
+    buttonBackToRewards: 'main button.btn--info:has(.pi-chevron-left)',
+    buttonCreateSportRequirement: 'Create Sport Requirement',
+    sportRequirementTable: 'main table',
+
+    // Confirmed live (probe): every field carries a real id. League/Country/Event/Market are
+    // free-text inputs until a Sport is picked from its dropdown, then become dropdowns under the
+    // SAME ids. Sport is an editable dropdown — clicking its body only focuses the text box, so
+    // every dropdown here is opened via its own .p-dropdown-trigger chevron instead.
+    dropdownFeedName: '#feedId',
+    dropdownSport: '#sportId',
+    dropdownLeague: '#leagueId',
+    dropdownCountry: '#country',
+    dropdownBetSlipType: '#betSlipTypeEnum',
+    dropdownEvent: '#eventId',
+    dropdownMarket: '#marketId',
+    dropdownTrigger: '.p-dropdown-trigger',
+    inputMinimumBetslipOdds: '#mininumBetslipOddsMultiplier input',
+    inputMinimumLegsRequired: '#minimumLegsRequired input',
+    inputMinimumLegOddsMultiplier: '#minimumLegOddsMultiplier input',
+    // Confirmed live (probe): the 2 switches carry no id — 1st = Single Leg Only, 2nd = Apply Odds
+    // And Multiplier To Legs In Total.
+    inputSwitch: '.p-inputswitch',
 };

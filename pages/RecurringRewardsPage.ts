@@ -27,6 +27,26 @@ export class RecurringRewardsPage extends BasePage {
     readonly confirmYesBtn: Locator;
     readonly confirmNoBtn: Locator;
 
+    // Sports Requirements sub-page (row ⋯ -> "Sports Requirements") — confirmed live (probe).
+    readonly backToRewardsBtn: Locator;
+    readonly createSportRequirementBtn: Locator;
+    readonly sportRequirementTable: Locator;
+    readonly sportRequirementDialog: Locator;
+    readonly feedNameDropdown: Locator;
+    readonly sportDropdown: Locator;
+    readonly leagueDropdown: Locator;
+    readonly countryDropdown: Locator;
+    readonly betSlipTypeDropdown: Locator;
+    readonly eventDropdown: Locator;
+    readonly marketDropdown: Locator;
+    readonly minimumBetslipOddsInput: Locator;
+    readonly minimumLegsRequiredInput: Locator;
+    readonly minimumLegOddsMultiplierInput: Locator;
+    readonly singleLegOnlySwitch: Locator;
+    readonly applyOddsToLegsInTotalSwitch: Locator;
+    readonly sportRequirementSaveBtn: Locator;
+    readonly sportRequirementCancelBtn: Locator;
+
     private readonly dialog: Locator;
 
     constructor(page: Page) {
@@ -56,6 +76,25 @@ export class RecurringRewardsPage extends BasePage {
         this.searchInput = page.locator(locators.searchInput);
         this.confirmYesBtn = page.locator(locators.confirmYesBtn).first();
         this.confirmNoBtn = page.locator(locators.confirmNoBtn).first();
+
+        this.backToRewardsBtn = page.locator(locators.buttonBackToRewards).first();
+        this.createSportRequirementBtn = page.getByRole('button', { name: locators.buttonCreateSportRequirement, exact: true });
+        this.sportRequirementTable = page.locator(locators.sportRequirementTable).first();
+        this.sportRequirementDialog = page.getByRole('dialog', { name: locators.buttonCreateSportRequirement });
+        this.feedNameDropdown = this.sportRequirementDialog.locator(locators.dropdownFeedName);
+        this.sportDropdown = this.sportRequirementDialog.locator(locators.dropdownSport);
+        this.leagueDropdown = this.sportRequirementDialog.locator(locators.dropdownLeague);
+        this.countryDropdown = this.sportRequirementDialog.locator(locators.dropdownCountry);
+        this.betSlipTypeDropdown = this.sportRequirementDialog.locator(locators.dropdownBetSlipType);
+        this.eventDropdown = this.sportRequirementDialog.locator(locators.dropdownEvent);
+        this.marketDropdown = this.sportRequirementDialog.locator(locators.dropdownMarket);
+        this.minimumBetslipOddsInput = this.sportRequirementDialog.locator(locators.inputMinimumBetslipOdds);
+        this.minimumLegsRequiredInput = this.sportRequirementDialog.locator(locators.inputMinimumLegsRequired);
+        this.minimumLegOddsMultiplierInput = this.sportRequirementDialog.locator(locators.inputMinimumLegOddsMultiplier);
+        this.singleLegOnlySwitch = this.sportRequirementDialog.locator(locators.inputSwitch).nth(0);
+        this.applyOddsToLegsInTotalSwitch = this.sportRequirementDialog.locator(locators.inputSwitch).nth(1);
+        this.sportRequirementSaveBtn = this.sportRequirementDialog.getByRole('button', { name: locators.buttonSave, exact: true });
+        this.sportRequirementCancelBtn = this.sportRequirementDialog.getByRole('button', { name: locators.buttonCancel, exact: true });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -320,6 +359,12 @@ export class RecurringRewardsPage extends BasePage {
         await this.page.waitForTimeout(300);
     }
 
+    /** The specific toast carrying this text — an earlier toast can still be on screen, so never
+     * read "the first toast" when asserting a particular one. */
+    getToastByText(text: string): Locator {
+        return this.page.locator(locators.toastMessage).filter({ hasText: text });
+    }
+
     async getToastText(timeout: number = 10000): Promise<string> {
         const toast = this.page.locator('.p-toast-message').first();
         const appeared = await toast.waitFor({ state: 'visible', timeout }).then(() => true).catch(() => false);
@@ -371,6 +416,24 @@ export class RecurringRewardsPage extends BasePage {
         }
     }
 
+    /** Deletes a Recurring Reward through the UI WITHOUT swallowing errors — for tests that check
+     * the Delete flow itself. Confirmed live (TC_RR_24): the list doesn't necessarily reflect the
+     * deletion immediately even after the success toast appears and the caller's own
+     * `waitForLoadState('networkidle')` resolves — same "list lags the server" behavior already
+     * seen elsewhere in this app. Waits for the row to actually disappear before returning, same
+     * proven pattern as deleteRewardIfPresent, so a caller's own absence check isn't racing it. */
+    async deleteRewardByPromotionName(promotionName: string) {
+        console.log(`Deleting Recurring Reward "${promotionName}"...`);
+        await this.ensureRowRenderedAcrossPages(promotionName);
+        const row = this.getRowByPromotionName(promotionName);
+        await row.waitFor({ state: 'visible', timeout: 15000 });
+        await this.clickDeleteForRow(row);
+        await this.confirmYesBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(this.confirmYesBtn);
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+        await row.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+    }
+
     /** Deletes EVERY row matching this Promotion Name, one at a time — needed because this app
      * allows duplicate Promotion Names (e.g. Clone), so a single delete can leave a sibling row
      * behind. Bounded by `maxAttempts` so a genuinely stuck delete can't loop forever. */
@@ -415,5 +478,160 @@ export class RecurringRewardsPage extends BasePage {
         await cloneItem.waitFor({ state: 'visible', timeout: 10000 });
         await this.clickElement(cloneItem);
         await this.promotionNameInput.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Sports Requirements sub-page — confirmed live (probe): row ⋯ -> "Sports Requirements"
+    //  opens /recurring-reward-sport/<id> with its own "Create Sport Requirement" popup.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    async clickSportsRequirementsByPromotionName(promotionName: string) {
+        console.log(`Opening Sports Requirements for "${promotionName}"...`);
+        await this.ensureRowRenderedAcrossPages(promotionName);
+        const row = this.getRowByPromotionName(promotionName);
+        await row.waitFor({ state: 'visible', timeout: 15000 });
+        await this.openRowMenu(row);
+        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(locators.menuItemSportsRequirements, { exact: true });
+        await menuItem.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(menuItem);
+        await this.createSportRequirementBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    async clickBackToRewards() {
+        console.log('Clicking Back to Recurring Rewards...');
+        await this.clickElement(this.backToRewardsBtn);
+        await this.createConfigurationBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    async clickCreateSportRequirement() {
+        console.log('Clicking Create Sport Requirement button...');
+        await this.clickElement(this.createSportRequirementBtn);
+        await this.feedNameDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    /** Opens a Sport Requirement dropdown via its chevron — Sport is an editable dropdown, so
+     * clicking its body only focuses the text box (confirmed live). Types the first word into the
+     * panel filter when one is shown, then clicks the option containing `optionText`; with no
+     * `optionText`, clicks the first option. Returns the picked option's text. */
+    private async pickSportRequirementOption(dropdown: Locator, optionText?: string): Promise<string> {
+        await this.clickElement(dropdown.locator(locators.dropdownTrigger));
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+
+        if (optionText) {
+            const filterInput = panel.locator('input.p-dropdown-filter');
+            if (await filterInput.isVisible().catch(() => false)) {
+                await filterInput.fill(optionText.split(' ')[0]);
+                await this.page.waitForTimeout(300);
+            }
+        }
+
+        const option = optionText
+            ? panel.locator(locators.dropdownItem, { hasText: optionText }).first()
+            : panel.locator(locators.dropdownItem).first();
+        await option.waitFor({ state: 'visible', timeout: 10000 });
+        const text = (await option.textContent())?.trim() ?? '';
+        await this.clickElement(option);
+        await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        await this.page.waitForTimeout(500);
+        return text;
+    }
+
+    async selectFeedName(value: string) {
+        console.log(`Selecting Feed Name: "${value}"...`);
+        await this.pickSportRequirementOption(this.feedNameDropdown, value);
+    }
+
+    async selectSport(value: string) {
+        console.log(`Selecting Sport: "${value}"...`);
+        await this.pickSportRequirementOption(this.sportDropdown, value);
+        // Confirmed live: League/Country/Event/Market switch from free-text to dropdowns once a
+        // Sport is picked — wait for League to become a dropdown before touching it.
+        await this.leagueDropdown.locator(locators.dropdownTrigger).waitFor({ state: 'visible', timeout: 10000 });
+    }
+
+    async selectLeague(value: string) {
+        console.log(`Selecting League: "${value}"...`);
+        await this.pickSportRequirementOption(this.leagueDropdown, value);
+    }
+
+    async selectCountry(value: string) {
+        console.log(`Selecting Country: "${value}"...`);
+        await this.pickSportRequirementOption(this.countryDropdown, value);
+    }
+
+    async selectBetSlipType(value: 'Wager' | 'Settlement') {
+        console.log(`Selecting Bet Slip Type: "${value}"...`);
+        await this.pickSportRequirementOption(this.betSlipTypeDropdown, value);
+    }
+
+    /** Event options are mock fixtures labelled with today's date, so pick the first one. */
+    async selectFirstEvent(): Promise<string> {
+        console.log('Selecting the first Event...');
+        return this.pickSportRequirementOption(this.eventDropdown);
+    }
+
+    async selectMarket(value: string) {
+        console.log(`Selecting Market: "${value}"...`);
+        await this.pickSportRequirementOption(this.marketDropdown, value);
+    }
+
+    // These are p-inputnumber fields pre-filled with 0 — same keystroke convention as
+    // fillWagerAmountRequirement (plain .fill() doesn't register with InputNumber).
+    private async fillNumberInput(input: Locator, value: string) {
+        await input.waitFor({ state: 'visible' });
+        await input.click({ clickCount: 3 });
+        await input.pressSequentially(value);
+        await input.press('Tab');
+        await this.page.waitForTimeout(200);
+    }
+
+    async fillMinimumBetslipOdds(value: string) {
+        console.log(`Filling Minimum Betslip Odds: "${value}"...`);
+        await this.fillNumberInput(this.minimumBetslipOddsInput, value);
+    }
+
+    async fillMinimumLegsRequired(value: string) {
+        console.log(`Filling Minimum Legs Required: "${value}"...`);
+        await this.fillNumberInput(this.minimumLegsRequiredInput, value);
+    }
+
+    async fillMinimumLegOddsMultiplier(value: string) {
+        console.log(`Filling Minimum Leg Odds Multiplier: "${value}"...`);
+        await this.fillNumberInput(this.minimumLegOddsMultiplierInput, value);
+    }
+
+    async isSwitchOn(switchLocator: Locator): Promise<boolean> {
+        return await switchLocator.locator('input').isChecked();
+    }
+
+    async toggleSingleLegOnly() {
+        console.log('Toggling Single Leg Only...');
+        await this.clickElement(this.singleLegOnlySwitch);
+        await this.page.waitForTimeout(200);
+    }
+
+    async toggleApplyOddsToLegsInTotal() {
+        console.log('Toggling Apply Odds And Multiplier To Legs In Total...');
+        await this.clickElement(this.applyOddsToLegsInTotalSwitch);
+        await this.page.waitForTimeout(200);
+    }
+
+    async clickSportRequirementSave() {
+        console.log('Clicking Save (Sport Requirement)...');
+        await this.clickElement(this.sportRequirementSaveBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    async clickSportRequirementCancel() {
+        console.log('Clicking Cancel (Sport Requirement)...');
+        await this.clickElement(this.sportRequirementCancelBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    getSportRequirementRow(text: string): Locator {
+        return this.sportRequirementTable.locator('tbody tr', { hasText: text }).first();
     }
 }

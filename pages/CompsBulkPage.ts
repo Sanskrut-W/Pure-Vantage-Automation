@@ -589,6 +589,44 @@ export class CompsBulkPage extends BasePage {
         return !(await saveBtn.evaluate(el => el.hasAttribute('disabled') || el.classList.contains('p-disabled')));
     }
 
+    /** Filters the list via the "Search by Description or Comp Code" box so a row created by
+     * this run is found even when it isn't on the first page of the table. */
+    async searchBulkComp(text: string) {
+        console.log(`Searching bulk comps for "${text}"...`);
+        const searchInput = this.page.locator(compsBulkLocators.searchInput);
+        await this.fillInput(searchInput, text);
+        await this.page.waitForTimeout(1000);
+    }
+
+    /** Edit opens with Region Code still loading (blank, spinner) — confirmed in the recording.
+     * Waits until it shows a value so later edits aren't overwritten by the late load. */
+    async waitForEditDialogLoaded(dialog: Locator, timeoutMs: number = 15000): Promise<void> {
+        const deadline = Date.now() + timeoutMs;
+        while (Date.now() < deadline) {
+            if ((await this.getRegionCodeValue(dialog).catch(() => '')) !== '') return;
+            await this.page.waitForTimeout(500);
+        }
+    }
+
+    /** Cleanup for tests that create their own bulk comp — swallows every error so a failed
+     * cleanup never masks the real test result. */
+    async deleteBulkCompIfPresent(description: string) {
+        try {
+            console.log(`Cleanup: deleting bulk comp "${description}" if present...`);
+            await this.page.keyboard.press('Escape').catch(() => {});
+            await this.searchBulkComp(description);
+            const row = this.getRowByDescription(description);
+            if (!(await row.isVisible({ timeout: 5000 }).catch(() => false))) {
+                console.log(`Cleanup: bulk comp "${description}" not found — nothing to delete.`);
+                return;
+            }
+            await this.clickDeleteOnRow(description);
+            await this.clickYesOnDeleteDialog();
+        } catch (error) {
+            console.log(`Cleanup: failed to delete bulk comp "${description}": ${error}`);
+        }
+    }
+
     async getToastText(timeout: number = 15000): Promise<string> {
         const toast = this.page.locator('.p-toast-message').first();
         const appeared = await toast.waitFor({ state: 'visible', timeout }).then(() => true).catch(() => false);

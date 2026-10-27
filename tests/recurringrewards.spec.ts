@@ -71,6 +71,20 @@ async function createDailyReward(page: any, recurringRewardsPage: any): Promise<
   return promotionName;
 }
 
+/** Sport Requirement values entered in recordings/rr-20261026100104.mp4 (TC_RR_24). Event is
+ * picked as the first option instead — its mock labels carry today's date. */
+const SPORT_REQUIREMENT = {
+  feedName: 'mockfeed1',
+  sport: 'Soccer',
+  league: 'Premier League',
+  country: 'Afghanistan',
+  betSlipType: 'Wager' as const,
+  market: 'Match Result',
+  minimumBetslipOdds: '2',
+  minimumLegsRequired: '1',
+  minimumLegOddsMultiplier: '2',
+};
+
 // // ═══════════════════════════════════════════════════════════════════════════════
 // //  TC_RR_01 – TC_RR_02 — Page Level Tests
 // // ═══════════════════════════════════════════════════════════════════════════════
@@ -454,40 +468,131 @@ test.describe('Marketing - Recurring Rewards - Create Popup Tests', () => {
 //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_22_step3_reopened_edit');
 //     console.log(`✅ TC_RR_22 PASSED — Reward renamed to "${editedName}" and the change persisted after reopening Edit.`);
 
-//     await recurringRewardsPage.clickCancel();
+// //     await recurringRewardsPage.clickCancel();
+// //   });
+
+//   // ASSUMED (not independently confirmed): Clone reuses the same Create/Edit dialog pre-filled
+//   // with the original Reward's values, the same pattern already confirmed for Rules Engine's own
+//   // Clone feature elsewhere in this app — only the "Clone" menu item and the popup's own Save
+//   // button were captured live for Recurring Rewards specifically. See
+//   // RecurringRewardsPage.clickCloneByPromotionName's own comment.
+//   test('TC_RR_23 Verify Clone creates a duplicate Recurring Reward', async ({ page, recurringRewardsPage }, testInfo) => {
+//     const promotionName = await createDailyReward(page, recurringRewardsPage);
+//     rewardNameToCleanup = promotionName;
+
+//     const countBeforeClone = await recurringRewardsPage.getRowCountByPromotionName(promotionName);
+//     expect(countBeforeClone, `Expected exactly 1 row for "${promotionName}" before cloning`).toBe(1);
+
+//     await recurringRewardsPage.clickCloneByPromotionName(promotionName);
+
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_23_step1_clone_popup');
+
+//     // This app does not enforce unique Promotion Names (confirmed live: the real data table
+//     // already shows 2 separate rows both named "Pranav Test"), so clicking Save without changing
+//     // anything should succeed and leave a second row behind with the same name.
+//     await recurringRewardsPage.clickSave();
+
+//     const toastText = await recurringRewardsPage.getToastText(10000);
+//     console.log(`Toast after Clone Save: "${toastText || '(no toast appeared)'}"`);
+
+//     await expect(recurringRewardsPage.promotionNameInput, 'Expected the Clone popup to close after Save').not.toBeVisible({ timeout: 15000 });
+//     await page.waitForLoadState('networkidle').catch(() => {});
+
+//     const countAfterClone = await recurringRewardsPage.getRowCountByPromotionName(promotionName);
+//     expect(countAfterClone, `Expected a second row for "${promotionName}" after cloning. Toast said: "${toastText || '(no toast appeared)'}"`).toBe(countBeforeClone + 1);
+
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_23_step2_duplicate_created');
+//     console.log(`✅ TC_RR_23 PASSED — Clone created a duplicate Reward named "${promotionName}" (now ${countAfterClone} rows).`);
 //   });
 
-  // ASSUMED (not independently confirmed): Clone reuses the same Create/Edit dialog pre-filled
-  // with the original Reward's values, the same pattern already confirmed for Rules Engine's own
-  // Clone feature elsewhere in this app — only the "Clone" menu item and the popup's own Save
-  // button were captured live for Recurring Rewards specifically. See
-  // RecurringRewardsPage.clickCloneByPromotionName's own comment.
-  test('TC_RR_23 Verify Clone creates a duplicate Recurring Reward', async ({ page, recurringRewardsPage }, testInfo) => {
-    const promotionName = await createDailyReward(page, recurringRewardsPage);
+  // ─── Sports Requirements ────────────────────────────────────────────────────
+  // Generated from recordings/rr-20261026100104.mp4 (steps: recordings/work/rr-20261026100104/steps.md)
+  //
+  // Flagged assumptions:
+  //  - Promotion Name "QFG", Region "Betway Botswana", End Date 2026/11/30 and Wager 23 from the
+  //    recording are replaced by the existing fillMandatoryDailyFields() values (Auto… name, first
+  //    region, today, 10) — they don't affect the Sport Requirement check.
+  //  - Event is the first option (mock events are labelled with today's date).
+  //  - The Sport Requirement row's own "Single Leg Only" switch is read via aria-checked="true"
+  //    on its outer .p-inputswitch div — confirmed live (the recording's assumed
+  //    "p-inputswitch-checked" CSS class doesn't exist).
+  //  - Deleting the reward is assumed to remove its Sport Requirement too (what the recording does).
+  test('TC_RR_24 Verify a Sport Requirement can be created for a new Recurring Reward', async ({ page, recurringRewardsPage }, testInfo) => {
+    // Step 1: create the Daily Recurring Reward (popup already opened by beforeEach)
+    const promotionName = await fillMandatoryDailyFields(recurringRewardsPage);
     rewardNameToCleanup = promotionName;
+    await expect(recurringRewardsPage.saveBtn, 'Expected Save to be enabled once all mandatory Daily fields are filled').toBeEnabled({ timeout: 10000 });
 
-    const countBeforeClone = await recurringRewardsPage.getRowCountByPromotionName(promotionName);
-    expect(countBeforeClone, `Expected exactly 1 row for "${promotionName}" before cloning`).toBe(1);
-
-    await recurringRewardsPage.clickCloneByPromotionName(promotionName);
-
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_23_step1_clone_popup');
-
-    // This app does not enforce unique Promotion Names (confirmed live: the real data table
-    // already shows 2 separate rows both named "Pranav Test"), so clicking Save without changing
-    // anything should succeed and leave a second row behind with the same name.
     await recurringRewardsPage.clickSave();
-
-    const toastText = await recurringRewardsPage.getToastText(10000);
-    console.log(`Toast after Clone Save: "${toastText || '(no toast appeared)'}"`);
-
-    await expect(recurringRewardsPage.promotionNameInput, 'Expected the Clone popup to close after Save').not.toBeVisible({ timeout: 15000 });
+    await expect(recurringRewardsPage.getToastByText('Recurring reward created successfully'), 'Expected the "Recurring reward created successfully" toast').toBeVisible({ timeout: 15000 });
+    await expect(recurringRewardsPage.promotionNameInput, 'Expected the popup to close after a successful Save').not.toBeVisible({ timeout: 15000 });
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    const countAfterClone = await recurringRewardsPage.getRowCountByPromotionName(promotionName);
-    expect(countAfterClone, `Expected a second row for "${promotionName}" after cloning. Toast said: "${toastText || '(no toast appeared)'}"`).toBe(countBeforeClone + 1);
+    const isPresent = await recurringRewardsPage.isRowVisibleByPromotionName(promotionName, 15000);
+    expect(isPresent, `Expected the new Recurring Reward "${promotionName}" to appear in the table`).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_23_step2_duplicate_created');
-    console.log(`✅ TC_RR_23 PASSED — Clone created a duplicate Reward named "${promotionName}" (now ${countAfterClone} rows).`);
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_24_step1_reward_created');
+
+    // Step 2: row ⋯ -> Sports Requirements -> Create Sport Requirement
+    await recurringRewardsPage.clickSportsRequirementsByPromotionName(promotionName);
+    await expect(page.getByText('No Sport Requirements Found'), 'Expected a brand-new Reward to have no Sport Requirements yet').toBeVisible({ timeout: 15000 });
+
+    await recurringRewardsPage.clickCreateSportRequirement();
+    await expect(recurringRewardsPage.sportRequirementSaveBtn, 'Expected Save to start disabled in the Create Sport Requirement popup').toBeDisabled();
+
+    await recurringRewardsPage.selectFeedName(SPORT_REQUIREMENT.feedName);
+    await recurringRewardsPage.selectSport(SPORT_REQUIREMENT.sport);
+    await expect(recurringRewardsPage.sportRequirementDialog.getByText('Tip: Select Sport from the dropdown'), 'Expected the Tip message once a Sport is picked from the dropdown').toBeVisible();
+    await recurringRewardsPage.selectLeague(SPORT_REQUIREMENT.league);
+    await recurringRewardsPage.selectCountry(SPORT_REQUIREMENT.country);
+    await recurringRewardsPage.selectBetSlipType(SPORT_REQUIREMENT.betSlipType);
+    const eventName = await recurringRewardsPage.selectFirstEvent();
+    await recurringRewardsPage.selectMarket(SPORT_REQUIREMENT.market);
+
+    await recurringRewardsPage.fillMinimumBetslipOdds(SPORT_REQUIREMENT.minimumBetslipOdds);
+    await recurringRewardsPage.fillMinimumLegsRequired(SPORT_REQUIREMENT.minimumLegsRequired);
+    await recurringRewardsPage.fillMinimumLegOddsMultiplier(SPORT_REQUIREMENT.minimumLegOddsMultiplier);
+
+    await recurringRewardsPage.toggleSingleLegOnly();
+    await recurringRewardsPage.toggleApplyOddsToLegsInTotal();
+    expect(await recurringRewardsPage.isSwitchOn(recurringRewardsPage.singleLegOnlySwitch), 'Expected Single Leg Only to be switched on').toBe(true);
+    expect(await recurringRewardsPage.isSwitchOn(recurringRewardsPage.applyOddsToLegsInTotalSwitch), 'Expected Apply Odds And Multiplier To Legs In Total to be switched on').toBe(true);
+
+    await expect(recurringRewardsPage.sportRequirementSaveBtn, 'Expected Save to be enabled once the Sport Requirement is filled').toBeEnabled({ timeout: 10000 });
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_24_step2_sport_requirement_filled');
+
+    // Step 3: Save and verify the Sport Requirement row
+    await recurringRewardsPage.clickSportRequirementSave();
+    await expect(recurringRewardsPage.getToastByText('Sport Requirement created successfully'), 'Expected the "Sport Requirement created successfully" toast').toBeVisible({ timeout: 15000 });
+    await expect(recurringRewardsPage.sportRequirementDialog, 'Expected the Create Sport Requirement popup to close after Save').not.toBeVisible({ timeout: 15000 });
+    await page.waitForLoadState('networkidle').catch(() => {});
+
+    const sportRow = recurringRewardsPage.getSportRequirementRow(SPORT_REQUIREMENT.sport);
+    await expect(sportRow, 'Expected the new Sport Requirement row in the table').toBeVisible({ timeout: 15000 });
+    for (const value of [SPORT_REQUIREMENT.country, SPORT_REQUIREMENT.league, eventName, SPORT_REQUIREMENT.market, SPORT_REQUIREMENT.betSlipType]) {
+      await expect(sportRow, `Expected the Sport Requirement row to show "${value}"`).toContainText(value);
+    }
+    await expect(sportRow.locator('td').nth(5), 'Expected Min Betslip Odds to be 2').toHaveText(SPORT_REQUIREMENT.minimumBetslipOdds);
+    await expect(sportRow.locator('td').nth(6), 'Expected Minimum Legs to be 1').toHaveText(SPORT_REQUIREMENT.minimumLegsRequired);
+    // Confirmed live: this app's PrimeNG inputswitch reports its checked state via
+    // aria-checked="true" on the OUTER role="checkbox" div (.p-inputswitch itself) — same
+    // convention already proven elsewhere in this app (e.g. LeaderboardPage.isToggleChecked) —
+    // NOT a "p-inputswitch-checked" CSS class, which doesn't exist (confirmed live: the real class
+    // list here is "p-inputswitch p-component p-highlight p-disabled").
+    await expect(sportRow.locator('.p-inputswitch'), 'Expected the row\'s Single Leg Only switch to be on').toHaveAttribute('aria-checked', 'true');
+
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_24_step3_sport_requirement_created');
+
+    // Step 4: back to the list and delete the Reward (as the recording does)
+    await recurringRewardsPage.clickBackToRewards();
+    await recurringRewardsPage.deleteRewardByPromotionName(promotionName);
+    await expect(recurringRewardsPage.getToastByText(`Successfully deleted reward "${promotionName}"`), 'Expected the delete-success toast naming the Reward').toBeVisible({ timeout: 15000 });
+    await page.waitForLoadState('networkidle').catch(() => {});
+
+    const isPresentAfterDelete = await recurringRewardsPage.isRowVisibleByPromotionName(promotionName, 5000);
+    expect(isPresentAfterDelete, `Expected "${promotionName}" to be removed from the table after Delete`).toBe(false);
+
+    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RR_24_step4_reward_deleted');
+    console.log(`✅ TC_RR_24 PASSED — Sport Requirement created for "${promotionName}" and the Reward was deleted afterwards.`);
   });
 });
