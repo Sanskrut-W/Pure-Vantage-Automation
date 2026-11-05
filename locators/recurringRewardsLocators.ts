@@ -68,4 +68,32 @@ export const recurringRewardsLocators = {
     // Confirmed live (probe): the 2 switches carry no id — 1st = Single Leg Only, 2nd = Apply Odds
     // And Multiplier To Legs In Total.
     inputSwitch: '.p-inputswitch',
+
+    // ─── Casino Requirements sub-page (row ⋯ -> "Casino Requirements") — confirmed live
+    // (user-supplied outerHTML). Unlike Sport Requirements, Provider/Game are plain (non-editable)
+    // PrimeNG dropdowns, both rendered enabled (data-p-disabled="false") from the moment the popup
+    // opens — Game is never disabled, it's only CLEARED when Provider changes.
+    menuItemCasinoRequirements: 'Casino Requirements',
+    buttonCreateReward: 'Create Reward',
+    casinoRequirementTable: 'main table',
+    dropdownProvider: '#provider',
+    dropdownGame: '#game',
+    inputCategory: '#category',
+
+    // ─── Comp Configuration sub-page (row ⋯ -> "Comp Configuration") — confirmed live
+    // (user-supplied outerHTML). Comp Code/Day of Week are standard (non-editable) PrimeNG
+    // dropdowns (same opening mechanism as Casino's Provider/Game), Comp Amount is a p-inputnumber,
+    // Scheduled Time is a time-only p-calendar (user-confirmed: set via its own clock arrows, same
+    // convention as Weekly Expiry Time), and "Is Scheduled" is a plain checkbox.
+    menuItemCompConfiguration: 'Comp Configuration',
+    buttonCreateCompConfiguration: 'Create Comp Configuration',
+    compConfigurationTable: 'main table',
+    dropdownCompCode: '#compCode',
+    inputCompAmount: '#compAmount input',
+    calendarScheduledTime: '#scheduledTime input',
+    dropdownDayOfWeek: '#dayOfWeek',
+    // ASSUMED: no id/name was given for this checkbox — the user's outerHTML shows exactly one
+    // `.p-checkbox` inside this popup ("Is Scheduled"), so it's scoped positionally within the
+    // dialog rather than by a confirmed id.
+    checkboxIsScheduled: '.p-checkbox',
 };

@@ -9,6 +9,11 @@ export const rulesEngineLocators = {
 
     // ─── Step 2: Qualification — all ids confirmed live ───────────────────────
     inputRequiredAmount: '#requiredAmount input',
+    // Confirmed live: new field, sits between Required Amount and Eligibility Frequency. The
+    // user's own outerHTML sample showed it pre-filled with "Count", but a LIVE run on a fresh
+    // Rule showed it renders BLANK with its own "Field is required" message — that sample must
+    // have come from an already-filled Rule. Mandatory: blocks Next until a value is picked.
+    dropdownProgressMetric: '#progressMetric',
     dropdownEligibilityFrequency: '#eligibilityFrequency',
     calendarStartDate: '#startDate input',
     calendarEndDate: '#endDate input',

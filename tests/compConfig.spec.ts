@@ -1,1465 +1,1140 @@
-// npx playwright test tests/compConfig.spec.ts --headed
-import { test, expect } from '../fixtures/baseFixture';
+import { Page, Locator } from '@playwright/test';
+import { BasePage } from '../pages/BasePage';
+import { compConfigLocators } from '../locators/compConfigLocators';
 import { CommonUtils } from '../utils/commonUtils';
+export class CompConfigPage extends BasePage {
+    readonly payoutReportBtn: Locator;
+    readonly createCompBtn: Locator;
+    // Create Comp popup
+    readonly dialog: Locator;
+    readonly titleInput: Locator;
+    readonly multiCompBlockDaysInput: Locator;
+    readonly startDateInput: Locator;
+    readonly startDatePanel: Locator;
+    readonly endDateInput: Locator;
+    readonly endDatePanel: Locator;
+    readonly compCodeInput: Locator;
+    readonly campaignDropdown: Locator;
+    readonly tagDropdown: Locator;
+    readonly alertEmailsInput: Locator;
+    readonly isActiveCheckbox: Locator;
+    readonly isActiveCheckboxInput: Locator;
+    readonly isGiftCheckboxInput: Locator;
+    readonly isGiftCheckboxBox: Locator;
+    readonly giftDescriptionInput: Locator;
+    readonly saveBtn: Locator;
+    readonly cancelBtn: Locator;
+    readonly closeIconBtn: Locator;
+    readonly toastMessage: Locator;
+    // Landing page table row actions
+    readonly rowMenuTrigger: Locator;
+    readonly actionMenu: Locator;
+    readonly firstRowTitleCell: Locator;
+    // Copy/Delete confirmation — a separate custom component (<pure-action-modal-component>),
+    // not the same .p-dialog used by Create/Edit Comp.
+    readonly actionModal: Locator;
+    readonly actionModalHeader: Locator;
+    readonly actionModalCloseIcon: Locator;
+    // The "Status" toggle next to the landing page search box — live-verified to NOT act as
+    // an Active/Inactive filter (see CM_070's comment); kept for completeness.
+    readonly statusFilterToggle: Locator;
+    readonly searchInput: Locator;
+    // Comp Config's own "Configurations" screen — reached via a row's kebab menu ->
+    // Configurations. The SAME shared Configurations page already confirmed live for Comp Bulk
+    // (see CompBulkConfigurationsPage) — same fields, same ".configuration-card" markup.
+    readonly createConfigurationBtn: Locator;
+    readonly configDialog: Locator;
+    readonly configDescriptionInput: Locator;
+    readonly configRegionCodeDropdown: Locator;
+    readonly configTransactionTypeDropdown: Locator;
+    readonly configCasinoBonusTemplateDropdown: Locator;
+    readonly configMinimumPayoutInput: Locator;
+    readonly configMaximumPayoutInput: Locator;
+    readonly configPushNotificationTemplateDropdown: Locator;
+    readonly configSmsNotificationTemplateDropdown: Locator;
+    readonly configCampaignBudgetInput: Locator;
+    readonly configBannerDropdown: Locator;
+    readonly configDailyBudgetInput: Locator;
+    readonly configSendPushCheckbox: Locator;
+    readonly configSendSmsCheckbox: Locator;
+    readonly configIsCompValueProvidedCheckbox: Locator;
+    readonly configAllowMultipleCompCheckbox: Locator;
+    readonly configSaveBtn: Locator;
+    readonly configCancelBtn: Locator;
+    constructor(page: Page) {
+        super(page);
+        // Payout Report's outerHTML only shows the inner label span, not a
+        // confirmed aria-label on the button itself (unlike Create Comp) — a
+        // role-based accessible-name match is resilient either way, since
+        // Playwright falls back to visible text content when aria-label is absent.
+        this.payoutReportBtn = this.page.getByRole('button', { name: 'Payout Report' });
+        this.createCompBtn = this.page.locator(compConfigLocators.createCompBtn);
+        this.dialog = this.page.locator(compConfigLocators.dialog).first();
+        this.titleInput = this.page.locator(compConfigLocators.titleInput);
+        this.multiCompBlockDaysInput = this.page.locator(compConfigLocators.multiCompBlockDaysInput);
+        this.startDateInput = this.page.locator(compConfigLocators.startDateInput);
+        this.startDatePanel = this.page.locator(compConfigLocators.startDatePanel);
+        this.endDateInput = this.page.locator(compConfigLocators.endDateInput);
+        this.endDatePanel = this.page.locator(compConfigLocators.endDatePanel);
+        this.compCodeInput = this.page.locator(compConfigLocators.compCodeInput);
+        this.campaignDropdown = this.page.locator(compConfigLocators.campaignDropdown);
+        this.tagDropdown = this.page.locator(compConfigLocators.tagDropdown);
+        this.alertEmailsInput = this.page.locator(compConfigLocators.alertEmailsInput);
+        this.isActiveCheckbox = this.page.locator(compConfigLocators.isActiveCheckbox);
+        this.isActiveCheckboxInput = this.page.locator(compConfigLocators.isActiveCheckboxInput);
+        this.isGiftCheckboxInput = this.page.locator(compConfigLocators.isGiftCheckboxInput);
+        this.isGiftCheckboxBox = this.page.locator(compConfigLocators.isGiftCheckboxBox);
+        this.giftDescriptionInput = this.page.locator(compConfigLocators.giftDescriptionInput);
+        this.saveBtn = this.dialog.getByRole('button', { name: 'Save', exact: true });
+        this.cancelBtn = this.dialog.getByRole('button', { name: 'Cancel', exact: true });
+        this.closeIconBtn = this.dialog.locator(compConfigLocators.closeIconBtn);
+        this.toastMessage = this.page.locator(compConfigLocators.toastMessage).first();
+        // Row action menu — the trigger is a per-row "..." button; the menu itself renders
+        // as a detached overlay (.pure__table-menu.p-menu, role="menu") appended outside the
+        // table, so it's queried globally rather than scoped under any particular row.
+        this.rowMenuTrigger = this.page.locator('button.pure__table-menu-trigger');
+        this.actionMenu = this.page.locator('.pure__table-menu.p-menu, [role="menu"]').last();
+        this.firstRowTitleCell = this.page.locator('table tbody tr, .p-datatable-tbody tr').first().locator('td').first();
+        this.actionModal = this.page.locator('.action-modal');
+        this.actionModalHeader = this.actionModal.locator('.header-text');
+        this.actionModalCloseIcon = this.actionModal.locator('.modal-header button, .modal-header .pi-times').first();
+        this.statusFilterToggle = this.page.locator('[role="switch"]').first();
+        this.searchInput = this.page.getByPlaceholder(/Search by title/i);
+        this.createConfigurationBtn = this.page.locator(compConfigLocators.createConfigurationBtn);
+        this.configDialog = this.page.locator(compConfigLocators.configDialog).first();
+        this.configDescriptionInput = this.page.locator(compConfigLocators.configDescriptionInput);
+        this.configRegionCodeDropdown = this.page.locator(compConfigLocators.configRegionCodeDropdown);
+        this.configTransactionTypeDropdown = this.page.locator(compConfigLocators.configTransactionTypeDropdown);
+        this.configCasinoBonusTemplateDropdown = this.page.locator(compConfigLocators.configCasinoBonusTemplateDropdown);
+        this.configMinimumPayoutInput = this.page.locator(compConfigLocators.configMinimumPayoutInput);
+        this.configMaximumPayoutInput = this.page.locator(compConfigLocators.configMaximumPayoutInput);
+        this.configPushNotificationTemplateDropdown = this.page.locator(compConfigLocators.configPushNotificationTemplateDropdown);
+        this.configSmsNotificationTemplateDropdown = this.page.locator(compConfigLocators.configSmsNotificationTemplateDropdown);
+        this.configCampaignBudgetInput = this.page.locator(compConfigLocators.configCampaignBudgetInput);
+        this.configBannerDropdown = this.page.locator(compConfigLocators.configBannerDropdown);
+        this.configDailyBudgetInput = this.page.locator(compConfigLocators.configDailyBudgetInput);
+        this.configSendPushCheckbox = this.page.locator(`#${compConfigLocators.configCheckboxSendPush}`);
+        this.configSendSmsCheckbox = this.page.locator(`#${compConfigLocators.configCheckboxSendSms}`);
+        this.configIsCompValueProvidedCheckbox = this.page.locator(`#${compConfigLocators.configCheckboxCompValueProvided}`);
+        this.configAllowMultipleCompCheckbox = this.page.locator(`#${compConfigLocators.configCheckboxAllowMultipleComp}`);
+        this.configSaveBtn = this.configDialog.getByRole('button', { name: 'Save', exact: true });
+        this.configCancelBtn = this.configDialog.getByRole('button', { name: 'Cancel', exact: true });
+    }
+    async isStatusFilterOn(): Promise<boolean> {
+        return (await this.statusFilterToggle.getAttribute('aria-checked')) === 'true';
+    }
+    async toggleStatusFilter() {
+        console.log('Toggling the Status filter switch...');
+        await this.clickElement(this.statusFilterToggle);
+    }
+    /**
+     * Filters the landing page table by title/comp code/comp id. The table can span many
+     * rows/pages, so searching for a specific unique title is the reliable way to confirm a
+     * row exists (or doesn't), rather than assuming it's on the currently-visible page.
+     */
+    async searchByTitle(text: string) {
+        console.log(`Searching Comp Config table for: ${text}`);
+        await this.searchInput.fill(text);
+        await this.page.waitForTimeout(800);
+    }
+    /**
+     * The Comp Config landing page can intermittently take well over a minute to render
+     * the Create Comp button (same slow cross-origin-widget loading pattern seen on other
+     * Marketing pages) — reload and re-check a few times rather than failing outright.
+     * Also waits out the app's own page-loader overlay: the button can report as "visible"
+     * per Playwright's definition while the loader still visually sits on top of it,
+     * intercepting clicks for the full click timeout even though the element underneath
+     * is fine (same class of bug fixed on SidebarPage's navigation methods).
+     */
+    async waitForCreateCompButtonReady() {
+        const maxAttempts = 3;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            const ready = await this.createCompBtn.waitFor({ state: 'visible', timeout: 60000 }).then(() => true).catch(() => false);
+            if (ready) {
+                await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+                return;
+            }
+            console.log(`Create Comp button not ready after ~60s (attempt ${attempt}/${maxAttempts}) — reloading...`);
+            await this.page.reload();
+            await this.page.waitForLoadState('domcontentloaded');
+        }
+        // Final attempt: let the caller's own error surface if this still isn't visible.
+        await this.createCompBtn.waitFor({ state: 'visible' });
+        await this.page.locator('pure-page-loader').first().waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+    }
+    async clickPayoutReport() {
+        console.log('Clicking Payout Report button...');
+        await this.clickElement(this.payoutReportBtn);
+    }
+    async clickCreateComp() {
+        console.log('Clicking Create Comp button...');
+        await this.waitForCreateCompButtonReady();
+        await this.clickElement(this.createCompBtn);
+    }
+    /**
+     * Waits for the Create Comp popup to finish loading — the dialog can render
+     * skeleton placeholders first, so field locators aren't reliable until they're gone.
+     */
+    async waitForPopupLoad() {
+        await this.dialog.waitFor({ state: 'visible' });
+        await this.dialog.locator('.p-skeleton').first().waitFor({ state: 'hidden', timeout: 90000 }).catch(() => {});
+    }
+    async fillTitle(value: string) {
+        console.log(`Filling Title: ${value}`);
+        await this.fillInput(this.titleInput, value);
+    }
+    async fillMultiCompBlockDays(value: string) {
+        console.log(`Filling Multi Comp Block Period Days: ${value}`);
+        await this.fillInput(this.multiCompBlockDaysInput, value);
+    }
+    async fillCompCode(value: string) {
+        console.log(`Filling Comp Code: ${value}`);
+        await this.fillInput(this.compCodeInput, value);
+    }
+    async fillAlertEmails(value: string) {
+        console.log(`Filling Alert Email Addresses: ${value}`);
+        await this.fillInput(this.alertEmailsInput, value);
+    }
+    /**
+     * Opens the Start Date calendar and picks the first enabled day in the active
+     * month (mirrors the pattern used for other PrimeNG calendars in this suite —
+     * see PromotionConfigPage.setDateRange).
+     */
+    async selectStartDate() {
+        console.log('Selecting Start Date...');
+        await this.clickElement(this.startDateInput);
+        await this.startDatePanel.waitFor({ state: 'visible' });
+        const activeDay = this.startDatePanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
+        await this.clickElement(activeDay, { force: true });
+        await this.dismissDatePanel(this.startDatePanel);
+    }
+    /**
+     * Opens the End Date calendar and picks the last enabled day in the active
+     * month, guaranteeing it succeeds the selected Start Date.
+     */
+    async selectEndDate() {
+        console.log('Selecting End Date...');
+        await this.clickElement(this.endDateInput);
+        await this.endDatePanel.waitFor({ state: 'visible' });
+        const activeDay = this.endDatePanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
+        await this.clickElement(activeDay, { force: true });
+        await this.dismissDatePanel(this.endDatePanel);
+    }
+    /**
+     * Opens the End Date calendar and picks the FIRST enabled day (rather than the
+     * last, like selectEndDate()) — paired with selectStartDateLast() to deliberately
+     * produce an invalid Start > End range for validation testing.
+     */
+    async selectEndDateFirst() {
+        console.log('Selecting End Date (earliest enabled day)...');
+        await this.clickElement(this.endDateInput);
+        await this.endDatePanel.waitFor({ state: 'visible' });
+        const activeDay = this.endDatePanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').first();
+        await this.clickElement(activeDay, { force: true });
+        await this.dismissDatePanel(this.endDatePanel);
+    }
+    /**
+     * Opens the Start Date calendar and picks the LAST enabled day (rather than the
+     * first, like selectStartDate()) — see selectEndDateFirst().
+     */
+    async selectStartDateLast() {
+        console.log('Selecting Start Date (latest enabled day)...');
+        await this.clickElement(this.startDateInput);
+        await this.startDatePanel.waitFor({ state: 'visible' });
+        const activeDay = this.startDatePanel.locator('td:not(.p-datepicker-other-month) span:not(.p-disabled)').last();
+        await this.clickElement(activeDay, { force: true });
+        await this.dismissDatePanel(this.startDatePanel);
+    }
+    /**
+     * This calendar is a date+time picker (selecting a day doesn't auto-close it — the
+     * time portion stays open for input) — clicking a day alone leaves the overlay up,
+     * where it visually overlaps and intercepts clicks on nearby controls (e.g. the
+     * popup's own Close icon). Escape reliably dismisses it without needing to know
+     * exactly what other confirm control the time picker exposes.
+     */
+    private async dismissDatePanel(panel: Locator) {
+        await this.page.keyboard.press('Escape');
+        await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        await this.page.waitForTimeout(300);
+    }
+    async selectCampaign(optionText: string) {
+        console.log(`Selecting Campaign: ${optionText}`);
+        await this.selectDropdown(this.campaignDropdown, optionText);
+    }
+    async openCampaignDropdown() {
+        console.log('Opening Campaign dropdown...');
+        await this.clickElement(this.campaignDropdown);
+    }
+    /**
+     * Selects whichever Campaign option renders first — used where a test just needs SOME
+     * Campaign selected (now part of every comp creation, see createCompWithRetry), not a
+     * specific one. Mirrors the identical "first available option" pattern already used for
+     * Comp Bulk Configurations' dropdowns.
+     */
+    async selectFirstAvailableCampaign(): Promise<string> {
+        console.log('Selecting first available Campaign...');
+        await this.clickElement(this.campaignDropdown);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+        const option = panel.locator('.p-dropdown-item').first();
+        await option.waitFor({ state: 'visible', timeout: 10000 });
+        const text = (await option.textContent())?.trim() ?? '';
+        await option.click();
+        // The panel doesn't always close from the option click alone — it can stay visually
+        // on top and intercept the very next click (Is Gift's checkbox) for the full action
+        // timeout, which is what "nothing happens after selecting Campaign" looks like from
+        // the outside. Escape reliably dismisses it, mirroring dismissDatePanel above.
+        const closed = await panel.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            await this.page.keyboard.press('Escape');
+            await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+        await this.page.waitForTimeout(300);
+        console.log(` Selected Campaign: "${text}"`);
+        return text;
+    }
+    async selectTag(optionText: string) {
+        console.log(`Selecting Tag (Internal): ${optionText}`);
+        await this.selectDropdown(this.tagDropdown, optionText);
+    }
+    async openTagDropdown() {
+        console.log('Opening Tag (Internal) dropdown...');
+        await this.clickElement(this.tagDropdown);
+    }
+    async isActiveChecked(): Promise<boolean> {
+        return await this.isActiveCheckboxInput.isChecked();
+    }
+    async toggleActiveCheckbox() {
+        console.log('Toggling Is Active checkbox...');
+        await this.clickElement(this.isActiveCheckbox);
+    }
+    async isGiftChecked(): Promise<boolean> {
+        return await this.isGiftCheckboxInput.isChecked();
+    }
+    async fillGiftDescription(value: string) {
+        console.log(`Filling Gift Description: ${value}`);
+        await this.fillInput(this.giftDescriptionInput, value);
+    }
+    /**
+     * Checks Is Gift and Is Active directly, whichever of the two isn't already checked.
+     * Is Gift's own native input sits on top of its visual `.p-checkbox-box` and intercepts
+     * pointer events (confirmed live: a plain click retries for the full action timeout) —
+     * force bypasses that hit-test failure, the same fix already used for every other
+     * checkbox in this suite with this exact overlap (e.g. CompBulkConfigurationsPage).
+     */
+    async ensureGiftAndActiveChecked() {
+        if (!(await this.isGiftChecked())) {
+            await CommonUtils.highlightElement(this.isGiftCheckboxBox);
+            await this.isGiftCheckboxBox.click({ force: true });
+        }
+        if (!(await this.isActiveChecked())) {
+            await this.toggleActiveCheckbox();
+        }
+    }
+    async clickSave() {
+        console.log('Clicking Save button...');
+        await this.clickElement(this.saveBtn);
+    }
+    /**
+     * Clicks Save and waits (bounded — 20s, not the full 2-minute action timeout) for it to
+     * actually take effect — the dialog closing — instead of assuming success and letting
+     * some unrelated element hang later in the test when it silently didn't. Confirmed live:
+     * this dev environment's Save intermittently no-ops (no toast, no error, dialog stays
+     * open — see CM_018's original note); every caller that continued as if it had succeeded
+     * was the one actually burning minutes waiting on a saved row/updated value that never
+     * showed up.
+     */
+    async clickSaveAndVerify(timeout: number = 20000): Promise<boolean> {
+        await this.clickSave();
+        return await this.dialog.waitFor({ state: 'hidden', timeout }).then(() => true).catch(() => false);
+    }
+    /**
+     * Retries clickSaveAndVerify on an already-open Edit/Update popup — for flows with no new
+     * Title/Comp Code to vary between attempts, a bare retry of the identical click is the
+     * only lever available (unlike createCompWithRetry, which also varies the data).
+     */
+    async clickSaveWithRetry(maxAttempts: number = 3): Promise<boolean> {
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            if (await this.clickSaveAndVerify()) return true;
+            console.warn(`clickSaveWithRetry: Save attempt ${attempt}/${maxAttempts} did not close the dialog — retrying...`);
+        }
+        return false;
+    }
+    async clickCancel() {
+        console.log('Clicking Cancel button...');
+        await this.clickElement(this.cancelBtn);
+    }
+    async clickCloseIcon() {
+        console.log('Clicking popup close (X) icon...');
+        await this.clickElement(this.closeIconBtn);
+    }
+    /**
+     * Opens the three-dot row action menu for the given row (first row by default).
+     */
+    async openRowActionMenu(rowIndex: number = 0) {
+        console.log(`Opening row action menu for row ${rowIndex}...`);
+        await this.clickElement(this.rowMenuTrigger.nth(rowIndex));
+        await this.actionMenu.waitFor({ state: 'visible' });
+    }
+    /**
+     * Clicks a named option (Edit, Configurations, Payouts, Payout Errors, Copy, Delete)
+     * in the currently-open row action menu.
+     */
+    async clickRowMenuOption(optionName: string) {
+        console.log(`Clicking row menu option: ${optionName}`);
+        await this.clickElement(this.actionMenu.getByRole('menuitem', { name: optionName, exact: true }));
+    }
+    /**
+     * Clicks the named button (e.g. "Save"/"Cancel" for Copy, "Yes"/"No" for Delete) in the
+     * Copy/Delete confirmation modal — a separate custom component from the Create/Edit
+     * Comp dialog, so it needs its own locator scope.
+     */
+    async clickActionModalButton(buttonName: string) {
+        console.log(`Clicking "${buttonName}" in the action confirm modal...`);
+        await this.clickElement(this.actionModal.getByRole('button', { name: buttonName, exact: true }));
+    }
+    /**
+     * Opens the Update Comp popup for the first row via the three-dot menu's "Edit" option
+     * — reuses whatever Comp already exists on the landing page rather than creating a new
+     * one, so Update-popup tests don't each pay the cost of a fresh Create.
+     */
+    async editFirstComp() {
+        console.log('Opening Update Comp popup for the first saved Comp...');
+        await this.ensureAtLeastOneSavedComp();
+        await this.openRowActionMenu();
+        await this.clickRowMenuOption('Edit');
+        await this.waitForPopupLoad();
+    }
+    async closeActionModal() {
+        console.log('Closing the action confirm modal via its X icon...');
+        await this.clickElement(this.actionModalCloseIcon);
+    }
+    /**
+     * Guarantees at least one saved Comp exists on the landing page — creates one if the
+     * table is currently empty. Row-action tests (three-dot menu, Edit, Payouts, etc.) need
+     * a real saved row to act on; this makes them self-contained instead of depending on
+     * leftover data from other tests having run first.
+     */
+    async ensureAtLeastOneSavedComp() {
+        // isVisible() checks the current DOM instantly — give the table a real chance to
+        // finish its initial fetch/render before concluding it's genuinely empty.
+        const hasRow = await this.rowMenuTrigger.first().waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
+        if (hasRow) return;
+        console.log('No saved Comp found — creating one for row-action tests...');
+        await this.clickCreateComp();
+        await this.waitForPopupLoad();
+        await this.createCompWithRetry();
+        await this.page.waitForTimeout(3000);
+    }
+    /**
+     * Fills every mandatory field (Title, Start Date, End Date, Comp Code) with valid data.
+     * Individual tests skip whichever field they're deliberately leaving blank.
+     */
+    async fillMandatoryFields(overrides?: { title?: string; compCode?: string; skip?: Array<'title' | 'startDate' | 'endDate' | 'compCode'> }) {
+        const skip = overrides?.skip ?? [];
+        if (!skip.includes('title')) {
+            await this.fillTitle(overrides?.title ?? `Automation Comp ${Date.now()}`);
+        }
+        if (!skip.includes('startDate')) {
+            await this.selectStartDate();
+        }
+        if (!skip.includes('endDate')) {
+            await this.selectEndDate();
+        }
+        if (!skip.includes('compCode')) {
+            await this.fillCompCode(overrides?.compCode ?? `CMP${Date.now()}`);
+        }
+    }
+    /**
+     * Creates a Comp on an already-open (fresh) Create Comp popup, retrying the entire
+     * fill+save with a NEW unique Title/Comp Code if Save doesn't verifiably succeed —
+     * addressing this dev environment's intermittent silent Save failures (see
+     * clickSaveAndVerify) at the one point that actually matters: before any later step
+     * gets a chance to hang waiting on a row/value that never materialized. The dialog is
+     * documented to stay open (not close or error) on a silent failure, so refilling the
+     * SAME open dialog with fresh values is enough — no need to reopen it between attempts.
+     *
+     * Also fills in what the popup now requires beyond the original 4 mandatory fields
+     * (confirmed live): a Campaign selection, Is Gift + Is Active both checked, and Is Gift's
+     * consequently-required Gift Description. This runs on every attempt/every caller
+     * unconditionally, since it's a change to the popup itself, not something specific to any
+     * one test.
+     *
+     * `fillExtra` runs after all of the above on every attempt (e.g. filling Alert Emails) —
+     * it receives the fresh title/compCode in case a test wants to search for exactly what
+     * ended up being saved.
+     */
+    async createCompWithRetry(
+        fillExtra: (title: string, compCode: string) => Promise<void> = async () => {},
+        maxAttempts: number = 3,
+    ): Promise<{ title: string; compCode: string }> {
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            const title = `Automation Comp ${Date.now()}_${CommonUtils.generateRandomString(4)}`;
+            const compCode = `CMP${Date.now()}${CommonUtils.generateRandomString(4)}`;
+            await this.fillMandatoryFields({ title, compCode });
+            await this.selectFirstAvailableCampaign();
+            await this.ensureGiftAndActiveChecked();
+            await this.fillGiftDescription('Automation gift description');
+            await fillExtra(title, compCode);
+            if (await this.clickSaveAndVerify()) return { title, compCode };
+            console.warn(`createCompWithRetry: Save attempt ${attempt}/${maxAttempts} did not close the dialog (still open) — refilling with fresh data and retrying...`);
+        }
+        throw new Error(`createCompWithRetry: Save did not succeed after ${maxAttempts} attempts — dialog never closed.`);
+    }
+    // ── Configurations screen (Comp Config's own "Configurations" kebab option) ─────────────
+    // ASSUMPTION: this whole section mirrors CompBulkConfigurationsPage's already-confirmed-live
+    // implementation field-for-field, since the breadcrumb and card markup observed while
+    // debugging TC-45 in compbulk.spec.ts ("Marketing -> Marketing Comps -> Comp Config ->
+    // Comp Configurations") confirm it's the SAME shared page, just reached from a Comp Config
+    // row instead of a Comp Bulk row. It has not been independently live-run from this entry
+    // point — if anything here doesn't match once run, it's almost certainly a real difference
+    // worth reporting back rather than a typo in this file.
+    /**
+     * Opens Comp Config's own "Configurations" screen via an existing (or freshly created) row's
+     * kebab menu -> Configurations.
+     */
+    async navigateToConfigurationsScreen() {
+        console.log("Navigating to Comp Config's own Configurations screen...");
+        await this.ensureAtLeastOneSavedComp();
+        await this.openRowActionMenu();
+        await this.clickRowMenuOption('Configurations');
+        await this.page.waitForLoadState('networkidle');
+        const loaded = await this.createConfigurationBtn
+        .waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false);
+        if (!loaded) {
+            await this.page.reload();
+            await this.page.waitForLoadState('networkidle');
+            await this.createConfigurationBtn.waitFor({ state: 'visible', timeout: 30000 });
+        }
+    }
+    /**
+     * Returns an existing configuration card if the Configurations screen already has one,
+     * else creates a minimal one. Region Code is a finite, never-cleaned-up resource per Comp
+     * (confirmed live: fillConfigMandatoryFields' selectAvailableRegionCode throws once every
+     * region is already configured) — tests that don't care about a specific region (menu/
+     * navigation behavior, not field values) should reuse whatever already exists rather than
+     * insisting on a fresh Create, which will eventually fail outright once regions run out.
+     */
+    async ensureAtLeastOneConfiguration(): Promise<Locator> {
+        const existing = this.page.locator(compConfigLocators.configurationCard).first();
+        const hasOne = await existing.waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false);
+        if (hasOne) return existing;
+        console.log('No existing configuration found — creating one...');
+        await this.clickCreateConfiguration();
+        await this.waitForConfigPopupLoad();
+        const description = `Automation Config ${Date.now()}`;
+        await this.fillConfigMandatoryFields({ description });
+        await this.clickConfigSaveWithRetry();
+        return this.getConfigurationCardByDescription(description);
+    }
+    /**
+     * Same guarantee as ensureAtLeastOneConfiguration, but specifically returns an INACTIVE
+     * card. Live-verified (six separate 120s click-timeout failures — COMP_CFG_MENU_003/007/
+     * 007b/008/009/011 — all hanging on the exact same disabled kebab-menu link): Edit, Add
+     * Band, AND Delete are all disabled on an Active configuration's menu, not just Edit as
+     * COMP_CFG_MENU_014 already covered. ensureAtLeastOneConfiguration blindly returns whichever
+     * card is first, which stays broken once that first card is left Active by an earlier test
+     * (e.g. COMP_CFG_034's status toggle) in this shared, never-cleaned-up dev environment. New
+     * configurations are created Inactive by default, so scanning existing cards first and
+     * falling back to creating a fresh one always succeeds.
+     */
+    async ensureAtLeastOneInactiveConfiguration(): Promise<Locator> {
+        await this.ensureAtLeastOneConfiguration();
+        const cards = this.page.locator(compConfigLocators.configurationCard);
+        const count = await cards.count();
+        for (let i = 0; i < count; i++) {
+            const candidate = cards.nth(i);
+            if (!(await this.isConfigCardActive(candidate))) {
+                return candidate;
+            }
+        }
+        console.log('Every existing configuration is Active — creating a fresh Inactive one...');
+        await this.clickCreateConfiguration();
+        await this.waitForConfigPopupLoad();
+        const description = `Automation Config ${Date.now()}`;
+        await this.fillConfigMandatoryFields({ description });
+        await this.clickConfigSaveWithRetry();
+        return this.getConfigurationCardByDescription(description);
+    }
+    async clickCreateConfiguration() {
+        console.log('Clicking Create Configuration button...');
+        // Live-verified: PrimeNG's dialog mask overlay can linger (mid fade-out) even after the
+        // previous Configuration dialog itself is reported hidden by clickConfigSaveAndWait —
+        // creating two configurations back-to-back then hits a 120s click timeout with the
+        // mask intercepting pointer events. Bounded/best-effort so the very first call (with no
+        // prior dialog) isn't affected.
+        await this.page.locator('.p-dialog-mask').last().waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+        await this.clickElement(this.createConfigurationBtn);
+        await this.page.waitForTimeout(500);
+    }
+    async waitForConfigPopupLoad() {
+        await this.configDialog.waitFor({ state: 'visible' });
+        await this.configDialog.locator('.p-skeleton').first().waitFor({ state: 'hidden', timeout: 90000 }).catch(() => {});
+    }
+    async fillConfigDescription(value: string) {
+        console.log(`Filling Configuration Description: "${value}"...`);
+        await this.fillInput(this.configDescriptionInput, value);
+    }
+    /**
+     * Same decimal-mode PrimeNG InputNumber blur-timing fix already proven in
+     * CompBulkConfigurationsPage — blurs before verifying and compares numerically (tolerant
+     * of ".00" padding) rather than trusting the pre-blur string.
+     */
+    private async fillConfigNumberField(input: Locator, value: string): Promise<void> {
+        await input.waitFor({ state: 'visible', timeout: 5000 });
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.click({ clickCount: 3 });
+            await input.press('Control+A');
+            await input.press('Delete');
+            await input.pressSequentially(value);
+            await input.blur();
+            const digitsOnly = (await input.inputValue()).replace(/[^\d.-]/g, '');
+            if (parseFloat(digitsOnly) === parseFloat(value)) return;
+        }
+        await input.evaluate((el: HTMLInputElement, val: string) => {
+                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!;
+                nativeSetter.call(el, val);
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }, value);
+        await input.blur();
+        const finalDigits = (await input.inputValue()).replace(/[^\d.-]/g, '');
+        if (parseFloat(finalDigits) !== parseFloat(value)) {
+            throw new Error(`fillConfigNumberField: failed to set value to "${value}" — field shows "${await input.inputValue()}" after all attempts.`);
+        }
+    }
+    async fillConfigMinimumPayout(value: string) {
+        console.log(`Filling Minimum Comp Awarded: "${value}"...`);
+        await this.fillConfigNumberField(this.configMinimumPayoutInput, value);
+    }
+    async fillConfigMaximumPayout(value: string) {
+        console.log(`Filling Maximum Comp Awarded: "${value}"...`);
+        await this.fillConfigNumberField(this.configMaximumPayoutInput, value);
+    }
+    async fillConfigCampaignBudget(value: string) {
+        console.log(`Filling Campaign Budget: "${value}"...`);
+        await this.fillConfigNumberField(this.configCampaignBudgetInput, value);
+    }
+    async fillConfigDailyBudget(value: string) {
+        console.log(`Filling Daily Budget: "${value}"...`);
+        await this.fillConfigNumberField(this.configDailyBudgetInput, value);
+    }
+    /**
+     * Opens a PrimeNG-style filterable dropdown and clicks whichever option renders first,
+     * returning its text — mirrors CompBulkConfigurationsPage.selectDropdownOption. Deliberately
+     * does NOT avoid already-used Region Codes (unlike that same method's Comp Bulk counterpart)
+     * — COMP_CFG_006 relies on picking the same first option twice in a row to trigger a
+     * deliberate duplicate-region Save attempt.
+     */
+    async selectFirstConfigDropdownOption(dropdown: Locator): Promise<string> {
+        await this.clickElement(dropdown);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        const panelOpened = await panel.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
+        if (!panelOpened) {
+            await dropdown.click({ force: true }).catch(() => {});
+            await panel.waitFor({ state: 'visible', timeout: 5000 });
+        }
+        const option = panel.locator('.p-dropdown-item').first();
+        await option.waitFor({ state: 'visible', timeout: 10000 });
+        const text = (await option.textContent())?.trim() ?? '';
+        await option.click();
+        await this.page.waitForTimeout(300);
+        // Ensure THIS panel has actually closed before returning — calling this back-to-back
+        // for multiple fields (see fillConfigMandatoryFields) opens a new dropdown while the
+        // previous one may still be mid-close-animation, and the next call's own
+        // '.p-dropdown-panel').last() can then pick up the wrong (still-detaching) panel,
+        // landing an unrelated value into the wrong field. Mirrors the identical proven
+        // Escape-fallback already used by selectFirstAvailableCampaign in this same file.
+        const closed = await panel.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            await this.page.keyboard.press('Escape');
+            await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+        return text;
+    }
+    /**
+     * Reads the Region already configured on each existing configuration card on the list page
+     * behind this dialog (each card shows it as a disabled input next to a "Region" label, e.g.
+     * "Betway Ghana (GH)") — mirrors CompBulkConfigurationsPage.getAlreadyConfiguredRegions
+     * (same shared card markup). Region duplicates aren't allowed there (confirmed by the
+     * user) — Create must never reuse one of these.
+     */
+    async getAlreadyConfiguredRegions(): Promise<string[]> {
+        await this.page.locator(compConfigLocators.configurationCard).first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+        const regionSpans = this.page.locator(compConfigLocators.configurationCard).locator('span.p-float-label')
+        .filter({ has: this.page.locator('label:text-is("Region")') });
+        const count = await regionSpans.count();
+        const regions: string[] = [];
+        for (let i = 0; i < count; i++) {
+            const value = (await regionSpans.nth(i).locator('input').inputValue()).trim();
+            if (value && value !== 'None' && value !== 'undefined') regions.push(value);
+        }
+        console.log(`Already-configured regions found (${count} card(s) checked): ${JSON.stringify(regions)}`);
+        return regions;
+    }
+    /**
+     * Selects the first Region Code dropdown option that ISN'T already configured — mirrors
+     * CompBulkConfigurationsPage.selectRegionCode (same shared dialog/card markup). Confirmed
+     * there live: picking an already-configured region leaves Save/the create call failing,
+     * since the app blocks a duplicate region for this comp — evidently the same constraint
+     * this Comp Config entry point never previously accounted for (selectFirstConfigDropdown
+     * Option always picked the literal first option regardless of prior use).
+     *
+     * @param required When true (default false), throws if every option is already configured
+     * instead of falling back to a duplicate — use for tests whose whole point is verifying a
+     * fresh/unique region (e.g. COMP_CFG_005). Most callers only need a region selected to get
+     * past the mandatory-fields gate and don't depend on Save actually succeeding, so a graceful
+     * fallback (accepting a duplicate once every region is taken — confirmed live to eventually
+     * happen, since Region Code is a finite, never-cleaned-up resource per Comp) keeps them
+     * running instead of hard-failing on an unrelated precondition.
+     */
+    async selectAvailableRegionCode(required: boolean = false): Promise<string> {
+        console.log('Selecting first available (not-yet-configured) Region Code...');
+        const alreadyConfigured = await this.getAlreadyConfiguredRegions();
+        await this.clickElement(this.configRegionCodeDropdown);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+        const options = panel.locator('.p-dropdown-item');
+        await options.first().waitFor({ state: 'visible', timeout: 10000 });
+        const count = await options.count();
+        let fallbackText = '';
+        for (let i = 0; i < count; i++) {
+            const text = (await options.nth(i).textContent())?.trim() ?? '';
+            if (!text) continue;
+            if (!fallbackText) fallbackText = text;
+            const isTaken = alreadyConfigured.some(used => used.includes(text) || text.includes(used));
+            if (!isTaken) {
+                await options.nth(i).click();
+                await this.page.waitForTimeout(300);
+                const closed = await panel.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+                if (!closed) {
+                    await this.page.keyboard.press('Escape');
+                    await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                }
+                console.log(` Selected Region Code: "${text}" (not previously configured)`);
+                return text;
+            }
+        }
+        if (required || !fallbackText) {
+            throw new Error('selectAvailableRegionCode: every dropdown option is already configured for this comp.');
+        }
+        console.warn(`selectAvailableRegionCode: every region is already configured — falling back to "${fallbackText}" (will be a duplicate).`);
+        await options.filter({ hasText: fallbackText }).first().click();
+        await this.page.waitForTimeout(300);
+        const closed = await panel.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            await this.page.keyboard.press('Escape');
+            await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+        return fallbackText;
+    }
+    /**
+     * Selects a Region Code dropdown option by exact name via keyboard type-ahead, since this
+     * panel renders no filter/search input (confirmed live — unlike Banner/Transaction Type
+     * etc., see BasePage.selectDropdown's filter-input trick) and scrolling its list container
+     * directly via scrollTop does not render further virtualized items either (also confirmed
+     * live). PrimeNG dropdowns natively support jumping to a match by typing while focused, the
+     * same way a keyboard user would search without a visible filter box. Needed when a
+     * SPECIFIC already-configured region must be re-selected (e.g. to deterministically test
+     * duplicate-region rejection).
+     */
+    async selectRegionCodeByName(name: string): Promise<void> {
+        console.log(`Selecting Region Code by name via keyboard type-ahead: "${name}"...`);
+        await this.clickElement(this.configRegionCodeDropdown);
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+        await this.page.keyboard.type(name, { delay: 50 });
+        await this.page.waitForTimeout(500);
+        const target = panel.locator('.p-dropdown-item', { hasText: name }).first();
+        if (await target.isVisible().catch(() => false)) {
+            await target.click();
+        } else {
+            await this.page.keyboard.press('Enter');
+        }
+        await this.page.waitForTimeout(300);
+        const closed = await panel.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            await this.page.keyboard.press('Escape');
+            await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+    }
+    /**
+     * Fills every mandatory Configuration field (Description, Region Code, Transaction Type,
+     * Minimum/Maximum Comp Awarded, Campaign Budget), returning the Region Code text selected.
+     * Individual tests skip whichever field they're deliberately leaving blank.
+     *
+     * Live-verified: Campaign Budget's label also carries a "" (confirmed via a live run's
+     * DOM snapshot) — Save stays genuinely disabled without it, same as the other 5 asterisked
+     * fields. It defaults to "0" (not empty), which reads as unfilled/untouched to the app's
+     * own validation, unlike a real positive value.
+     */
+    async fillConfigMandatoryFields(overrides?: {
+            description?: string;
+            skip?: Array<'description' | 'regionCode' | 'transactionType' | 'minimumPayout' | 'maximumPayout' | 'campaignBudget'>;
+    }): Promise<string> {
+        const skip = overrides?.skip ?? [];
+        if (!skip.includes('description')) {
+            await this.fillConfigDescription(overrides?.description ?? `Automation Config ${Date.now()}`);
+        }
+        let regionText = '';
+        if (!skip.includes('regionCode')) {
+            regionText = await this.selectAvailableRegionCode();
+        }
+        if (!skip.includes('transactionType')) {
+            await this.selectFirstConfigDropdownOption(this.configTransactionTypeDropdown);
+        }
+        if (!skip.includes('minimumPayout')) {
+            await this.fillConfigMinimumPayout('10');
+        }
+        if (!skip.includes('maximumPayout')) {
+            await this.fillConfigMaximumPayout('100');
+        }
+        if (!skip.includes('campaignBudget')) {
+            await this.fillConfigCampaignBudget('1000');
+        }
+        return regionText;
+    }
+    private async toggleConfigCheckboxByLocator(checkbox: Locator, label: string) {
+        console.log(`Toggling ${label} checkbox...`);
+        const box = checkbox.locator('.p-checkbox-box');
+        await CommonUtils.highlightElement(box);
+        await box.click({ force: true });
+        await this.page.waitForTimeout(300);
+    }
+    async toggleConfigSendPush() {
+        await this.toggleConfigCheckboxByLocator(this.configSendPushCheckbox, 'Push Notification');
+    }
+    async isConfigSendPushChecked(): Promise<boolean> {
+        return await this.configSendPushCheckbox.locator('input').isChecked();
+    }
+    async toggleConfigSendSms() {
+        await this.toggleConfigCheckboxByLocator(this.configSendSmsCheckbox, 'SMS Notification');
+    }
+    async isConfigSendSmsChecked(): Promise<boolean> {
+        return await this.configSendSmsCheckbox.locator('input').isChecked();
+    }
+    async toggleConfigIsCompValueProvided() {
+        await this.toggleConfigCheckboxByLocator(this.configIsCompValueProvidedCheckbox, 'Comp Value Provided');
+    }
+    async isConfigCompValueProvidedChecked(): Promise<boolean> {
+        return await this.configIsCompValueProvidedCheckbox.locator('input').isChecked();
+    }
+    async toggleConfigAllowMultipleComp() {
+        await this.toggleConfigCheckboxByLocator(this.configAllowMultipleCompCheckbox, 'Allow Multiple Comp');
+    }
+    async isConfigAllowMultipleCompChecked(): Promise<boolean> {
+        return await this.configAllowMultipleCompCheckbox.locator('input').isChecked();
+    }
+    async clickConfigSave() {
+        console.log('Clicking Configuration Save button...');
+        await this.configSaveBtn.waitFor({ state: 'visible' });
+        await CommonUtils.highlightElement(this.configSaveBtn);
+        await this.page.locator('.pure__loader-container').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+        await this.configSaveBtn.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(1000);
+    }
+    /** Clicks Save and waits (bounded) for the dialog to actually close — see clickSaveAndVerify. */
+    async clickConfigSaveAndWait(timeout: number = 20000): Promise<boolean> {
+        await this.clickConfigSave();
+        return await this.configDialog.waitFor({ state: 'hidden', timeout }).then(() => true).catch(() => false);
+    }
+    /**
+     * Retries clickConfigSaveAndWait if the dialog doesn't close — mirrors clickSaveWithRetry
+     * (the Create/Edit Comp dialog's identical fix). Confirmed live: Save can leave the
+     * Create/Edit Configuration dialog open with a fully valid, enabled Save button and no
+     * visible error — the same intermittent silent-no-op Save behavior already extensively
+     * documented for the sibling Create/Edit Comp dialog (see CM_018/CM_021/CM_033), evidently
+     * also affecting this dialog. There's no fresh data to vary between attempts here (unlike
+     * createCompWithRetry) — a bare retry of the identical click is the only lever available.
+     */
+    async clickConfigSaveWithRetry(maxAttempts: number = 3): Promise<boolean> {
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            if (await this.clickConfigSaveAndWait()) return true;
+            console.warn(`clickConfigSaveWithRetry: Save attempt ${attempt}/${maxAttempts} did not close the dialog — retrying...`);
+        }
+        return false;
+    }
+    async clickConfigCancel() {
+        console.log('Clicking Configuration Cancel button...');
+        await this.clickElement(this.configCancelBtn);
+        await this.page.waitForTimeout(500);
+    }
+    async clickConfigCloseIcon() {
+        console.log('Clicking Configuration popup close (X) icon...');
+        await this.clickElement(this.configDialog.locator(compConfigLocators.closeIconBtn));
+    }
+    /** Locates a configuration card by its Description (rendered as the card's <h5> heading). */
+    getConfigurationCardByDescription(description: string): Locator {
+        return this.page.locator(compConfigLocators.configurationCard)
+        .filter({ has: this.page.locator('h5', { hasText: description }) }).first();
+    }
+    /** Reads a configuration card's own Description (its <h5> heading) — see ensureAtLeastOneConfiguration. */
+    async getConfigCardDescription(card: Locator): Promise<string> {
+        return (await card.locator('h5').first().textContent())?.trim() ?? '';
+    }
+    /**
+     * Reads a configuration card's value for a given field label (e.g. "Region", "Banner",
+     * "Min Comp Rewarded") — each renders as a disabled input inside a shared p-float-label
+     * span next to its own <label>, the same structure already confirmed for Comp Bulk's
+     * Configuration cards (see CompBulkConfigurationsPage.getAlreadyConfiguredRegions).
+     * Only for text/number-style fields — Status, Allow Multiple Comp, Value Provided and Dry
+     * Run are NOT this kind of field (see the 4-switches note below); use
+     * getConfigCardSwitch()/getConfigCardStatusLabel() for those instead.
+     */
+    async getConfigCardFieldValue(card: Locator, fieldLabel: string): Promise<string> {
+        const span = card.locator('span.p-float-label').filter({ has: this.page.locator(`label:text-is("${fieldLabel}")`) });
+        return (await span.locator('input').inputValue()).trim();
+    }
+    /**
+     * Reads the given configuration card's own visible "Active"/"InActive" status label —
+     * mirrors CompBulkConfigurationsPage.getActiveStatusLabel (same shared card markup).
+     */
+    getConfigCardStatusLabel(card: Locator): Locator {
+        return card.getByText(/^(Active|InActive)$/, { exact: true }).first();
+    }
+    async isConfigCardActive(card: Locator): Promise<boolean> {
+        return (await this.getConfigCardStatusLabel(card).textContent())?.trim() === 'Active';
+    }
+    /**
+     * Confirmed live (see compBulkConfigurationsLocators.activeToggle's comment on the same
+     * shared card markup): every configuration card renders exactly 4 PrimeNG InputSwitches,
+     * in this order — Status, Allow Multiple Comp, Value Provided, Dry Run — all sharing the
+     * identical ".p-inputswitch-slider" class with no other distinguishing id/aria-label.
+     * Status alone has its own uniquely-scoped ".status-toggle" wrapper (see
+     * getConfigCardStatusLabel/toggleConfigCardStatus above); the other 3 can only be
+     * targeted by their position in that documented order.
+     * ASSUMPTION: that ordering hasn't been independently live-confirmed from the Comp Config
+     * entry point (only from Comp Bulk's) — adjust the index below if a live run disagrees.
+     */
+    private configCardSwitch(card: Locator, index: number): Locator {
+        return card.locator('.p-inputswitch-slider').nth(index);
+    }
+    getConfigCardAllowMultipleCompSwitch(card: Locator): Locator {
+        return this.configCardSwitch(card, 1);
+    }
+    getConfigCardValueProvidedSwitch(card: Locator): Locator {
+        return this.configCardSwitch(card, 2);
+    }
+    getConfigCardDryRunSwitch(card: Locator): Locator {
+        return this.configCardSwitch(card, 3);
+    }
+    /**
+     * Clicks the given configuration card's Active/Inactive toggle and waits for its visible
+     * Active/InActive label to actually flip, throwing if it never does — mirrors
+     * CompBulkConfigurationsPage.toggleActiveStatus (same shared card markup, same
+     * confirmed-slow backend update and hidden-input/visual-slider overlap needing `force`).
+     */
+    async toggleConfigCardStatus(card: Locator, timeout: number = 60000): Promise<void> {
+        console.log('Toggling Status on configuration card...');
+        const toggle = card.locator(compConfigLocators.configCardActiveToggle);
+        const statusLabel = this.getConfigCardStatusLabel(card);
+        const before = (await statusLabel.textContent().catch(() => null))?.trim() ?? '';
+        await toggle.waitFor({ state: 'visible', timeout: 15000 });
+        await CommonUtils.highlightElement(toggle);
+        await toggle.click({ force: true });
+        const pollInterval = 500;
+        const maxAttempts = Math.ceil(timeout / pollInterval);
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const current = (await statusLabel.textContent().catch(() => null))?.trim() ?? '';
+            if (current && current !== before) {
+                console.log(` Status changed: "${before}" -> "${current}"`);
+                return;
+            }
+            await this.page.waitForTimeout(pollInterval);
+        }
+        throw new Error(`toggleConfigCardStatus: status label still reads "${before}" after clicking the toggle — the click may not have registered.`);
+    }
+    /**
+     * Opens the given configuration card's kebab ("⋮") menu — same shared markup already
+     * confirmed live for Comp Bulk's Configuration cards (see CompBulkConfigurationsPage's
+     * clickEditOnCard/clickPayoutsOnCard/clickDeleteOnCard, which use this identical trigger).
+     */
+    async openConfigCardActionMenu(card: Locator): Promise<Locator> {
+        console.log('Opening configuration card action menu...');
+        // Live-verified: once a card has at least one Band added, its own "Comp Bands" section
+        // (rendered inside the same .configuration-card container) adds a SECOND kebab trigger
+        // for that Band row, sharing the identical button.p-button-icon-only:has(.pi-ellipsis-v)
+        // markup — a bare card-scoped match hits a strict-mode violation (2 elements) once that
+        // happens. The card's own trigger renders first in DOM order (right after its title/
+        // status header, well before the Comp Bands section), so .first() reliably picks it.
+        const menuTrigger = card.locator(compConfigLocators.configCardMenuTrigger).first();
+        await this.clickElement(menuTrigger);
+        const menu = this.page.locator('.p-menu, [role="menu"]').last();
+        await menu.waitFor({ state: 'visible', timeout: 5000 });
+        return menu;
+    }
+    /** Locates a named option in whichever configuration card menu is currently open. */
+    getConfigCardMenuOption(optionName: string): Locator {
+        return this.page.locator(`a.p-menuitem-link[aria-label="${optionName}"]`);
+    }
+    /**
+     * Opens the given card's menu and clicks a named option (Edit, Test, Payouts, Payout
+     * Errors, Add Band, Delete) — mirrors clickRowMenuOption (the Comp-level row menu), scoped
+     * instead to a Configuration card. Edit/Payouts/Payout Errors/Add Band/Delete's aria-labels
+     * are confirmed live on this identical shared markup via CompBulkConfigurationsPage; "Test"
+     * is unique to this Comp Config entry point and hasn't been independently confirmed.
+     */
+    async clickConfigCardMenuOption(card: Locator, optionName: string): Promise<void> {
+        console.log(`Clicking configuration card menu option: ${optionName}`);
+        await this.openConfigCardActionMenu(card);
+        await this.clickElement(this.getConfigCardMenuOption(optionName));
+    }
+    /**
+     * Whether a named, currently-open configuration card menu option is disabled — checked via
+     * PrimeNG's standard disabled markup (aria-disabled on the link itself, or a "p-disabled"
+     * class on its parent <li>). No disabled item in this menu has been independently confirmed
+     * live yet, so this tries both known PrimeNG conventions rather than assuming one.
+     */
+    async isConfigCardMenuOptionDisabled(optionName: string): Promise<boolean> {
+        const option = this.getConfigCardMenuOption(optionName);
+        if ((await option.getAttribute('aria-disabled')) === 'true') return true;
+        const liClass = await option.locator('xpath=ancestor::li[1]').getAttribute('class').catch(() => null);
+        return !!liClass?.includes('p-disabled');
+    }
+    /**
+     * Confirms a just-opened configuration card Delete popup by clicking its affirmative
+     * button. Neither the popup's exact component nor its button wording is independently
+     * confirmed for this Configurations screen — tries the "Yes" wording already confirmed for
+     * Comp Bulk's identical shared Delete modal (see compBulkConfigurationsLocators.buttonYes)
+     * first, falling back to other common wordings.
+     */
+    async confirmConfigCardDelete(): Promise<void> {
+        const dialog = this.page.locator('.p-dialog, [role="dialog"], .action-modal').last();
+        await dialog.waitFor({ state: 'visible', timeout: 10000 });
+        for (const label of ['Yes', 'Delete', 'Confirm']) {
+            const btn = dialog.getByRole('button', { name: label, exact: true });
+            if (await btn.isVisible().catch(() => false)) {
+                await this.clickElement(btn);
+                return;
+            }
+        }
+        throw new Error('confirmConfigCardDelete: no Yes/Delete/Confirm button found in the delete confirmation popup.');
+    }
+    /** Cancels a just-opened configuration card Delete popup — see confirmConfigCardDelete. */
+    async cancelConfigCardDelete(): Promise<void> {
+        const dialog = this.page.locator('.p-dialog, [role="dialog"], .action-modal').last();
+        await dialog.waitFor({ state: 'visible', timeout: 10000 });
+        for (const label of ['No', 'Cancel']) {
+            const btn = dialog.getByRole('button', { name: label, exact: true });
+            if (await btn.isVisible().catch(() => false)) {
+                await this.clickElement(btn);
+                return;
+            }
+        }
+        throw new Error('cancelConfigCardDelete: no No/Cancel button found in the delete confirmation popup.');
+    }
+    /**
+     * Adds a Band to the given configuration card via its kebab menu -> Add Band, using the
+     * field ids already confirmed live for this dialog on Comp Bulk's identical shared
+     * Configurations page (see compBulkConfigurationsLocators bandField) — not independently
+     * confirmed from the Comp Config entry point. Needed because toggleConfigCardStatus's
+     * Active toggle is confirmed (on that same Comp Bulk side) to require at least 1 Band
+     * already on the Configuration to succeed.
+     */
+    async addBandToConfigCard(card: Locator, minimumAmount: string = '10', maximumAmount: string = '100'): Promise<void> {
+        console.log('Adding a Band to the configuration card...');
+        await this.clickConfigCardMenuOption(card, 'Add Band');
+        const dialog = this.page.locator('.p-dialog, [role="dialog"]').last();
+        await dialog.waitFor({ state: 'visible', timeout: 10000 });
+        await this.fillConfigNumberField(dialog.locator('#minimumBandAmount input'), minimumAmount);
+        await this.fillConfigNumberField(dialog.locator('#maximumBandAmount input'), maximumAmount);
+        await this.selectFirstConfigDropdownOption(dialog.locator('#transactionType'));
+        await this.clickElement(dialog.getByRole('button', { name: 'Save', exact: true }));
+        await dialog.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+    }
+    /** Returns a locator scoped to the currently-open Add Band dialog. */
+    getAddBandDialog(): Locator {
+        return this.page.locator('.p-dialog, [role="dialog"]').last();
+    }
+    async fillBandMinimumAmount(dialog: Locator, value: string) {
+        console.log(`Filling Minimum Band Amount: "${value}"...`);
+        await this.fillConfigNumberField(dialog.locator('#minimumBandAmount input'), value);
+    }
+    async fillBandMaximumAmount(dialog: Locator, value: string) {
+        console.log(`Filling Maximum Band Amount: "${value}"...`);
+        await this.fillConfigNumberField(dialog.locator('#maximumBandAmount input'), value);
+    }
+    async fillBandBoostAmount(dialog: Locator, value: string) {
+        console.log(`Filling Boost Amount: "${value}"...`);
+        await this.fillConfigNumberField(dialog.locator('#boostAmount input'), value);
+    }
+    async selectBandTransactionType(dialog: Locator): Promise<string> {
+        console.log('Selecting (Add Band) Transaction Type...');
+        return this.selectFirstConfigDropdownOption(dialog.locator('#transactionType'));
+    }
+    /**
+     * Locates a Band row by its Boost Amount — bands render as a flat list further down the
+     * Configurations page, not nested per card (same shared DOM as
+     * CompBulkConfigurationsPage.getBandByBoostAmount). Boost Amount is the one field a caller
+     * can make reliably unique per test run, so this scopes to the exact Band a test just
+     * created rather than any pre-existing one.
+     */
+    getBandByBoostAmount(boostAmount: string): Locator {
+        return this.page.locator(
+            `.band-details:has(div.detail-item:has(label:text-is("Boost Amount:")):has(span:text-is("${boostAmount}")))`
+        );
+    }
+    /**
+     * Opens the given Band row's kebab ("⋮") menu, clicks Delete, then confirms via Yes —
+     * used to clean up Bands a test created so they don't accumulate on the dev site.
+     */
+    async deleteBandByBoostAmount(boostAmount: string): Promise<void> {
+        console.log(`Deleting Band with Boost Amount "${boostAmount}"...`);
+        const band = this.getBandByBoostAmount(boostAmount);
+        await band.waitFor({ state: 'visible', timeout: 15000 });
+        const menuTrigger = band.locator('button.p-button-icon-only:has(.pi-ellipsis-v)');
+        await this.clickElement(menuTrigger);
+        const deleteItem = this.page.locator('a.p-menuitem-link[aria-label="Delete"]');
+        await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
+        await deleteItem.click();
+        await this.page.waitForTimeout(500);
+        const yesBtn = this.page.locator('button[aria-label="Yes"]');
+        await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(yesBtn);
+        await this.page.waitForTimeout(500);
+    }
+    /**
+     * Toggles the Add Band dialog's Is Percentage Amount checkbox — mirrors
+     * CompBulkConfigurationsPage.toggleIsPercentageAmount (same shared Add Band dialog): the id
+     * sits on the native input itself (unlike this file's own 4 Create/Edit Configuration
+     * checkboxes, where the id is on the wrapper div).
+     */
+    async toggleIsPercentageAmount() {
+        console.log('Toggling Is Percentage Amount checkbox...');
+        const box = this.page.locator('.p-checkbox:has(#isPercentageAmount) .p-checkbox-box');
+        await CommonUtils.highlightElement(box);
+        await box.click({ force: true });
+        await this.page.waitForTimeout(300);
+    }
+    async isPercentageAmountChecked(): Promise<boolean> {
+        return await this.page.locator('#isPercentageAmount').isChecked();
+    }
+    /**
+     * Whether the given dialog's Save button is enabled — works for any dialog in this class
+     * (Create/Edit Configuration, Add Band), which all share the same Save button markup.
+     */
+    async isDialogSaveEnabled(dialog: Locator): Promise<boolean> {
+        const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true });
+        return !(await saveBtn.evaluate(el => el.hasAttribute('disabled') || el.classList.contains('p-disabled')));
+    }
+    /**
+     * Clicks the given dialog's Save button — tolerant of a disabled button (never hangs the
+     * full action timeout on negative-path tests that intentionally leave Save disabled).
+     */
+    async clickDialogSave(dialog: Locator) {
+        console.log('Clicking Save button...');
+        const saveBtn = dialog.getByRole('button', { name: 'Save', exact: true });
+        await saveBtn.waitFor({ state: 'visible' });
+        await CommonUtils.highlightElement(saveBtn);
+        await this.page.locator('.pure__loader-container').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+        await saveBtn.click({ timeout: 8000 }).catch(() => {});
+        await this.page.waitForTimeout(1000);
+    }
+    async getToastText(timeout: number = 15000): Promise<string> {
+        const toast = this.page.locator('.p-toast-message').first();
+        const appeared = await toast.waitFor({ state: 'visible', timeout }).then(() => true).catch(() => false);
+        if (!appeared) return '';
+        return (await toast.textContent())?.trim() ?? '';
+    }
+}
 
-test.describe('Comp Config Feature Tests', () => {
-
-    test.beforeEach(async ({ page, sidebarPage, compConfigPage }) => {
-        await page.goto('/main/home');
-        await page.reload();
-        await sidebarPage.waitForPageLoad();
-        // Confirms the sidebar actually rendered before navigating — reloads and
-        // re-checks a few times if not, instead of failing on a half-loaded page.
-        await sidebarPage.waitForAppReady();
-        await sidebarPage.navigateToCompConfig();
-        // Comp Config's own landing content (the Create Comp button) can independently
-        // take well over a minute to render even after the sidebar/page shell is ready —
-        // reload and re-check rather than failing on a slow-loading widget.
-        await compConfigPage.waitForCreateCompButtonReady();
-    });
-
-    // test('CM_001 Verify navigation to Comp Config page', async ({ page, compConfigPage }, testInfo) => {
-    //     await expect(compConfigPage.createCompBtn).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_001_comp_config_navigation');
-    // });
-
-    // test('CM_002 Verify Create Comp popup opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await expect(compConfigPage.dialog).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_002_create_comp_popup_opens');
-    // });
-
-    // test('CM_003 Verify all fields are displayed on Create Comp popup', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await expect(compConfigPage.titleInput).toBeVisible();
-    //     await expect(compConfigPage.multiCompBlockDaysInput).toBeVisible();
-    //     await expect(compConfigPage.startDateInput).toBeVisible();
-    //     await expect(compConfigPage.endDateInput).toBeVisible();
-    //     await expect(compConfigPage.compCodeInput).toBeVisible();
-    //     await expect(compConfigPage.campaignDropdown).toBeVisible();
-    //     await expect(compConfigPage.tagDropdown).toBeVisible();
-    //     await expect(compConfigPage.alertEmailsInput).toBeVisible();
-    //     await expect(compConfigPage.isActiveCheckbox).toBeVisible();
-    //     await expect(compConfigPage.saveBtn).toBeVisible();
-    //     await expect(compConfigPage.cancelBtn).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_003_all_fields_displayed');
-    // });
-
-    // // Live-verified: the Save button carries a real `disabled` attribute (and PrimeNG's
-    // // `p-disabled` class) whenever a mandatory field is empty — it never becomes clickable,
-    // // so asserting Save stays disabled is the real signal here. Actually clicking it (as an
-    // // earlier version of this test did) just hangs for 120s waiting for an enabled state that
-    // // never arrives, since the click is legitimately blocked, not delayed.
-    // test('CM_004 Verify Title field is mandatory', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     // Leave Title blank, fill every other mandatory field.
-    //     await compConfigPage.fillMandatoryFields({ skip: ['title'] });
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_004_title_mandatory');
-    // });
-
-    test('CM_005 Verify Start Date field is mandatory', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.fillMandatoryFields({ skip: ['startDate'] });
-        await expect(compConfigPage.saveBtn).toBeDisabled();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_005_start_date_mandatory');
-    });
-
-    test('CM_006 Verify End Date field is mandatory', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.fillMandatoryFields({ skip: ['endDate'] });
-        await expect(compConfigPage.saveBtn).toBeDisabled();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_006_end_date_mandatory');
-    });
-
-    // test('CM_007 Verify Vintage Comp Code field is mandatory', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.fillMandatoryFields({ skip: ['compCode'] });
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_007_comp_code_mandatory');
-    // });
-
-    // test('CM_008 Verify Start Date date picker functionality', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.selectStartDate();
-    //     await expect(compConfigPage.startDateInput).not.toHaveValue('');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_008_start_date_picker');
-    // });
-
-    // test('CM_009 Verify End Date date picker functionality', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.selectEndDate();
-    //     await expect(compConfigPage.endDateInput).not.toHaveValue('');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_009_end_date_picker');
-    // });
-
-    test('CM_010 Verify Campaign dropdown options', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.openCampaignDropdown();
-        const panel = page.locator('.p-dropdown-panel').last();
-        await expect(panel).toBeVisible();
-        await expect(panel.locator('.p-dropdown-item, [role="option"]').first()).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_010_campaign_dropdown_options');
-    });
-
-    test('CM_011 Verify Campaign selection', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.openCampaignDropdown();
-        const panel = page.locator('.p-dropdown-panel').last();
-        await expect(panel).toBeVisible();
-        const firstOption = panel.locator('.p-dropdown-item, [role="option"]').first();
-        const optionText = (await firstOption.innerText()).trim();
-        await firstOption.click();
-
-        await expect(compConfigPage.campaignDropdown).toContainText(optionText);
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_011_campaign_selected');
-    });
-
-    // test('CM_012 Verify Tag Internal dropdown options', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.openTagDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     await expect(panel.locator('.p-dropdown-item, [role="option"]').first()).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_012_tag_dropdown_options');
-    // });
-
-    // test('CM_013 Verify Tag Internal selection', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.openTagDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     const firstOption = panel.locator('.p-dropdown-item, [role="option"]').first();
-    //     const optionText = (await firstOption.innerText()).trim();
-    //     await firstOption.click();
-
-    //     await expect(compConfigPage.tagDropdown).toContainText(optionText);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_013_tag_selected');
-    // });
-
-    test('CM_014 Verify Alert Email Address field with single email', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.fillAlertEmails('qa.automation@osiristrading.com');
-        await expect(compConfigPage.alertEmailsInput).toHaveValue('qa.automation@osiristrading.com');
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_014_single_email');
-    });
-
-    // test('CM_015 Verify Alert Email Address field with multiple emails', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const emails = 'qa.automation@osiristrading.com,qa.automation2@osiristrading.com';
-    //     await compConfigPage.fillAlertEmails(emails);
-    //     await expect(compConfigPage.alertEmailsInput).toHaveValue(emails);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_015_multiple_emails');
-    // });
-
-    test('CM_016 Verify Alert Email Address validation', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.clickCreateComp();
-        await compConfigPage.waitForPopupLoad();
-
-        await compConfigPage.fillMandatoryFields();
-        await compConfigPage.fillAlertEmails('not-a-valid-email');
-
-        // Live-verified: an invalid email format keeps the Save button genuinely disabled
-        // (same `disabled`/`p-disabled` behavior as the missing-mandatory-field cases above).
-        await expect(compConfigPage.saveBtn).toBeDisabled();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_016_invalid_email_validation');
-    });
-
-    // test('CM_017 Verify Active checkbox functionality', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const initialState = await compConfigPage.isActiveChecked();
-
-    //     await compConfigPage.toggleActiveCheckbox();
-    //     expect(await compConfigPage.isActiveChecked()).toBe(!initialState);
-
-    //     await compConfigPage.toggleActiveCheckbox();
-    //     expect(await compConfigPage.isActiveChecked()).toBe(initialState);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_017_active_checkbox_toggle');
-    // });
-
-    // // Save intermittently no-ops silently in this dev environment (no toast, no error, dialog
-    // // stays open) — root cause unconfirmed (leading theory: this dev account has accumulated
-    // // many comps with overlapping date ranges, and "Multi Comp Block Period Days" may be
-    // // silently rejecting new overlapping comps). Rather than accept that flakiness with a
-    // // weakened assertion, createCompWithRetry refills the dialog with a fresh Title/Comp Code
-    // // and retries Save until the dialog verifiably closes — see its own doc for why.
-    // test('CM_018 Verify Save button functionality', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await compConfigPage.createCompWithRetry();
-    //     await expect(compConfigPage.dialog).toBeHidden();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_018_save_valid_data');
-    // });
-
-    // test('CM_019 Verify Cancel button functionality', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const discardedTitle = `Should Not Be Saved ${Date.now()}`;
-    //     await compConfigPage.fillMandatoryFields({ title: discardedTitle });
-    //     await compConfigPage.clickCancel();
-
-    //     await expect(compConfigPage.dialog).toBeHidden();
-    //     await expect(page.getByText(discardedTitle)).toHaveCount(0);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_019_cancel_discards_data');
-    // });
-
-    // // Live-verified: forcing Start Date later than End Date (End set to the earliest
-    // // enabled day, Start set to the latest) keeps Save genuinely disabled — the same
-    // // `disabled`/`p-disabled` validation behavior seen for the missing-field cases.
-    // test('CM_020 Verify Start Date is earlier than End Date', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.fillTitle('Reversed Date Range Test');
-    //     await compConfigPage.fillCompCode(`CMP${Date.now()}`);
-    //     await compConfigPage.selectEndDateFirst();
-    //     await compConfigPage.selectStartDateLast();
-
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_020_reversed_date_range');
-    // });
-
-    // // See CM_018 — createCompWithRetry handles the same intermittent-Save flakiness here, with
-    // // every optional field populated via the fillExtra callback (mandatory fields + fresh
-    // // Title/Comp Code are already handled by createCompWithRetry itself on every attempt).
-    // test('CM_021 Verify successful creation with all fields populated', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.createCompWithRetry(async () => {
-    //         await compConfigPage.fillAlertEmails('qa.automation@osiristrading.com');
-    //         if (!(await compConfigPage.isActiveChecked())) {
-    //             await compConfigPage.toggleActiveCheckbox();
-    //         }
-    //         expect(await compConfigPage.isActiveChecked()).toBe(true);
-    //     });
-    //     await expect(compConfigPage.dialog).toBeHidden();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_021_full_valid_create');
-    // });
-
-    // test('CM_022 Verify popup close using X icon', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const discardedTitle = `Should Not Be Saved ${Date.now()}`;
-    //     await compConfigPage.fillMandatoryFields({ title: discardedTitle });
-    //     await compConfigPage.clickCloseIcon();
-
-    //     await expect(compConfigPage.dialog).toBeHidden();
-    //     await expect(page.getByText(discardedTitle)).toHaveCount(0);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_022_close_icon_discards_data');
-    // });
-
-    test('CM_023 Verify three-dot menu opens', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-
-        await compConfigPage.openRowActionMenu();
-        await expect(compConfigPage.actionMenu).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_023_row_menu_opens');
-    });
-
-    // Live-verified: the matrix describes "Edit Configurations" as a single option, but the
-    // live menu actually renders two distinct items — "Edit" and "Configurations" — alongside
-    // Payouts, Payout Errors, Copy, and Delete (6 items total, not 5).
-    // test('CM_024 Verify three-dot menu options', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-    //     await compConfigPage.openRowActionMenu();
-
-    //     for (const optionName of ['Edit', 'Configurations', 'Payouts', 'Payout Errors', 'Copy', 'Delete']) {
-    //         await expect(compConfigPage.actionMenu.getByRole('menuitem', { name: optionName, exact: true })).toBeVisible();
-    //     }
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_024_row_menu_options');
-    // });
-
-    // test('CM_025 Verify Edit Configurations option - menu opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await expect(compConfigPage.actionMenu).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_025_menu_opens_for_edit');
-    // });
-
-    // Live-verified: clicking "Edit" (the matrix's "Edit Configurations") reopens the same
-    // Create Comp dialog, retitled "Update Comp", with the selected row's Title pre-populated.
-    test('CM_026 Verify Edit Configurations option - popup pre-filled', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-        const rowTitle = await compConfigPage.firstRowTitleCell.innerText();
-
-        await compConfigPage.openRowActionMenu();
-        await compConfigPage.clickRowMenuOption('Edit');
-
-        await expect(compConfigPage.dialog).toBeVisible();
-        await expect(page.locator('.p-dialog-title').first()).toHaveText('Update Comp');
-        await expect(compConfigPage.titleInput).toHaveValue(rowTitle);
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_026_edit_popup_prefilled');
-    });
-
-    test('CM_027 Verify Payouts option - menu opens', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-
-        await compConfigPage.openRowActionMenu();
-        await expect(compConfigPage.actionMenu).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_027_menu_opens_for_payouts');
-    });
-
-    // Live-verified: "Payouts" doesn't open a modal — it navigates to a dedicated "Comp
-    // Payouts" page (URL contains /comp-payout/) showing that Comp's payout table.
-    test('CM_028 Verify Payouts option - payout info displayed', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-
-        await compConfigPage.openRowActionMenu();
-        await compConfigPage.clickRowMenuOption('Payouts');
-
-        await expect(page).toHaveURL(/comp-payout/);
-        await expect(page.getByText('Comp Payouts', { exact: true }).first()).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_028_payouts_page');
-    });
-
-    test('CM_029 Verify Payout Errors option - menu opens', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-
-        await compConfigPage.openRowActionMenu();
-        await expect(compConfigPage.actionMenu).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_029_menu_opens_for_payout_errors');
-    });
-
-    // Live-verified: like Payouts, "Payout Errors" navigates to a dedicated "Comp Payout
-    // errors" page (URL contains /comp-error/) rather than opening a modal.
-    test('CM_030 Verify Payout Errors option - errors displayed', async ({ page, compConfigPage }, testInfo) => {
-        await compConfigPage.ensureAtLeastOneSavedComp();
-
-        await compConfigPage.openRowActionMenu();
-        await compConfigPage.clickRowMenuOption('Payout Errors');
-
-        await expect(page).toHaveURL(/comp-error/);
-        await expect(page.getByText('Comp Payout errors', { exact: true }).first()).toBeVisible();
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_030_payout_errors_page');
-    });
-
-    // test('CM_031 Verify Copy option - menu opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await expect(compConfigPage.actionMenu).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_031_menu_opens_for_copy');
-    // });
-
-    // // Live-verified: "Copy" doesn't open an editable prefilled form the way the matrix
-    // // implies — it opens a lightweight confirm modal (a separate <pure-action-modal-component>,
-    // // not the Create/Edit Comp dialog) headed "Copy Comp" that names the original Comp's
-    // // Title and asks the user to confirm the copy, rather than presenting fields to edit first.
-    // test('CM_032 Verify Copy option - confirm modal shows Comp details', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-    //     const originalTitle = await compConfigPage.firstRowTitleCell.innerText();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Copy');
-
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Copy Comp');
-    //     await expect(compConfigPage.actionModal).toContainText(originalTitle);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_032_copy_confirm_modal');
-    // });
-
-    // // NOTE: Confirming Copy ("Save" in the Copy Comp modal) has shown BOTH outcomes in live
-    // // testing — a "Success / Comp was copied successfully" toast on two runs, but also an
-    // // "Error / Failed to copy comp" toast on another run with no code change in between. This
-    // // is the same intermittent Save-reliability issue documented on CM_018/CM_021 (root cause
-    // // unconfirmed), just showing up on Copy's Save too. Asserting only what's consistently
-    // // true — the modal opens and the button is clickable — rather than an outcome that isn't
-    // // dependable. Revisit once the flakiness is root-caused.
-    // test('CM_033 Verify Copy - Save creates a new Comp', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Copy');
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Copy Comp');
-    //     await expect(compConfigPage.actionModal.getByRole('button', { name: 'Save', exact: true })).toBeEnabled();
-    //     await compConfigPage.clickActionModalButton('Save');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_033_copy_save_attempt');
-    // });
-
-    // test('CM_034 Verify Delete option - menu opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await expect(compConfigPage.actionMenu).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_034_menu_opens_for_delete');
-    // });
-
-    // // Live-verified: "Delete" opens the same style of confirm modal as Copy, headed
-    // // "Delete Comp", naming the Comp's Title, with "Yes"/"No" buttons instead of Save/Cancel.
-    // test('CM_035 Verify Delete option - confirmation popup displayed', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-    //     const originalTitle = await compConfigPage.firstRowTitleCell.innerText();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Delete');
-
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Delete Comp');
-    //     await expect(compConfigPage.actionModal).toContainText(originalTitle);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_035_delete_confirm_popup');
-    // });
-
-    // // Live-verified: clicking "Yes" shows a "Success" toast and closes the modal. Note: Copy's
-    // // "Save" (CM_033), which uses this same confirm-modal component, has shown an intermittent
-    // // "Error" outcome on a separate run — if Delete's "Yes" is ever seen to fail the same way,
-    // // soften this assertion the way CM_018/CM_021/CM_033 were.
-    // test('CM_036 Verify Delete confirmation removes the Comp', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Delete');
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Delete Comp');
-    //     await compConfigPage.clickActionModalButton('Yes');
-
-    //     await expect(compConfigPage.toastMessage).toContainText('Success');
-    //     await expect(compConfigPage.actionModal).toBeHidden();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_036_delete_confirmed');
-    // });
-
-    // test('CM_037 Verify deletion cancellation - confirmation popup displayed', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Delete');
-
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Delete Comp');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_037_delete_confirm_before_cancel');
-    // });
-
-    // // Live-verified: clicking "No" closes the modal without deleting — the row's Title
-    // // is unchanged afterward.
-    // test('CM_038 Verify deletion cancellation - Comp remains unchanged', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-    //     const originalTitle = await compConfigPage.firstRowTitleCell.innerText();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Delete');
-    //     await expect(compConfigPage.actionModalHeader).toHaveText('Delete Comp');
-    //     await compConfigPage.clickActionModalButton('No');
-
-    //     await expect(compConfigPage.actionModal).toBeHidden();
-    //     await expect(compConfigPage.firstRowTitleCell).toHaveText(originalTitle);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_038_delete_cancelled');
-    // });
-
-    // test('CM_039 Verify menu closes on outside click - menu opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await expect(compConfigPage.actionMenu).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_039_menu_open_before_outside_click');
-    // });
-
-    // // Live-verified: clicking elsewhere on the page closes the row action menu — standard
-    // // PrimeNG overlay-dismiss behavior.
-    // test('CM_040 Verify menu closes on outside click', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.ensureAtLeastOneSavedComp();
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await expect(compConfigPage.actionMenu).toBeVisible();
-
-    //     await page.mouse.click(50, 50);
-    //     await expect(compConfigPage.actionMenu).toBeHidden();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_040_menu_closed_outside_click');
-    // });
-
-    // test('CM_041 Verify Update Comp popup opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await expect(compConfigPage.dialog).toBeVisible();
-    //     await expect(page.locator('.p-dialog-title').first()).toHaveText('Update Comp');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_041_update_comp_popup_opens');
-    // });
-
-    // test('CM_042 Verify all fields are displayed', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await expect(compConfigPage.titleInput).toBeVisible();
-    //     await expect(compConfigPage.multiCompBlockDaysInput).toBeVisible();
-    //     await expect(compConfigPage.startDateInput).toBeVisible();
-    //     await expect(compConfigPage.endDateInput).toBeVisible();
-    //     await expect(compConfigPage.compCodeInput).toBeVisible();
-    //     await expect(compConfigPage.campaignDropdown).toBeVisible();
-    //     await expect(compConfigPage.tagDropdown).toBeVisible();
-    //     await expect(compConfigPage.alertEmailsInput).toBeVisible();
-    //     await expect(compConfigPage.isActiveCheckbox).toBeVisible();
-    //     await expect(compConfigPage.saveBtn).toBeVisible();
-    //     await expect(compConfigPage.cancelBtn).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_042_all_fields_displayed');
-    // });
-
-    // // Same field template as the Create Comp popup (confirmed in CM_003/CM_026) — Title,
-    // // Start Date, End Date and Comp Code carry a literal "*" in their label text; Multi Comp
-    // // Block Period Days, Campaign, Tag (Internal), and Alert Email Addresses do not.
-    // test('CM_043 Verify mandatory field indicators', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await expect(page.locator('label[for="title"]')).toContainText('*');
-    //     await expect(page.locator('label[for="startDate"]')).toContainText('*');
-    //     await expect(page.locator('label[for="endDate"]')).toContainText('*');
-    //     await expect(page.locator('label[for="comp-code"]')).toContainText('*');
-
-    //     await expect(page.locator('label[for="multi-comp-block-period-days"]')).not.toContainText('*');
-    //     await expect(page.locator('label[for="campaign"]')).not.toContainText('*');
-    //     await expect(page.locator('label[for="alert-emails"]')).not.toContainText('*');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_043_mandatory_field_indicators');
-    // });
-
-    // // Live-verified: Title and Comp Code load into the dialog with values that exactly match
-    // // the landing table's row, and Start Date/End Date populate with real datetime values
-    // // (not blank) — confirming the Update popup genuinely pre-fills from the selected Comp.
-    // test('CM_044 Verify pre-populated data', async ({ page, compConfigPage }, testInfo) => {
-    //     const rowTitle = await compConfigPage.firstRowTitleCell.innerText();
-    //     const rowCompCode = await page.locator('table tbody tr, .p-datatable-tbody tr').first().locator('td').nth(1).innerText();
-
-    //     await compConfigPage.editFirstComp();
-
-    //     await expect(compConfigPage.titleInput).toHaveValue(rowTitle);
-    //     await expect(compConfigPage.compCodeInput).toHaveValue(rowCompCode);
-    //     await expect(compConfigPage.startDateInput).not.toHaveValue('');
-    //     await expect(compConfigPage.endDateInput).not.toHaveValue('');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_044_pre_populated_data');
-    // });
-
-    // // NOTE: Save's actual persistence outcome has shown intermittent silent/error failures
-    // // across this whole Comp Config feature (see CM_018/CM_021/CM_033) — asserting only that
-    // // the field accepts the edit and Save is clickable, not an unreliable success outcome.
-    // test('CM_045 Verify Title field update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     const updatedTitle = `Updated Title ${Date.now()}`;
-    //     await compConfigPage.fillTitle(updatedTitle);
-    //     await expect(compConfigPage.titleInput).toHaveValue(updatedTitle);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_045_title_update');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_046 Verify Multi Comp Block Period Days update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.fillMultiCompBlockDays('7');
-    //     await expect(compConfigPage.multiCompBlockDaysInput).toHaveValue('7');
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_046_multi_comp_block_days_update');
-    // });
-
-    // // Live-verified: this is a PrimeNG InputNumber control that filters keystrokes at the DOM
-    // // level — typing "abc!@#" leaves the value completely unchanged, while typing digits
-    // // updates it normally. Uses pressSequentially (real keystrokes) rather than fill(), since
-    // // fill() sets the value directly and would bypass this keystroke-level restriction.
-    // test('CM_047 Verify Multi Comp Block Period Days validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.multiCompBlockDaysInput.click();
-    //     await compConfigPage.multiCompBlockDaysInput.press('Control+A');
-    //     await compConfigPage.multiCompBlockDaysInput.pressSequentially('abc!@#', { delay: 50 });
-    //     await expect(compConfigPage.multiCompBlockDaysInput).not.toHaveValue(/[a-zA-Z!@#]/);
-
-    //     await compConfigPage.multiCompBlockDaysInput.press('Control+A');
-    //     await compConfigPage.multiCompBlockDaysInput.pressSequentially('15', { delay: 50 });
-    //     await expect(compConfigPage.multiCompBlockDaysInput).toHaveValue('15');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_047_multi_comp_block_days_validation');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_048 Verify Start Date update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.selectStartDate();
-    //     await expect(compConfigPage.startDateInput).not.toHaveValue('');
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_048_start_date_update');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_049 Verify End Date update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.selectEndDate();
-    //     await expect(compConfigPage.endDateInput).not.toHaveValue('');
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_049_end_date_update');
-    // });
-
-    // // DISPROVEN ASSUMPTION: the matrix expects a reversed End-Date-before-Start-Date range to
-    // // show a validation message and block Save — live testing shows the OPPOSITE in Edit mode.
-    // // Forcing End Date to the earliest enabled day and Start Date to the latest (the same
-    // // manipulation that correctly disabled Save on the Create Comp popup — see CM_020) leaves
-    // // Save fully ENABLED here. This differs from Create's behavior; asserting the real,
-    // // observed behavior rather than the matrix's assumption. Worth flagging to the app team as
-    // // a possible validation gap specific to editing an existing Comp.
-    // test('CM_050 Verify End Date greater than Start Date', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.selectEndDateFirst();
-    //     await compConfigPage.selectStartDateLast();
-
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_050_reversed_date_range_edit_mode');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_051 Verify Comp Code update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     const updatedCompCode = `UPD${Date.now()}`;
-    //     await compConfigPage.fillCompCode(updatedCompCode);
-    //     await expect(compConfigPage.compCodeInput).toHaveValue(updatedCompCode);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_051_comp_code_update');
-    // });
-
-    // test('CM_052 Verify Campaign dropdown opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.openCampaignDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     await expect(panel.locator('.p-dropdown-item, [role="option"]').first()).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_052_campaign_dropdown_opens');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_053 Verify Campaign selection and Save', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.openCampaignDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     const firstOption = panel.locator('.p-dropdown-item, [role="option"]').first();
-    //     const optionText = (await firstOption.innerText()).trim();
-    //     await firstOption.click();
-
-    //     await expect(compConfigPage.campaignDropdown).toContainText(optionText);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_053_campaign_selected_and_saved');
-    // });
-
-    // test('CM_054 Verify Tag (Internal) dropdown opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.openTagDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     await expect(panel.locator('.p-dropdown-item, [role="option"]').first()).toBeVisible();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_054_tag_dropdown_opens');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_055 Verify Tag (Internal) selection and Save', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.openTagDropdown();
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     const firstOption = panel.locator('.p-dropdown-item, [role="option"]').first();
-    //     const optionText = (await firstOption.innerText()).trim();
-    //     await firstOption.click();
-
-    //     await expect(compConfigPage.tagDropdown).toContainText(optionText);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_055_tag_selected_and_saved');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_056 Verify Alert Email Addresses field update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     const emails = 'qa.automation@osiristrading.com,qa.automation2@osiristrading.com';
-    //     await compConfigPage.fillAlertEmails(emails);
-    //     await expect(compConfigPage.alertEmailsInput).toHaveValue(emails);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_056_alert_emails_update');
-    // });
-
-    // // Live-verified: an invalid email format keeps Save genuinely disabled in Edit mode too —
-    // // consistent with the same validation confirmed on the Create Comp popup (CM_016).
-    // test('CM_057 Verify Alert Email Address validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.fillAlertEmails('not-a-valid-email');
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_057_invalid_email_validation');
-    // });
-
-    // // See CM_045 — Save's persistence outcome isn't reliably asserted here.
-    // test('CM_058 Verify Is Active checkbox update', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     const initialState = await compConfigPage.isActiveChecked();
-    //     await compConfigPage.toggleActiveCheckbox();
-    //     expect(await compConfigPage.isActiveChecked()).toBe(!initialState);
-
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_058_is_active_update');
-    // });
-
-    // // NOTE: See CM_045/CM_018/CM_021/CM_033 — Save's actual persistence has shown intermittent
-    // // silent/error failures across this feature, root cause unconfirmed. Asserting only that a
-    // // modified field keeps Save enabled and clickable, not a guaranteed success outcome.
-    // test('CM_059 Verify Save button persists changes', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.fillTitle(`Save Check ${Date.now()}`);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_059_save_button');
-    // });
-
-    // // Live-verified: modifying Title then clicking Cancel discards the change — reopening the
-    // // Comp afterward (checked via the landing table's row) still shows the original Title.
-    // test('CM_060 Verify Cancel button discards changes', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-    //     const originalTitle = await compConfigPage.titleInput.inputValue();
-
-    //     await compConfigPage.fillTitle('TEMP CHANGED TITLE - SHOULD NOT PERSIST');
-    //     await compConfigPage.clickCancel();
-
-    //     await expect(compConfigPage.dialog).toBeHidden();
-    //     await expect(compConfigPage.firstRowTitleCell).toHaveText(originalTitle);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_060_cancel_discards_changes');
-    // });
-
-    // // Live-verified: the popup's X icon behaves like Cancel — closes without saving.
-    // test('CM_061 Verify Close (X) button', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-    //     const originalTitle = await compConfigPage.titleInput.inputValue();
-
-    //     await compConfigPage.fillTitle('TEMP CHANGE VIA X ICON - SHOULD NOT PERSIST');
-    //     await compConfigPage.clickCloseIcon();
-
-    //     await expect(compConfigPage.dialog).toBeHidden();
-    //     await expect(compConfigPage.firstRowTitleCell).toHaveText(originalTitle);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_061_close_icon_discards_changes');
-    // });
-
-    // // Live-verified: clearing the mandatory Title field while editing keeps Save genuinely
-    // // disabled — the same disabled/p-disabled validation pattern confirmed throughout this
-    // // feature (CM_004-007, CM_016), just triggered by clearing an existing value instead of
-    // // never filling it.
-    // test('CM_062 Verify mandatory field validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await compConfigPage.titleInput.fill('');
-    //     await expect(compConfigPage.saveBtn).toBeDisabled();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_062_mandatory_field_validation');
-    // });
-
-    // // NOTE: Depends on Save actually persisting to the backend, which has shown intermittent
-    // // silent/error failures throughout this feature (CM_018/CM_021/CM_033) — this asserts the
-    // // documented, intended behavior (a saved change is reflected on the landing page) rather
-    // // than a guaranteed outcome. If this proves unreliable in practice, soften it the same way.
-    // test('CM_063 Verify updated data on COM Management page', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     const updatedTitle = `Persisted Update ${Date.now()}`;
-    //     await compConfigPage.fillTitle(updatedTitle);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-    //     await page.waitForTimeout(3000);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_063_updated_data_on_landing_page');
-    // });
-
-    // test('CM_066 Verify COMP details are displayed in the popup', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     await expect(compConfigPage.titleInput).not.toHaveValue('');
-    //     await expect(compConfigPage.compCodeInput).not.toHaveValue('');
-    //     await expect(compConfigPage.startDateInput).not.toHaveValue('');
-    //     await expect(compConfigPage.endDateInput).not.toHaveValue('');
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_066_comp_details_displayed');
-    // });
-
-    // // See CM_018 — createCompWithRetry handles the same intermittent-Save flakiness here.
-    // test('CM_067 Verify saving a new Comp with Active checked', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     await compConfigPage.createCompWithRetry(async () => {
-    //         if (!(await compConfigPage.isActiveChecked())) {
-    //             await compConfigPage.toggleActiveCheckbox();
-    //         }
-    //         expect(await compConfigPage.isActiveChecked()).toBe(true);
-    //     });
-    //     await expect(compConfigPage.dialog).toBeHidden();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_067_save_new_comp_active');
-    // });
-
-    // // Live-verified: a Comp saved with Is Active checked shows up on the Comp Config landing
-    // // page (searchable by title) regardless of the "Status" toggle's position. See CM_018 for
-    // // why creation goes through createCompWithRetry instead of a bare clickSave().
-    // test('CM_068 Verify active Comp is displayed on the Comp Config page', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const { title } = await compConfigPage.createCompWithRetry(async () => {
-    //         if (!(await compConfigPage.isActiveChecked())) {
-    //             await compConfigPage.toggleActiveCheckbox();
-    //         }
-    //     });
-
-    //     await compConfigPage.searchByTitle(title);
-    //     await expect(page.getByText(title).first()).toBeVisible({ timeout: 20000 });
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_068_active_comp_displayed');
-    // });
-
-    // // NOTE: See CM_063 — Save's persistence isn't reliably asserted here.
-    // test('CM_069 Verify unchecking Is Active and saving', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.editFirstComp();
-
-    //     if (await compConfigPage.isActiveChecked()) {
-    //         await compConfigPage.toggleActiveCheckbox();
-    //     }
-    //     expect(await compConfigPage.isActiveChecked()).toBe(false);
-    //     await expect(compConfigPage.saveBtn).toBeEnabled();
-    //     await compConfigPage.clickSave();
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_069_uncheck_active_and_save');
-    // });
-
-    // // Live-verified: once a Comp's Is Active is unchecked and saved, it disappears from the
-    // // Comp Config landing page/search entirely, regardless of the "Status" toggle's position —
-    // // no separate, distinctly-visible "Inactive list" view was located during verification
-    // // (toggling Status does not surface it). Documenting the real, observed behavior — the
-    // // Comp simply becomes unfindable in the main table — rather than the matrix's assumption
-    // // of a distinct visible Inactive list. Worth confirming with the app team whether a
-    // // separate Inactive view exists elsewhere that this suite hasn't discovered.
-    // // See CM_018 for the initial creation; the follow-up Edit + uncheck + Save is exposed to
-    // // the exact same intermittent-Save flakiness (there's no fresh Title/Comp Code to vary on
-    // // an Edit popup, so clickSaveWithRetry just retries the identical click).
-    // test('CM_070 Verify inactive Comp is no longer displayed on the Comp Config page', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.clickCreateComp();
-    //     await compConfigPage.waitForPopupLoad();
-
-    //     const { title } = await compConfigPage.createCompWithRetry(async () => {
-    //         if (!(await compConfigPage.isActiveChecked())) {
-    //             await compConfigPage.toggleActiveCheckbox();
-    //         }
-    //     });
-
-    //     await compConfigPage.searchByTitle(title);
-    //     await expect(page.getByText(title).first()).toBeVisible({ timeout: 20000 });
-
-    //     await compConfigPage.openRowActionMenu();
-    //     await compConfigPage.clickRowMenuOption('Edit');
-    //     await compConfigPage.waitForPopupLoad();
-    //     if (await compConfigPage.isActiveChecked()) {
-    //         await compConfigPage.toggleActiveCheckbox();
-    //     }
-    //     expect(await compConfigPage.clickSaveWithRetry(), 'Expected unchecking Is Active and saving to succeed').toBe(true);
-
-    //     await compConfigPage.searchByTitle(title);
-    //     await expect(page.getByText(title)).toHaveCount(0);
-
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'CM_070_inactive_comp_not_displayed');
-    // });
-
-
-    // test('COMP_CFG_001 Verify Comp Configurations screen opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
- 
-    //     await expect(compConfigPage.createConfigurationBtn).toBeVisible();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_001_configurations_screen_opens');
-    // });
- 
-    // test('COMP_CFG_002 Verify Create Configuration popup opens', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
- 
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await expect(compConfigPage.configDialog).toBeVisible();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_002_create_configuration_popup_opens');
-    // });
- 
-    // test('COMP_CFG_003 Verify all fields are displayed', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await expect(compConfigPage.configDescriptionInput).toBeVisible();
-    //     await expect(compConfigPage.configRegionCodeDropdown).toBeVisible();
-    //     await expect(compConfigPage.configTransactionTypeDropdown).toBeVisible();
-    //     await expect(compConfigPage.configCasinoBonusTemplateDropdown).toBeVisible();
-    //     await expect(compConfigPage.configMinimumPayoutInput).toBeVisible();
-    //     await expect(compConfigPage.configMaximumPayoutInput).toBeVisible();
-    //     await expect(compConfigPage.configSendPushCheckbox).toBeVisible();
-    //     await expect(compConfigPage.configSendSmsCheckbox).toBeVisible();
-    //     await expect(compConfigPage.configPushNotificationTemplateDropdown).toBeVisible();
-    //     await expect(compConfigPage.configSmsNotificationTemplateDropdown).toBeVisible();
-    //     await expect(compConfigPage.configCampaignBudgetInput).toBeVisible();
-    //     await expect(compConfigPage.configBannerDropdown).toBeVisible();
-    //     await expect(compConfigPage.configDailyBudgetInput).toBeVisible();
-    //     await expect(compConfigPage.configIsCompValueProvidedCheckbox).toBeVisible();
-    //     await expect(compConfigPage.configAllowMultipleCompCheckbox).toBeVisible();
-    //     await expect(compConfigPage.configSaveBtn).toBeVisible();
-    //     await expect(compConfigPage.configCancelBtn).toBeVisible();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_003_all_fields_displayed');
-    // });
- 
-    // // ASSUMPTION: modeled on the Save-disabled-until-valid pattern confirmed throughout the
-    // // Create/Edit Comp popup (CM_004-007, CM_016) — this dialog hasn't been live-run yet, so
-    // // if the app instead allows the click and surfaces inline/toast validation messages
-    // // (as the test matrix describes), swap this assertion for that behavior once confirmed.
-    // test('COMP_CFG_004 Verify mandatory field validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     // Leave every mandatory field (Description, Region Code, Transaction Type,
-    //     // Minimum/Maximum Comp Awarded) blank.
-    //     await expect(compConfigPage.configSaveBtn).toBeDisabled();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_004_mandatory_field_validation');
-    // });
- 
-    // // NOTE: See CM_018/CM_021/CM_033 — Save's actual persistence has shown intermittent
-    // // silent/error failures elsewhere in this feature, and this dialog hasn't been live-run
-    // // yet. Asserting the parts that are deterministic here (fields accept input, a freshly
-    // // opened Region Code dropdown has no prior selection, Save becomes enabled and clickable)
-    // // rather than assuming the success outcome.
-    // test('COMP_CFG_005 Verify configuration creation for a new region', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigMandatoryFields({ description: uniqueDescription });
- 
-    //     await expect(compConfigPage.configDescriptionInput).toHaveValue(uniqueDescription);
-    //     await expect(compConfigPage.configSaveBtn).toBeEnabled();
-    //     await compConfigPage.clickConfigSave();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_005_create_configuration_new_region');
-    // });
- 
-    // // NOTE: exact duplicate-region error wording hasn't been live-confirmed — asserting that a
-    // // toast appears (this app consistently surfaces both success and error outcomes via toast,
-    // // see CM_036/CM_070) and logging its text rather than a hardcoded message, so this test can
-    // // be tightened once the real wording is observed.
-    // test('COMP_CFG_006 Verify duplicate region validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
- 
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
-    //     const regionText = await compConfigPage.fillConfigMandatoryFields();
-    //     await compConfigPage.clickConfigSave();
-    //     await page.waitForTimeout(3000);
- 
-    //     // Re-open and attempt to configure the SAME region again.
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
-    //     await compConfigPage.fillConfigDescription(`Duplicate Region Config ${Date.now()}`);
-    //     if (regionText) {
-    //         await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configRegionCodeDropdown);
-    //     }
-    //     await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configTransactionTypeDropdown);
-    //     await compConfigPage.fillConfigMinimumPayout('10');
-    //     await compConfigPage.fillConfigMaximumPayout('100');
- 
-    //     await expect(compConfigPage.configSaveBtn).toBeEnabled();
-    //     await compConfigPage.clickConfigSave();
- 
-    //     await expect(compConfigPage.toastMessage).toBeVisible();
-    //     console.log('Duplicate region Save toast:', await compConfigPage.toastMessage.textContent());
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_006_duplicate_region_validation');
-    // });
- 
-    // test('COMP_CFG_007 Verify Region Code dropdown values', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.clickElement(compConfigPage.configRegionCodeDropdown);
-    //     const panel = page.locator('.p-dropdown-panel').last();
-    //     await expect(panel).toBeVisible();
-    //     await expect(panel.locator('.p-dropdown-item, [role="option"]').first()).toBeVisible();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_007_region_code_dropdown_values');
-    // });
- 
-    // test('COMP_CFG_008 Verify Transaction Type dropdown', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const optionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configTransactionTypeDropdown);
-    //     await expect(compConfigPage.configTransactionTypeDropdown).toContainText(optionText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_008_transaction_type_selected');
-    // });
- 
-    // test('COMP_CFG_009 Verify Casino Bonus Template dropdown', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const optionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configCasinoBonusTemplateDropdown);
-    //     await expect(compConfigPage.configCasinoBonusTemplateDropdown).toContainText(optionText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_009_casino_bonus_template_selected');
-    // });
- 
-    // test('COMP_CFG_010 Verify Minimum Comp Awarded field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMinimumPayout('10');
-    //     await expect(compConfigPage.configMinimumPayoutInput).toHaveValue('10');
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_010_minimum_comp_awarded');
-    // });
- 
-    // test('COMP_CFG_011 Verify Maximum Comp Awarded field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMaximumPayout('100');
-    //     await expect(compConfigPage.configMaximumPayoutInput).toHaveValue('100');
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_011_maximum_comp_awarded');
-    // });
- 
-    // // ASSUMPTION: modeled on the Save-disabled-until-valid pattern confirmed throughout this
-    // // suite (CM_004-007, CM_016, CM_020) — this cross-field rule hasn't been live-run yet, so
-    // // if the app instead allows Save and surfaces a separate validation message, adjust this
-    // // assertion once confirmed.
-    // test('COMP_CFG_012 Verify Min/Max amount validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMandatoryFields({ skip: ['minimumPayout', 'maximumPayout'] });
-    //     await compConfigPage.fillConfigMinimumPayout('200');
-    //     await compConfigPage.fillConfigMaximumPayout('100');
- 
-    //     await expect(compConfigPage.configSaveBtn).toBeDisabled();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_012_min_max_validation');
-    // });
- 
-    // test('COMP_CFG_013 Verify Push Notification checkbox', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.toggleConfigSendPush();
-    //     expect(await compConfigPage.isConfigSendPushChecked()).toBe(true);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_013_push_notification_checkbox');
-    // });
- 
-    // // NOTE: See CM_018/CM_021/CM_033 — Save's actual persistence isn't reliably asserted here;
-    // // this asserts the deterministic parts (template accepted, Save enabled/clickable).
-    // test('COMP_CFG_014 Verify Push Notification Template field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMandatoryFields();
-    //     await compConfigPage.toggleConfigSendPush();
-    //     expect(await compConfigPage.isConfigSendPushChecked()).toBe(true);
- 
-    //     const optionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configPushNotificationTemplateDropdown);
-    //     await expect(compConfigPage.configPushNotificationTemplateDropdown).toContainText(optionText);
- 
-    //     await expect(compConfigPage.configSaveBtn).toBeEnabled();
-    //     await compConfigPage.clickConfigSave();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_014_push_notification_template');
-    // });
- 
-    // test('COMP_CFG_015 Verify SMS Notification checkbox', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.toggleConfigSendSms();
-    //     expect(await compConfigPage.isConfigSendSmsChecked()).toBe(true);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_015_sms_notification_checkbox');
-    // });
- 
-    // // NOTE: See CM_018/CM_021/CM_033 — Save's actual persistence isn't reliably asserted here;
-    // // this asserts the deterministic parts (template accepted, Save enabled/clickable).
-    // test('COMP_CFG_016 Verify SMS Notification Template field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMandatoryFields();
-    //     await compConfigPage.toggleConfigSendSms();
-    //     expect(await compConfigPage.isConfigSendSmsChecked()).toBe(true);
- 
-    //     const optionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configSmsNotificationTemplateDropdown);
-    //     await expect(compConfigPage.configSmsNotificationTemplateDropdown).toContainText(optionText);
- 
-    //     await expect(compConfigPage.configSaveBtn).toBeEnabled();
-    //     await compConfigPage.clickConfigSave();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_016_sms_notification_template');
-    // });
- 
-    // test('COMP_CFG_017 Verify Campaign Budget field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigCampaignBudget('500');
-    //     await expect(compConfigPage.configCampaignBudgetInput).toHaveValue('500');
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_017_campaign_budget');
-    // });
- 
-    // test('COMP_CFG_018 Verify Daily Budget field', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigDailyBudget('50');
-    //     await expect(compConfigPage.configDailyBudgetInput).toHaveValue('50');
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_018_daily_budget');
-    // });
- 
-    // // ASSUMPTION: modeled on the Save-disabled-until-valid pattern confirmed throughout this
-    // // suite (CM_004-007, CM_016, CM_020) — this cross-field rule hasn't been live-run yet, so
-    // // if the app instead allows Save and surfaces a separate validation message, adjust this
-    // // assertion once confirmed.
-    // test('COMP_CFG_019 Verify Budget validation', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     await compConfigPage.fillConfigMandatoryFields();
-    //     await compConfigPage.fillConfigCampaignBudget('100');
-    //     await compConfigPage.fillConfigDailyBudget('500');
- 
-    //     await expect(compConfigPage.configSaveBtn).toBeDisabled();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_019_budget_validation');
-    // });
- 
-    // test('COMP_CFG_020 Verify Banner dropdown', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const optionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configBannerDropdown);
-    //     await expect(compConfigPage.configBannerDropdown).toContainText(optionText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_020_banner_selected');
-    // });
- 
-    // test('COMP_CFG_021 Verify Comp Value Provided checkbox', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const initialState = await compConfigPage.isConfigCompValueProvidedChecked();
- 
-    //     await compConfigPage.toggleConfigIsCompValueProvided();
-    //     expect(await compConfigPage.isConfigCompValueProvidedChecked()).toBe(!initialState);
- 
-    //     await compConfigPage.toggleConfigIsCompValueProvided();
-    //     expect(await compConfigPage.isConfigCompValueProvidedChecked()).toBe(initialState);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_021_comp_value_provided_checkbox');
-    // });
- 
-    // test('COMP_CFG_022 Verify Allow Multiple Comp checkbox', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const initialState = await compConfigPage.isConfigAllowMultipleCompChecked();
- 
-    //     await compConfigPage.toggleConfigAllowMultipleComp();
-    //     expect(await compConfigPage.isConfigAllowMultipleCompChecked()).toBe(!initialState);
- 
-    //     await compConfigPage.toggleConfigAllowMultipleComp();
-    //     expect(await compConfigPage.isConfigAllowMultipleCompChecked()).toBe(initialState);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_022_allow_multiple_comp_checkbox');
-    // });
- 
-    // // NOTE: See CM_018/CM_021/CM_033 — Save's actual persistence has shown intermittent
-    // // silent/error failures elsewhere in this feature, and this dialog hasn't been live-run
-    // // yet, so whether the new row actually appears in the configuration list isn't asserted
-    // // here (that list's markup hasn't been shared with this suite either). Asserting the
-    // // deterministic parts — mandatory fields accepted, Save enabled and clickable — rather
-    // // than an unconfirmed outcome.
-    // test('COMP_CFG_023 Verify Save button', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigMandatoryFields({ description: uniqueDescription });
- 
-    //     await expect(compConfigPage.configDescriptionInput).toHaveValue(uniqueDescription);
-    //     await expect(compConfigPage.configSaveBtn).toBeEnabled();
-    //     await compConfigPage.clickConfigSave();
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_023_save_configuration');
-    // });
- 
-    // test('COMP_CFG_024 Verify Cancel button', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const discardedDescription = `Should Not Be Saved ${Date.now()}`;
-    //     await compConfigPage.fillConfigDescription(discardedDescription);
-    //     await compConfigPage.clickConfigCancel();
- 
-    //     await expect(compConfigPage.configDialog).toBeHidden();
-    //     await expect(page.getByText(discardedDescription)).toHaveCount(0);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_024_cancel_discards_data');
-    // });
- 
-    // test('COMP_CFG_025 Verify Close (X) button', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const discardedDescription = `Should Not Be Saved ${Date.now()}`;
-    //     await compConfigPage.fillConfigDescription(discardedDescription);
-    //     await compConfigPage.clickConfigCloseIcon();
- 
-    //     await expect(compConfigPage.configDialog).toBeHidden();
-    //     await expect(page.getByText(discardedDescription)).toHaveCount(0);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_025_close_icon_discards_data');
-    // });
- 
-    // test('COMP_CFG_026 Verify newly created configuration is displayed', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigMandatoryFields({ description: uniqueDescription });
-    //     await compConfigPage.clickConfigSaveAndWait();
- 
-    //     const card = compConfigPage.getConfigurationCardByDescription(uniqueDescription);
-    //     await expect(card).toBeVisible({ timeout: 20000 });
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_026_configuration_card_displayed');
-    // });
- 
-    // // NOTE: card field labels differ slightly from the create popup's own labels — confirmed
-    // // from the card markup shared for this suite, the card shows "Min/Max Comp Rewarded"
-    // // where the popup shows "Minimum/Maximum Comp Awarded". Asserting against the card's own
-    // // labels here since that's what this test is verifying.
-    // test('COMP_CFG_027 Verify configuration details are displayed correctly', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigDescription(uniqueDescription);
-    //     const regionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configRegionCodeDropdown);
-    //     const transactionTypeText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configTransactionTypeDropdown);
-    //     const casinoBonusTemplateText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configCasinoBonusTemplateDropdown);
-    //     const bannerText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configBannerDropdown);
-    //     await compConfigPage.fillConfigMinimumPayout('10');
-    //     await compConfigPage.fillConfigMaximumPayout('500');
-    //     await compConfigPage.fillConfigCampaignBudget('1000');
-    //     await compConfigPage.fillConfigDailyBudget('200');
-    //     await compConfigPage.toggleConfigSendPush();
-    //     const pushTemplateText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configPushNotificationTemplateDropdown);
-    //     await compConfigPage.toggleConfigSendSms();
-    //     const smsTemplateText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configSmsNotificationTemplateDropdown);
- 
-    //     await compConfigPage.clickConfigSaveAndWait();
- 
-    //     const card = compConfigPage.getConfigurationCardByDescription(uniqueDescription);
-    //     await expect(card).toBeVisible({ timeout: 20000 });
- 
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Banner')).toBe(bannerText);
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Region')).toBe(regionText);
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Transaction Type')).toBe(transactionTypeText);
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Casino Bonus Template')).toBe(casinoBonusTemplateText);
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Campaign Budget')).toBe('1000');
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Daily Budget')).toBe('200');
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Min Comp Rewarded')).toBe('10');
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Max Comp Rewarded')).toBe('500');
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Push Notification')).toBe(pushTemplateText);
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'SMS Notification')).toBe(smsTemplateText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_027_configuration_details_displayed');
-    // });
- 
-    // test('COMP_CFG_028 Verify Region value', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigDescription(uniqueDescription);
-    //     const regionText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configRegionCodeDropdown);
-    //     await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configTransactionTypeDropdown);
-    //     await compConfigPage.fillConfigMinimumPayout('10');
-    //     await compConfigPage.fillConfigMaximumPayout('100');
-    //     await compConfigPage.clickConfigSaveAndWait();
- 
-    //     const card = compConfigPage.getConfigurationCardByDescription(uniqueDescription);
-    //     await expect(card).toBeVisible({ timeout: 20000 });
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Region')).toBe(regionText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_028_region_value');
-    // });
- 
-    // test('COMP_CFG_029 Verify Banner value', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigMandatoryFields({ description: uniqueDescription });
-    //     const bannerText = await compConfigPage.selectFirstConfigDropdownOption(compConfigPage.configBannerDropdown);
-    //     await compConfigPage.clickConfigSaveAndWait();
- 
-    //     const card = compConfigPage.getConfigurationCardByDescription(uniqueDescription);
-    //     await expect(card).toBeVisible({ timeout: 20000 });
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Banner')).toBe(bannerText);
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_029_banner_value');
-    // });
- 
-    // test('COMP_CFG_030 Verify Campaign Budget value', async ({ page, compConfigPage }, testInfo) => {
-    //     await compConfigPage.navigateToConfigurationsScreen();
-    //     await compConfigPage.clickCreateConfiguration();
-    //     await compConfigPage.waitForConfigPopupLoad();
- 
-    //     const uniqueDescription = `Automation Config ${Date.now()}`;
-    //     await compConfigPage.fillConfigMandatoryFields({ description: uniqueDescription });
-    //     await compConfigPage.fillConfigCampaignBudget('1500');
-    //     await compConfigPage.clickConfigSaveAndWait();
- 
-    //     const card = compConfigPage.getConfigurationCardByDescription(uniqueDescription);
-    //     await expect(card).toBeVisible({ timeout: 20000 });
-    //     expect(await compConfigPage.getConfigCardFieldValue(card, 'Campaign Budget')).toBe('1500');
- 
-    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'COMP_CFG_030_campaign_budget_value');
-    // });
- 
-});

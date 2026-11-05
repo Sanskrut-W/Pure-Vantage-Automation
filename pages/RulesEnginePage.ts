@@ -13,6 +13,7 @@ export class RulesEnginePage extends BasePage {
 
     // ─── Step 2: Qualification ───────────────────────────────────────────────
     readonly requiredAmountInput: Locator;
+    readonly progressMetricDropdown: Locator;
     readonly eligibilityFrequencyDropdown: Locator;
     readonly startDateInput: Locator;
     readonly endDateInput: Locator;
@@ -105,6 +106,7 @@ export class RulesEnginePage extends BasePage {
         this.actionDropdown = page.locator(rulesEngineLocators.dropdownAction);
 
         this.requiredAmountInput = page.locator(rulesEngineLocators.inputRequiredAmount);
+        this.progressMetricDropdown = page.locator(rulesEngineLocators.dropdownProgressMetric);
         this.eligibilityFrequencyDropdown = page.locator(rulesEngineLocators.dropdownEligibilityFrequency);
         this.startDateInput = page.locator(rulesEngineLocators.calendarStartDate);
         this.endDateInput = page.locator(rulesEngineLocators.calendarEndDate);
@@ -515,6 +517,16 @@ export class RulesEnginePage extends BasePage {
 
     async getRequiredAmountValue(): Promise<string> {
         return (await this.requiredAmountInput.inputValue()).trim();
+    }
+
+    // Confirmed live: Progress Metric renders blank and is mandatory (blocks Next until picked) —
+    // see fillQualificationStepNonRecurring/Recurring in rulesengine.spec.ts.
+    async selectProgressMetric(optionText: string) {
+        await this.selectDropdown(this.progressMetricDropdown, optionText);
+    }
+
+    async getProgressMetricValue(): Promise<string> {
+        return this.getDropdownValue(this.progressMetricDropdown);
     }
 
     async selectEligibilityFrequency(optionText: string) {

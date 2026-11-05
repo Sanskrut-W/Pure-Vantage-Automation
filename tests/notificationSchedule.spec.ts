@@ -26,22 +26,32 @@ test.describe('Notification Schedule Tests', () => {
     test('TC-3 Verify search bar functionality on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectCommunicationType('File Push');
 
-        // File Push data takes a while to load after selecting the type — wait for
+        // Select the confirmed region instead of relying on whichever region
+        // selectCommunicationType() auto-picked, so the search below hits a known dataset.
+        await notificationSchedulePage.selectRegion('Betway South Africa');
+
+        // File Push data takes a while to load after selecting the type/region — wait for
         // rows to appear before searching
         const hasRows = await notificationSchedulePage.waitForRows(30000);
-        expect(hasRows, 'Schedule rows must load after selecting the communication type').toBe(true);
+        expect(hasRows, 'Schedule rows must load after selecting the communication type and region').toBe(true);
 
-        // "arnoTest123" is confirmed live to appear exactly once in the File Push list — unlike
-        // "ABC"/"ABCTest", which would both match "ABCTest" rows under a contains-style filter and
-        // break the exact-count-of-1 assertion below.
-        await notificationSchedulePage.searchFor('arnoTest123');
+        await notificationSchedulePage.searchFor('Arno TEST');
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_results');
 
-        // The table refresh can lag behind the typed search term — poll until
-        // the filter is applied
+        // Confirmed live: under File Push / Betway South Africa, "Arno TEST" is a case-insensitive
+        // substring match against multiple Template Names (e.g. "Arno TEST" and "Arno Testing
+        // Template" both match) — it is NOT a unique value here, so assert every returned row
+        // actually matches the search term instead of an exact row count.
         await expect
             .poll(async () => notificationSchedulePage.getRowCount(), { timeout: 15000 })
-            .toBe(1);
+            .toBeGreaterThan(0);
+
+        const templateNames = await notificationSchedulePage.dataTable
+            .locator('tbody tr:not(.p-datatable-emptymessage) td:first-child')
+            .allInnerTexts();
+        for (const name of templateNames) {
+            expect(name.toLowerCase(), `Expected row "${name}" to match search term "Arno TEST"`).toContain('arno test');
+        }
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_notif_schedule_search_exact');
     });
@@ -110,6 +120,10 @@ test.describe('Notification Schedule Tests', () => {
             await panel.waitFor({ state: 'visible', timeout: 5000 });
             await panel.locator('.p-dropdown-item').nth(i).click();
             await page.waitForLoadState('networkidle');
+            // Confirmed live: Communication Type alone never loads any rows — Region must also be
+            // selected (this loop drives the dropdown directly instead of via the page object, so
+            // it needs its own region selection here too).
+            await notificationSchedulePage.selectFirstRegion();
             // First type gets the longest wait; later ones a shorter one
             hasRows = await notificationSchedulePage.waitForRows(i === 0 ? 30000 : 15000);
         }
@@ -148,6 +162,12 @@ test.describe('Notification Schedule Tests', () => {
 
     test('TC-9 Verify pagination is available and functional on Notification Schedule Page', async ({ page, notificationSchedulePage }, testInfo) => {
         await notificationSchedulePage.selectFirstCommunicationType();
+
+        // Pagination needs a deterministic, multi-page dataset — select the confirmed region
+        // instead of relying on whichever region selectFirstCommunicationType() auto-picked.
+        await notificationSchedulePage.selectRegion('Betway South Africa');
+        const hasRows = await notificationSchedulePage.waitForRows(30000);
+        expect(hasRows, 'Schedule rows must load after selecting Betway South Africa').toBe(true);
 
         await expect(notificationSchedulePage.paginatorBottom).toBeVisible({ timeout: 15000 });
 

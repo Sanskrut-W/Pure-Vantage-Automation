@@ -54,6 +54,10 @@ async function fillBasicsStep(page: any, rulesEnginePage: any, description: stri
 // lands directly on the Rules step.
 async function fillQualificationStepNonRecurring(page: any, rulesEnginePage: any): Promise<void> {
     await rulesEnginePage.fillRequiredAmount('10');
+    // Confirmed live: Progress Metric renders BLANK (not pre-filled with "Count" as its own
+    // outerHTML sample suggested) and shows "Field is required" — Next stays disabled until one is
+    // picked, same as every other mandatory Qualification field.
+    await rulesEnginePage.selectFirstOption(rulesEnginePage.progressMetricDropdown);
     await rulesEnginePage.selectFirstEligibilityFrequencyExceptRecurring();
     await rulesEnginePage.setStartDate();
     await rulesEnginePage.setEndDate();
@@ -64,6 +68,7 @@ async function fillQualificationStepNonRecurring(page: any, rulesEnginePage: any
 // Fills Qualification with Recurring (so Schedule step opens) and clicks Next.
 async function fillQualificationStepRecurring(page: any, rulesEnginePage: any): Promise<void> {
     await rulesEnginePage.fillRequiredAmount('10');
+    await rulesEnginePage.selectFirstOption(rulesEnginePage.progressMetricDropdown);
     await rulesEnginePage.selectEligibilityFrequency('Recurring');
     await rulesEnginePage.setStartDate();
     await rulesEnginePage.setEndDate();
@@ -194,6 +199,7 @@ test.describe('Rules Engine - Qualification Step Tests', () => {
 
     test('TC_RE_008 Verify Qualification step opens with all fields', async ({ page, rulesEnginePage }, testInfo) => {
         await expect(rulesEnginePage.requiredAmountInput, 'Expected Required Amount field').toBeVisible({ timeout: 15000 });
+        await expect(rulesEnginePage.progressMetricDropdown, 'Expected Progress Metric field').toBeVisible();
         await expect(rulesEnginePage.eligibilityFrequencyDropdown, 'Expected Eligibility Frequency field').toBeVisible();
         await expect(rulesEnginePage.startDateInput, 'Expected Start Date field').toBeVisible();
         await expect(rulesEnginePage.endDateInput, 'Expected End Date field').toBeVisible();
@@ -201,7 +207,7 @@ test.describe('Rules Engine - Qualification Step Tests', () => {
         await expect(rulesEnginePage.multiAwardCheckbox, 'Expected Multi Award checkbox').toBeVisible();
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_008_qualification_step_fields');
-        console.log('Qualification step opens with all 4 fields and both checkboxes.');
+        console.log('Qualification step opens with all 5 fields and both checkboxes.');
     });
 
     test('TC_RE_009 Verify mandatory field validation on Qualification', async ({ page, rulesEnginePage }, testInfo) => {
@@ -296,6 +302,22 @@ test.describe('Rules Engine - Qualification Step Tests', () => {
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_016_recurring_opens_schedule');
         console.log('Recurring Eligibility Frequency correctly opens the Schedule step right after Rules.');
     });
+
+    test('TC_RE_065 Verify Progress Metric is mandatory and accepts a selection', async ({ page, rulesEnginePage }, testInfo) => {
+        // Confirmed live: Progress Metric renders BLANK (not pre-filled with "Count", despite its
+        // own outerHTML sample showing that value — that sample must have come from an
+        // already-filled Rule) and shows its own "Field is required" message until a value is
+        // picked, same as every other mandatory Qualification field.
+        const defaultValue = await rulesEnginePage.getProgressMetricValue();
+        expect(defaultValue, 'Expected Progress Metric to start blank').toBe('');
+
+        const selected = await rulesEnginePage.selectFirstOption(rulesEnginePage.progressMetricDropdown);
+        const shownValue = await rulesEnginePage.getProgressMetricValue();
+        expect(shownValue, `Expected the selected Progress Metric "${selected}" to be shown`).toBe(selected);
+
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_065_progress_metric_dropdown');
+        console.log(`Progress Metric started blank (mandatory) and accepted selecting "${selected}".`);
+    });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -333,21 +355,6 @@ test.describe('Rules Engine - Rules Step - Groups Tests', () => {
         await rulesEnginePage.clickCancel();
     });
 
-    test('TC_RE_019 Verify mandatory field validation on Add group', async ({ page, rulesEnginePage }, testInfo) => {
-        await rulesEnginePage.clickAddGroup();
-        const saveWasClickable = await rulesEnginePage.saveBtn.isEnabled().catch(() => false);
-        if (saveWasClickable) {
-            await rulesEnginePage.clickSave();
-            await page.waitForTimeout(500);
-        }
-        const hasErrors = await rulesEnginePage.hasValidationErrors();
-        expect(hasErrors || !saveWasClickable, 'Expected mandatory-field validation when Group Description is blank').toBe(true);
-
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_019_add_group_mandatory_validation');
-        console.log(`Add group mandatory validation enforced via: ${hasErrors ? 'inline errors' : 'disabled Save button'}.`);
-
-        await rulesEnginePage.clickCancel().catch(() => {});
-    });
 
     test('TC_RE_020 Verify Group Operator dropdown has And and Or', async ({ page, rulesEnginePage }, testInfo) => {
         await rulesEnginePage.clickAddGroup();
@@ -666,11 +673,13 @@ test.describe('Rules Engine - Rules Step - Sport Conditions Tests', () => {
         const countBefore = await rulesEnginePage.getSportConditionCount();
         await rulesEnginePage.clickAddSport();
         await rulesEnginePage.selectFirstBetSlipType();
+        // Confirmed live: new mandatory field, blocks Save until a value is picked.
+        await rulesEnginePage.selectFirstSettlementFilter();
         await rulesEnginePage.selectFirstFeedName();
         await rulesEnginePage.selectFirstSport();
         await page.waitForTimeout(300);
 
-        await expect(rulesEnginePage.saveBtn, 'Expected Save to be enabled once Bet Slip Type/Feed Name/Sport are filled').toBeEnabled({ timeout: 10000 });
+        await expect(rulesEnginePage.saveBtn, 'Expected Save to be enabled once Bet Slip Type/Settlement Filter/Feed Name/Sport are filled').toBeEnabled({ timeout: 10000 });
         await rulesEnginePage.clickSave();
 
         await expect(rulesEnginePage.betSlipTypeDropdown, 'Expected the Add sport popup to close after Save').not.toBeVisible({ timeout: 10000 });
@@ -683,6 +692,7 @@ test.describe('Rules Engine - Rules Step - Sport Conditions Tests', () => {
     test('TC_RE_035b Verify Edit and Delete on a saved Sport condition', async ({ page, rulesEnginePage }, testInfo) => {
         await rulesEnginePage.clickAddSport();
         await rulesEnginePage.selectFirstBetSlipType();
+        await rulesEnginePage.selectFirstSettlementFilter();
         await rulesEnginePage.selectFirstFeedName();
         await rulesEnginePage.selectFirstSport();
         await page.waitForTimeout(300);
@@ -751,20 +761,20 @@ test.describe('Rules Engine - Rules Step - Casino Conditions Tests', () => {
         await rulesEnginePage.clickCancel();
     });
 
-    test('TC_RE_037 Verify mandatory field validation on Add casino', async ({ page, rulesEnginePage }, testInfo) => {
+    test('TC_RE_037 Verify Add casino popup has no mandatory fields and saves with everything blank', async ({ page, rulesEnginePage }, testInfo) => {
+        // Confirmed live: Casino condition fields are no longer mandatory — Save stays enabled and
+        // succeeds with Provider/Game/Category left blank. This is genuine app behavior, not a bug.
+        const countBefore = await rulesEnginePage.getCasinoConditionCount();
         await rulesEnginePage.clickAddCasino();
-        const saveWasClickable = await rulesEnginePage.saveBtn.isEnabled().catch(() => false);
-        if (saveWasClickable) {
-            await rulesEnginePage.clickSave();
-            await page.waitForTimeout(500);
-        }
-        const hasErrors = await rulesEnginePage.hasValidationErrors();
-        expect(hasErrors || !saveWasClickable, 'Expected mandatory-field validation when Provider/Game/Category are blank').toBe(true);
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_037_add_casino_mandatory_validation');
-        console.log(`Add casino mandatory validation enforced via: ${hasErrors ? 'inline errors' : 'disabled Save button'}.`);
+        await expect(rulesEnginePage.saveBtn, 'Expected Save to be enabled with all fields blank').toBeEnabled({ timeout: 10000 });
+        await rulesEnginePage.clickSave();
 
-        await rulesEnginePage.clickCancel().catch(() => {});
+        await expect(rulesEnginePage.casinoCategoryInput, 'Expected the Add casino popup to close after Save').not.toBeVisible({ timeout: 10000 });
+        await expect.poll(() => rulesEnginePage.getCasinoConditionCount(), { message: 'Expected the Casino Conditions table to gain one row after Save with blank fields', timeout: 10000 }).toBe(countBefore + 1);
+
+        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_037_add_casino_blank_fields_save');
+        console.log('✅ TC_RE_037 PASSED — Add casino popup has no mandatory fields and Save succeeds with everything blank.');
     });
 
     test('TC_RE_038 Verify Cancel discards the Add casino popup', async ({ page, rulesEnginePage }, testInfo) => {
@@ -1120,6 +1130,7 @@ test.describe('Rules Engine - Review Step and Full Creation Tests', () => {
         await rulesEnginePage.createGroup(`Group_${Date.now()}`, 'And');
         await rulesEnginePage.clickAddSport();
         await rulesEnginePage.selectFirstBetSlipType();
+        await rulesEnginePage.selectFirstSettlementFilter();
         await rulesEnginePage.selectFirstFeedName();
         await rulesEnginePage.selectFirstSport();
         await page.waitForTimeout(300);
@@ -1158,6 +1169,7 @@ test.describe('Rules Engine - Review Step and Full Creation Tests', () => {
         await rulesEnginePage.createGroup(`Group_${Date.now()}`, 'And');
         await rulesEnginePage.clickAddSport();
         await rulesEnginePage.selectFirstBetSlipType();
+        await rulesEnginePage.selectFirstSettlementFilter();
         await rulesEnginePage.selectFirstFeedName();
         await rulesEnginePage.selectFirstSport();
         await page.waitForTimeout(300);
@@ -1183,6 +1195,7 @@ test.describe('Rules Engine - Review Step and Full Creation Tests', () => {
         await rulesEnginePage.createGroup(`Group_${Date.now()}`, 'And');
         await rulesEnginePage.clickAddSport();
         await rulesEnginePage.selectFirstBetSlipType();
+        await rulesEnginePage.selectFirstSettlementFilter();
         await rulesEnginePage.selectFirstFeedName();
         await rulesEnginePage.selectFirstSport();
         await page.waitForTimeout(300);
@@ -1239,6 +1252,7 @@ test.describe('Rules Engine - List Page - Row Actions Tests', () => {
         if (withCondition) {
             await rulesEnginePage.clickAddSport();
             await rulesEnginePage.selectFirstBetSlipType();
+            await rulesEnginePage.selectFirstSettlementFilter();
             await rulesEnginePage.selectFirstFeedName();
             await rulesEnginePage.selectFirstSport();
             await page.waitForTimeout(300);

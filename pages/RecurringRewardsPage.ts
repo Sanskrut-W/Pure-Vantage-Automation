@@ -47,6 +47,30 @@ export class RecurringRewardsPage extends BasePage {
     readonly sportRequirementSaveBtn: Locator;
     readonly sportRequirementCancelBtn: Locator;
 
+    // Casino Requirements sub-page (row ⋯ -> "Casino Requirements") — confirmed live
+    // (user-supplied outerHTML).
+    readonly createRewardBtn: Locator;
+    readonly casinoRequirementTable: Locator;
+    readonly casinoRequirementDialog: Locator;
+    readonly providerDropdown: Locator;
+    readonly gameDropdown: Locator;
+    readonly categoryInput: Locator;
+    readonly casinoRequirementSaveBtn: Locator;
+    readonly casinoRequirementCancelBtn: Locator;
+
+    // Comp Configuration sub-page (row ⋯ -> "Comp Configuration") — confirmed live
+    // (user-supplied outerHTML).
+    readonly createCompConfigurationBtn: Locator;
+    readonly compConfigurationTable: Locator;
+    readonly compConfigurationDialog: Locator;
+    readonly compCodeDropdown: Locator;
+    readonly compAmountInput: Locator;
+    readonly scheduledTimeInput: Locator;
+    readonly dayOfWeekDropdown: Locator;
+    readonly isScheduledCheckbox: Locator;
+    readonly compConfigurationSaveBtn: Locator;
+    readonly compConfigurationCancelBtn: Locator;
+
     private readonly dialog: Locator;
 
     constructor(page: Page) {
@@ -80,7 +104,13 @@ export class RecurringRewardsPage extends BasePage {
         this.backToRewardsBtn = page.locator(locators.buttonBackToRewards).first();
         this.createSportRequirementBtn = page.getByRole('button', { name: locators.buttonCreateSportRequirement, exact: true });
         this.sportRequirementTable = page.locator(locators.sportRequirementTable).first();
-        this.sportRequirementDialog = page.getByRole('dialog', { name: locators.buttonCreateSportRequirement });
+        // Confirmed live (TC_RR_33): the Edit flow opens a dialog titled "Update Sport Requirement",
+        // NOT "Create Sport Requirement" — name-scoping this to the Create title broke every field
+        // locator built from it as soon as Edit was used. Only one such popup is ever open at a time
+        // (same simpler convention already used by RecurringRewardsPage's own `dialog` for the
+        // Reward-level Create/Edit popup), so a bare, title-agnostic `div[role="dialog"]` works for
+        // both Create and Update.
+        this.sportRequirementDialog = page.locator('div[role="dialog"]').last();
         this.feedNameDropdown = this.sportRequirementDialog.locator(locators.dropdownFeedName);
         this.sportDropdown = this.sportRequirementDialog.locator(locators.dropdownSport);
         this.leagueDropdown = this.sportRequirementDialog.locator(locators.dropdownLeague);
@@ -95,6 +125,35 @@ export class RecurringRewardsPage extends BasePage {
         this.applyOddsToLegsInTotalSwitch = this.sportRequirementDialog.locator(locators.inputSwitch).nth(1);
         this.sportRequirementSaveBtn = this.sportRequirementDialog.getByRole('button', { name: locators.buttonSave, exact: true });
         this.sportRequirementCancelBtn = this.sportRequirementDialog.getByRole('button', { name: locators.buttonCancel, exact: true });
+
+        this.createRewardBtn = page.getByRole('button', { name: locators.buttonCreateReward, exact: true });
+        this.casinoRequirementTable = page.locator(locators.casinoRequirementTable).first();
+        // Title-agnostic from the start (lesson learned from Sport Requirement's own Create/Update
+        // dialog-title mismatch) — only one such popup is ever open at a time.
+        this.casinoRequirementDialog = page.locator('div[role="dialog"]').last();
+        this.providerDropdown = this.casinoRequirementDialog.locator(locators.dropdownProvider);
+        this.gameDropdown = this.casinoRequirementDialog.locator(locators.dropdownGame);
+        this.categoryInput = this.casinoRequirementDialog.locator(locators.inputCategory);
+        this.casinoRequirementSaveBtn = this.casinoRequirementDialog.getByRole('button', { name: locators.buttonSave, exact: true });
+        this.casinoRequirementCancelBtn = this.casinoRequirementDialog.getByRole('button', { name: locators.buttonCancel, exact: true });
+
+        this.createCompConfigurationBtn = page.getByRole('button', { name: locators.buttonCreateCompConfiguration, exact: true });
+        this.compConfigurationTable = page.locator(locators.compConfigurationTable).first();
+        // Confirmed live (every TC_RR_4x run): this popup's own Scheduled Time field renders a
+        // SECOND, separate `role="dialog"` element for its clock-arrow overlay ("Choose Date") the
+        // moment the popup mounts — not only once it's clicked — so a positional `.last()` (the
+        // convention used for Sport/Casino Requirement, neither of which has a Calendar field) picks
+        // that overlay instead of the real popup as soon as it exists. Scoped by content instead
+        // (the one dialog containing #compCode), which works for both Create and Edit and can never
+        // match the Choose Date overlay.
+        this.compConfigurationDialog = page.locator('div[role="dialog"]').filter({ has: page.locator(locators.dropdownCompCode) });
+        this.compCodeDropdown = this.compConfigurationDialog.locator(locators.dropdownCompCode);
+        this.compAmountInput = this.compConfigurationDialog.locator(locators.inputCompAmount);
+        this.scheduledTimeInput = this.compConfigurationDialog.locator(locators.calendarScheduledTime);
+        this.dayOfWeekDropdown = this.compConfigurationDialog.locator(locators.dropdownDayOfWeek);
+        this.isScheduledCheckbox = this.compConfigurationDialog.locator(locators.checkboxIsScheduled);
+        this.compConfigurationSaveBtn = this.compConfigurationDialog.getByRole('button', { name: locators.buttonSave, exact: true });
+        this.compConfigurationCancelBtn = this.compConfigurationDialog.getByRole('button', { name: locators.buttonCancel, exact: true });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -214,6 +273,25 @@ export class RecurringRewardsPage extends BasePage {
 
     async selectOption(dropdownLocator: Locator, optionText: string) {
         await this.selectDropdown(dropdownLocator, optionText);
+    }
+
+    /** Picks whichever option does NOT match `excludeText` — used to force a different selection
+     * than the one already made (e.g. Casino Requirement's Provider, to verify Game gets cleared).
+     * Returns null if only one option exists. */
+    async selectOptionOtherThan(dropdownLocator: Locator, excludeText: string): Promise<string | null> {
+        const panel = await this.openDropdown(dropdownLocator);
+        const options = panel.locator(locators.dropdownItem);
+        const count = await options.count();
+        for (let i = 0; i < count; i++) {
+            const text = (await options.nth(i).textContent())?.trim() ?? '';
+            if (text && text !== excludeText) {
+                await options.nth(i).click();
+                await this.page.waitForTimeout(300);
+                return text;
+            }
+        }
+        await this.page.keyboard.press('Escape').catch(() => {});
+        return null;
     }
 
     async getDropdownValue(dropdownLocator: Locator): Promise<string> {
@@ -416,6 +494,33 @@ export class RecurringRewardsPage extends BasePage {
         }
     }
 
+    /** Gets back to the Rewards list page before cleanup runs, regardless of where a failed test
+     * left off. Confirmed gap: every Sport/Casino/Comp Configuration sub-page test ends with its own
+     * `clickBackToRewards()` as its LAST line — a test that fails earlier (e.g. TC_RR_46's/49's own
+     * Scheduled Time timeout) never reaches it, so `deleteAllRewardsByPromotionName` afterward was
+     * searching the Rewards-list table while the browser was still sitting on the sub-page, never
+     * finding the row, and silently leaking the Reward despite `rewardNameToCleanup` being set.
+     * Safe to call unconditionally: a no-op when already on the list. */
+    async ensureOnRewardsListPage(): Promise<void> {
+        const onList = await this.createConfigurationBtn.isVisible({ timeout: 3000 }).catch(() => false);
+        if (onList) return;
+
+        // A failed test can leave the Create/Edit popup — and/or its own nested overlay (e.g. Comp
+        // Configuration's Scheduled Time "Choose Date" picker, stacked on top) — open over the
+        // sub-page. Escape closes one layer at a time, so press it twice to clear both before
+        // trying Back to Rewards.
+        await this.page.keyboard.press('Escape').catch(() => {});
+        await this.page.waitForTimeout(300);
+        await this.page.keyboard.press('Escape').catch(() => {});
+        await this.page.waitForTimeout(300);
+
+        const canGoBack = await this.backToRewardsBtn.isVisible({ timeout: 3000 }).catch(() => false);
+        if (canGoBack) {
+            await this.backToRewardsBtn.click({ force: true }).catch(() => {});
+            await this.createConfigurationBtn.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+        }
+    }
+
     /** Deletes a Recurring Reward through the UI WITHOUT swallowing errors — for tests that check
      * the Delete flow itself. Confirmed live (TC_RR_24): the list doesn't necessarily reflect the
      * deletion immediately even after the success toast appears and the caller's own
@@ -548,8 +653,12 @@ export class RecurringRewardsPage extends BasePage {
         console.log(`Selecting Sport: "${value}"...`);
         await this.pickSportRequirementOption(this.sportDropdown, value);
         // Confirmed live: League/Country/Event/Market switch from free-text to dropdowns once a
-        // Sport is picked — wait for League to become a dropdown before touching it.
+        // Sport is picked — they don't all switch over in the exact same tick, so wait for every one
+        // of their triggers (not just League's) before anything downstream reads their enabled state.
         await this.leagueDropdown.locator(locators.dropdownTrigger).waitFor({ state: 'visible', timeout: 10000 });
+        await this.countryDropdown.locator(locators.dropdownTrigger).waitFor({ state: 'visible', timeout: 10000 });
+        await this.eventDropdown.locator(locators.dropdownTrigger).waitFor({ state: 'visible', timeout: 10000 });
+        await this.marketDropdown.locator(locators.dropdownTrigger).waitFor({ state: 'visible', timeout: 10000 });
     }
 
     async selectLeague(value: string) {
@@ -576,6 +685,82 @@ export class RecurringRewardsPage extends BasePage {
     async selectMarket(value: string) {
         console.log(`Selecting Market: "${value}"...`);
         await this.pickSportRequirementOption(this.marketDropdown, value);
+    }
+
+    /** Picks whichever Sport Requirement dropdown option does NOT match `excludeText` — used by the
+     * cascading-clear tests to force a different selection than the one already made. Returns null
+     * if only one option exists (nothing to switch to). */
+    async selectSportRequirementOptionOtherThan(dropdownLocator: Locator, excludeText: string): Promise<string | null> {
+        await this.clickElement(dropdownLocator.locator(locators.dropdownTrigger));
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+
+        // Confirmed live: pickSportRequirementOption() types the selected option's first word into
+        // this dropdown's own filter box, and that text persists the next time the panel reopens —
+        // without clearing it here, the list stays pre-filtered down to just the already-selected
+        // option, making every real alternative invisible even though many exist.
+        const filterInput = panel.locator('input.p-dropdown-filter');
+        if (await filterInput.isVisible().catch(() => false)) {
+            await filterInput.fill('');
+            await this.page.waitForTimeout(300);
+        }
+
+        const options = panel.locator(locators.dropdownItem);
+        const count = await options.count();
+        for (let i = 0; i < count; i++) {
+            const text = (await options.nth(i).textContent())?.trim() ?? '';
+            if (text && text !== excludeText) {
+                await this.clickElement(options.nth(i));
+                await panel.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                await this.page.waitForTimeout(500);
+                return text;
+            }
+        }
+        await this.page.keyboard.press('Escape').catch(() => {});
+        return null;
+    }
+
+    // Confirmed live (code comment above selectSport()): League/Country/Event/Market render as
+    // plain free-text inputs — NOT functional dropdowns — until a Sport is picked, at which point
+    // they switch over TOGETHER, and their chevron trigger appears for the first time.
+    //
+    // Confirmed live (user clarification, TC_RR_27): rendering the trigger together is NOT the same
+    // as being enabled together — the underlying <input> only actually enables one field at a time,
+    // each gated by its own immediate predecessor having a value (League needs Sport, Country needs
+    // League, Event needs Country, Market needs Event). This method's own check (trigger visible AND
+    // input not disabled) already reflects that correctly; it's the callers that must not assume
+    // "trigger visible" alone means "usable".
+    //
+    // Confirmed live (TC_RR_28/29 runs): once a field has already been enabled and a LATER change
+    // (to Feed or Sport) disables it again, the chevron trigger stays rendered/visible — only the
+    // field's own <input> actually gets the `disabled` attribute (and confusingly keeps showing its
+    // old stale value instead of clearing). So trigger visibility alone only catches "never enabled
+    // yet"; checking the input's own disabled state is required to catch "disabled again".
+    async isSportRequirementFieldEnabled(dropdownLocator: Locator): Promise<boolean> {
+        const triggerVisible = await dropdownLocator.locator(locators.dropdownTrigger).isVisible().catch(() => false);
+        if (!triggerVisible) return false;
+        const inputDisabled = await dropdownLocator.locator('input').first().isDisabled().catch(() => false);
+        return !inputDisabled;
+    }
+
+    async isSportFieldEnabled(): Promise<boolean> {
+        return this.isSportRequirementFieldEnabled(this.sportDropdown);
+    }
+
+    async isLeagueFieldEnabled(): Promise<boolean> {
+        return this.isSportRequirementFieldEnabled(this.leagueDropdown);
+    }
+
+    async isCountryFieldEnabled(): Promise<boolean> {
+        return this.isSportRequirementFieldEnabled(this.countryDropdown);
+    }
+
+    async isEventFieldEnabled(): Promise<boolean> {
+        return this.isSportRequirementFieldEnabled(this.eventDropdown);
+    }
+
+    async isMarketFieldEnabled(): Promise<boolean> {
+        return this.isSportRequirementFieldEnabled(this.marketDropdown);
     }
 
     // These are p-inputnumber fields pre-filled with 0 — same keystroke convention as
@@ -633,5 +818,308 @@ export class RecurringRewardsPage extends BasePage {
 
     getSportRequirementRow(text: string): Locator {
         return this.sportRequirementTable.locator('tbody tr', { hasText: text }).first();
+    }
+
+    // Confirmed live (user-supplied outerHTML): unlike the Rewards list (kebab menu), each Sport
+    // Requirement row has its own standalone "Edit"/"Delete" buttons (aria-label="Edit"/"Delete") —
+    // no kebab trigger involved here.
+    //
+    // ASSUMED (not independently confirmed): Edit reuses the SAME Create Sport Requirement dialog,
+    // pre-filled with the row's existing values — same pattern already proven for the Rewards list's
+    // own Edit/Clone. `sportRequirementDialog` (and every field locator built from it) is scoped by
+    // the accessible name "Create Sport Requirement" — if the Edit dialog's title turns out to be
+    // different (e.g. "Edit Sport Requirement"), these locators will fail to find it, surfacing as a
+    // clear "field not visible" failure rather than a silent false pass. Needs live outerHTML of the
+    // Edit dialog to confirm/fix if that happens.
+    async clickEditSportRequirement(row: Locator) {
+        console.log('Clicking Edit on Sport Requirement row...');
+        const editBtn = row.getByRole('button', { name: 'Edit', exact: true });
+        await editBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(editBtn);
+        await this.feedNameDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    // Confirmed live: Delete is a standalone row button here too. Whether a Yes/No confirmation
+    // dialog appears before the delete actually happens was NOT independently confirmed for Sport
+    // Requirements specifically — click Yes only if one actually shows up, same tolerant pattern
+    // already used for Rewards/Leagues/Teams elsewhere in this app.
+    async clickDeleteSportRequirement(row: Locator) {
+        console.log('Clicking Delete on Sport Requirement row...');
+        const deleteBtn = row.getByRole('button', { name: 'Delete', exact: true });
+        await deleteBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(deleteBtn);
+        const confirmAppeared = await this.confirmYesBtn.isVisible({ timeout: 5000 }).catch(() => false);
+        if (confirmAppeared) {
+            await this.clickElement(this.confirmYesBtn);
+        }
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Casino Requirements sub-page — confirmed live (user-supplied outerHTML): row ⋯ -> "Casino
+    //  Requirements" navigates to a Casino page with its own "Create Reward" popup (Provider*,
+    //  Game*, Category*). Unlike Sport Requirements, Edit/Delete markup and the Delete confirm
+    //  dialog were all independently confirmed here.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    async clickCasinoRequirementsByPromotionName(promotionName: string) {
+        console.log(`Opening Casino Requirements for "${promotionName}"...`);
+        await this.ensureRowRenderedAcrossPages(promotionName);
+        const row = this.getRowByPromotionName(promotionName);
+        await row.waitFor({ state: 'visible', timeout: 15000 });
+        await this.openRowMenu(row);
+        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(locators.menuItemCasinoRequirements, { exact: true });
+        await menuItem.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(menuItem);
+        await this.createRewardBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    async clickCreateReward() {
+        console.log('Clicking Create Reward button...');
+        await this.clickElement(this.createRewardBtn);
+        await this.providerDropdown.waitFor({ state: 'visible', timeout: 15000 });
+
+        // Confirmed live (TC_RR_40, repeated): this popup can flash open and then get yanked back to
+        // the plain Rewards list a moment later — Provider being visible once isn't proof the popup is
+        // actually staying open. Re-check after a short pause so a popup that's about to vanish fails
+        // HERE, where the caller's retry wrapper can catch it, instead of surfacing much later as a
+        // misleading ".p-dropdown-panel never appeared" timeout from inside selectFirstProvider().
+        await this.page.waitForTimeout(800);
+        await this.providerDropdown.waitFor({ state: 'visible', timeout: 5000 });
+    }
+
+    /** Provider options' real names were never given — picks whichever renders first. Returns the
+     * picked text so callers can verify it later (e.g. in the created row). */
+    async selectFirstProvider(): Promise<string> {
+        console.log('Selecting first available Provider...');
+        return this.selectFirstOption(this.providerDropdown);
+    }
+
+    async selectProvider(value: string) {
+        console.log(`Selecting Provider: "${value}"...`);
+        await this.selectOption(this.providerDropdown, value);
+    }
+
+    /** Game options' real names were never given either — picks whichever renders first. */
+    async selectFirstGame(): Promise<string> {
+        console.log('Selecting first available Game...');
+        return this.selectFirstOption(this.gameDropdown);
+    }
+
+    async selectGame(value: string) {
+        console.log(`Selecting Game: "${value}"...`);
+        await this.selectOption(this.gameDropdown, value);
+    }
+
+    async fillCategory(value: string) {
+        console.log(`Filling Category: "${value}"...`);
+        await this.fillInput(this.categoryInput, value);
+    }
+
+    async getCategoryValue(): Promise<string> {
+        return (await this.categoryInput.inputValue()).trim();
+    }
+
+    async clickCasinoRequirementSave() {
+        console.log('Clicking Save (Casino Requirement)...');
+        await this.clickElement(this.casinoRequirementSaveBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    async clickCasinoRequirementCancel() {
+        console.log('Clicking Cancel (Casino Requirement)...');
+        await this.clickElement(this.casinoRequirementCancelBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    getCasinoRequirementRow(text: string): Locator {
+        return this.casinoRequirementTable.locator('tbody tr', { hasText: text }).first();
+    }
+
+    async clickEditCasinoRequirement(row: Locator) {
+        console.log('Clicking Edit on Casino Requirement row...');
+        const editBtn = row.getByRole('button', { name: 'Edit', exact: true });
+        await editBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(editBtn);
+        await this.providerDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    /** Confirmed live (user-supplied outerHTML): Delete here DOES show a Yes/No confirm dialog
+     * (.p-confirm-dialog-accept / .p-confirm-dialog-reject, aria-label Yes/No) — the same
+     * confirmYesBtn/confirmNoBtn locators already used elsewhere in this page object. Unlike Sport
+     * Requirements, this one is firm (always expects the dialog), not tolerant. */
+    async clickDeleteCasinoRequirement(row: Locator) {
+        console.log('Clicking Delete on Casino Requirement row...');
+        const deleteBtn = row.getByRole('button', { name: 'Delete', exact: true });
+        await deleteBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(deleteBtn);
+        await this.confirmYesBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(this.confirmYesBtn);
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Comp Configuration sub-page — confirmed live (user-supplied outerHTML): row ⋯ -> "Comp
+    //  Configuration" navigates to its own page with a "Create Comp Configuration" popup (Comp
+    //  Code*, Comp Amount*, Scheduled Time*, Day of Week*, plus an "Is Scheduled" checkbox).
+    //  Edit/Delete row buttons and the Delete Yes/No confirm dialog follow the SAME confirmed
+    //  convention already used for Casino Requirements (standalone row buttons, firm Yes/No dialog).
+    // ═══════════════════════════════════════════════════════════════════════
+
+    async clickCompConfigurationByPromotionName(promotionName: string) {
+        console.log(`Opening Comp Configuration for "${promotionName}"...`);
+        await this.ensureRowRenderedAcrossPages(promotionName);
+        const row = this.getRowByPromotionName(promotionName);
+        await row.waitFor({ state: 'visible', timeout: 15000 });
+        await this.openRowMenu(row);
+        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(locators.menuItemCompConfiguration, { exact: true });
+        await menuItem.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(menuItem);
+        await this.createCompConfigurationBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+
+    async clickCreateCompConfiguration() {
+        console.log('Clicking Create Comp Configuration button...');
+        await this.clickElement(this.createCompConfigurationBtn);
+        await this.compCodeDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    /** Comp Code options' real names were never given — picks whichever renders first. Returns the
+     * picked text so callers can verify it later (e.g. in the created row). */
+    async selectFirstCompCode(): Promise<string> {
+        console.log('Selecting first available Comp Code...');
+        return this.selectFirstOption(this.compCodeDropdown);
+    }
+
+    async selectCompCode(value: string) {
+        console.log(`Selecting Comp Code: "${value}"...`);
+        await this.selectOption(this.compCodeDropdown, value);
+    }
+
+    /** Confirmed live (TC_RR_49-52): typing a 6-digit value at pressSequentially's default (no-delay)
+     * speed gets randomly mangled (e.g. "343741" -> "3434", "353484" -> "354") — PrimeNG's
+     * InputNumber reformats/re-renders (thousands grouping) after every keystroke, and typing faster
+     * than that re-render settles drops or reorders characters. Every other p-inputnumber field in
+     * this file only ever types 1-2 digits, which never triggered this; Comp Amount's own
+     * test-controlled unique-lookup value is long enough to hit it. Verifies the result and retries
+     * once with a slower delay rather than silently trusting the first attempt. */
+    async fillCompAmount(value: string) {
+        console.log(`Filling Comp Amount: "${value}"...`);
+        await this.compAmountInput.waitFor({ state: 'visible' });
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const delay = attempt === 0 ? 50 : 150;
+            await this.compAmountInput.click({ clickCount: 3 });
+            await this.compAmountInput.pressSequentially(value, { delay });
+            await this.compAmountInput.press('Tab');
+            await this.page.waitForTimeout(200);
+
+            // PrimeNG may render the raw value with thousands separators (e.g. "343,741") — compare
+            // digits only.
+            const actual = (await this.getCompAmountValue()).replace(/[^0-9]/g, '');
+            if (actual === value) return;
+            console.log(`Comp Amount mismatch after typing (got "${actual}", expected "${value}") — retrying with a slower delay...`);
+        }
+    }
+
+    async getCompAmountValue(): Promise<string> {
+        return (await this.compAmountInput.inputValue()).trim();
+    }
+
+    /** User-confirmed (outerHTML): Scheduled Time is set via its own clock increment arrows, not
+     * typed. Unlike Weekly Expiry Time, the overlay's OWN outer panel id/class was never confirmed
+     * for this field — only the inner `.p-timepicker` block was, and its increment buttons carry
+     * real, confirmed aria-labels ("Next Hour"/"Next Minute") directly on the <button> itself, so
+     * those are used instead of the id/class/icon guesses that broke here. */
+    async setScheduledTime(hourClicks: number = 2, minuteClicks: number = 3) {
+        console.log(`Setting Scheduled Time via clock arrows (hour+${hourClicks}, minute+${minuteClicks})...`);
+        await this.scheduledTimeInput.click();
+        await this.page.waitForTimeout(300);
+
+        const panel = this.page.locator('.p-timepicker').last();
+        await panel.waitFor({ state: 'visible', timeout: 10000 });
+
+        const hourUpArrow = panel.getByRole('button', { name: 'Next Hour', exact: true });
+        for (let i = 0; i < hourClicks; i++) {
+            await hourUpArrow.click();
+            await this.page.waitForTimeout(150);
+        }
+
+        const minuteUpArrow = panel.getByRole('button', { name: 'Next Minute', exact: true });
+        for (let i = 0; i < minuteClicks; i++) {
+            await minuteUpArrow.click();
+            await this.page.waitForTimeout(150);
+        }
+
+        // Same confirmed-elsewhere trick (setWeeklyExpiryTime / CompAlertsPage): Escape closes the
+        // WHOLE parent dialog here, not just this time popup, once the arrows are registered. Click
+        // a neutral, always-present field instead (Comp Amount) to dismiss it.
+        if (await panel.isVisible().catch(() => false)) {
+            await this.compAmountInput.click({ force: true }).catch(() => {});
+            await this.page.waitForTimeout(300);
+        }
+    }
+
+    async getScheduledTimeValue(): Promise<string> {
+        return (await this.scheduledTimeInput.inputValue()).trim();
+    }
+
+    /** Day of Week options' real names were never given either — picks whichever renders first. */
+    async selectFirstDayOfWeek(): Promise<string> {
+        console.log('Selecting first available Day of Week...');
+        return this.selectFirstOption(this.dayOfWeekDropdown);
+    }
+
+    async selectDayOfWeek(value: string) {
+        console.log(`Selecting Day of Week: "${value}"...`);
+        await this.selectOption(this.dayOfWeekDropdown, value);
+    }
+
+    async isScheduledChecked(): Promise<boolean> {
+        return await this.isScheduledCheckbox.locator('input[type="checkbox"]').isChecked();
+    }
+
+    async toggleIsScheduled() {
+        console.log('Toggling Is Scheduled...');
+        await this.isScheduledCheckbox.locator('.p-checkbox-box').click({ force: true });
+        await this.page.waitForTimeout(200);
+    }
+
+    async clickCompConfigurationSave() {
+        console.log('Clicking Save (Comp Configuration)...');
+        await this.clickElement(this.compConfigurationSaveBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    async clickCompConfigurationCancel() {
+        console.log('Clicking Cancel (Comp Configuration)...');
+        await this.clickElement(this.compConfigurationCancelBtn);
+        await this.page.waitForTimeout(300);
+    }
+
+    getCompConfigurationRow(text: string): Locator {
+        return this.compConfigurationTable.locator('tbody tr', { hasText: text }).first();
+    }
+
+    async clickEditCompConfiguration(row: Locator) {
+        console.log('Clicking Edit on Comp Configuration row...');
+        const editBtn = row.getByRole('button', { name: 'Edit', exact: true });
+        await editBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(editBtn);
+        await this.compCodeDropdown.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    /** Confirmed live (user-supplied outerHTML): same Yes/No confirm dialog convention as Casino
+     * Requirements — firm (always expects the dialog), not tolerant. */
+    async clickDeleteCompConfiguration(row: Locator) {
+        console.log('Clicking Delete on Comp Configuration row...');
+        const deleteBtn = row.getByRole('button', { name: 'Delete', exact: true });
+        await deleteBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(deleteBtn);
+        await this.confirmYesBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.clickElement(this.confirmYesBtn);
+        await this.page.waitForLoadState('networkidle').catch(() => {});
     }
 }

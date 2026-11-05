@@ -5,6 +5,7 @@ import { notificationScheduleLocators } from '../locators/notificationScheduleLo
 export class NotificationSchedulePage extends BasePage {
     readonly searchInput:               Locator;
     readonly communicationTypeDropdown: Locator;
+    readonly regionDropdown:            Locator;
     readonly refreshBtn:                Locator;
     readonly dataTable:                 Locator;
     readonly paginatorBottom:           Locator;
@@ -14,10 +15,46 @@ export class NotificationSchedulePage extends BasePage {
         super(page);
         this.searchInput               = page.locator(notificationScheduleLocators.searchInput);
         this.communicationTypeDropdown = page.locator(notificationScheduleLocators.communicationTypeDropdown);
+        // Confirmed live (user-supplied outerHTML): no id/name was captured for this dropdown, only
+        // its placeholder label ("Select a Region") — which stops matching once a region is actually
+        // selected (the label text then shows the region name instead). Locating it by DOM position
+        // instead — the next ".p-dropdown" immediately after Communication Type — keeps matching it
+        // regardless of what's currently selected, which selectRegion() needs to re-pick a specific
+        // region after a prior selection.
+        this.regionDropdown = page.locator('xpath=//div[@id="communicationType"]/following::div[contains(concat(" ", normalize-space(@class), " "), " p-dropdown ")][1]');
         this.refreshBtn                = page.locator(notificationScheduleLocators.refreshBtn);
         this.dataTable                 = page.locator(notificationScheduleLocators.dataTable);
         this.paginatorBottom           = page.locator(notificationScheduleLocators.paginatorBottom);
         this.pageButtons               = page.locator(notificationScheduleLocators.pageButtons);
+    }
+
+    // Confirmed live (user): the schedule data never loads from Communication Type alone — Region
+    // must ALSO be selected before the table populates. Selects whichever region renders first.
+    async selectFirstRegion() {
+        console.log('Selecting first available Region');
+        await this.clickElement(this.regionDropdown);
+        await this.page.waitForTimeout(500);
+        const panel = this.page.locator('.p-dropdown-panel');
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        const firstOption = panel.locator('.p-dropdown-item').first();
+        await firstOption.waitFor({ state: 'visible', timeout: 5000 });
+        await firstOption.click();
+        await this.page.waitForLoadState('networkidle');
+    }
+
+    // Selects a specific Region by name — e.g. to land on a deterministic, confirmed-available
+    // dataset rather than whichever region selectFirstRegion()/selectFirstCommunicationType() would
+    // auto-pick. Can be called again after a prior region selection to switch regions.
+    async selectRegion(regionName: string) {
+        console.log(`Selecting Region: ${regionName}`);
+        await this.clickElement(this.regionDropdown);
+        await this.page.waitForTimeout(500);
+        const panel = this.page.locator('.p-dropdown-panel');
+        await panel.waitFor({ state: 'visible', timeout: 5000 });
+        const option = panel.locator('.p-dropdown-item', { hasText: regionName });
+        await option.first().waitFor({ state: 'visible', timeout: 5000 });
+        await option.first().click();
+        await this.page.waitForLoadState('networkidle');
     }
 
     async selectCommunicationType(typeName: string) {
@@ -30,6 +67,9 @@ export class NotificationSchedulePage extends BasePage {
         await option.first().waitFor({ state: 'visible', timeout: 5000 });
         await option.first().click();
         await this.page.waitForLoadState('networkidle');
+        // Confirmed live: selecting Communication Type alone never loads any rows — Region must
+        // also be picked before the schedule data appears.
+        await this.selectFirstRegion();
     }
 
     async selectFirstCommunicationType() {
@@ -42,6 +82,9 @@ export class NotificationSchedulePage extends BasePage {
         await firstOption.waitFor({ state: 'visible', timeout: 5000 });
         await firstOption.click();
         await this.page.waitForLoadState('networkidle');
+        // Confirmed live: selecting Communication Type alone never loads any rows — Region must
+        // also be picked before the schedule data appears.
+        await this.selectFirstRegion();
     }
 
     async searchFor(term: string) {

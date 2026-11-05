@@ -60,4 +60,8 @@ export const compConfigLocators = {
     configCancelBtn: 'button[aria-label="Cancel"]',
 
     configurationCard: '.configuration-card',
+    // Same shared Configurations card markup already confirmed live for Comp Bulk — see
+    // compBulkConfigurationsLocators' identical activeToggle/cardMenuTrigger values.
+    configCardActiveToggle: '.status-toggle .p-inputswitch-slider',
+    configCardMenuTrigger: 'button.p-button-icon-only:has(.pi-ellipsis-v)',
 };
