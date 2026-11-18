@@ -217,16 +217,27 @@ export class SegmentSchedulePage extends BasePage {
     }
 
     /**
+     * Confirmed live this specific Campaign permanently has a leftover Pending scheduled entry in
+     * this environment, so ANY attempt to schedule against it hits the "already exists for this
+     * segmentation group" collision toast — every single time, not just occasionally. Excluded by
+     * default from every selection (not only retries) so the very first attempt doesn't waste a
+     * submit-and-fail round trip on a campaign already known to always collide.
+     */
+    private static readonly KNOWN_COLLISION_CAMPAIGNS = ['camp test1234567890'];
+
+    /**
      * Opens the Campaign dropdown and clicks the first option that is both ACTIVE (not suffixed
      * "(Inactive)" — confirmed live that scheduling against an inactive campaign fails silently
      * server-side) and not one of excludeTexts (used when editing — re-submitting with the same
      * Campaign it already has is rejected the same way a duplicate Name is — and when retrying a
      * create that hit a "campaign already has a pending schedule" conflict, where excluding only
      * the single most-recent attempt could ping-pong between two blocked campaigns forever instead
-     * of ever reaching a third). Falls back to the first active option — or the first option at
-     * all if every one is inactive — rather than hanging if no option satisfies both conditions.
+     * of ever reaching a third) or one of the permanently-excluded KNOWN_COLLISION_CAMPAIGNS. Falls
+     * back to the first active option — or the first option at all if every one is inactive —
+     * rather than hanging if no option satisfies both conditions.
      */
     private async selectActiveCampaign(excludeTexts: string[] = []): Promise<string> {
+        const allExcludes = [...excludeTexts, ...SegmentSchedulePage.KNOWN_COLLISION_CAMPAIGNS];
         const panel = await this.openDropdown(this.campaignDropdown);
         const options = panel.locator(segmentScheduleLocators.dropdownItem);
         await options.first().waitFor({ state: 'visible', timeout: 10000 });
@@ -237,7 +248,7 @@ export class SegmentSchedulePage extends BasePage {
             const text = (await options.nth(i).textContent())?.trim() ?? '';
             if (/\(Inactive\)/i.test(text)) continue;
             if (firstActiveIndex === -1) firstActiveIndex = i;
-            if (excludeTexts.includes(text)) continue;
+            if (allExcludes.includes(text)) continue;
             await options.nth(i).click();
             await this.page.waitForTimeout(200);
             return text;

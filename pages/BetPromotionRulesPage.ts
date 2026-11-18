@@ -350,9 +350,14 @@ export class BetPromotionRulesPage extends BasePage {
     }
 
     private async dismissFilterPanel(panel: Locator) {
-        if (await panel.isVisible().catch(() => false)) {
-            await this.page.keyboard.press('Escape').catch(() => {});
-            await this.page.waitForTimeout(300);
+        if (!(await panel.isVisible().catch(() => false))) return;
+        await this.page.keyboard.press('Escape').catch(() => {});
+        const closed = await panel.waitFor({ state: 'hidden', timeout: 2000 }).then(() => true).catch(() => false);
+        if (!closed) {
+            // Escape alone didn't close it — click a neutral area of the page as a backup dismiss,
+            // same fallback idea already used for PrimeNG overlays elsewhere in this suite.
+            await this.page.locator('h2').first().click({ force: true }).catch(() => {});
+            await panel.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
         }
     }
 
@@ -375,6 +380,22 @@ export class BetPromotionRulesPage extends BasePage {
      * day-of-month sidesteps month-boundary edge cases entirely while still landing reliably
      * before/after today for range tests. */
     private async setFilterDateByMonthOffset(input: Locator, monthOffset: number) {
+        // Confirmed live (TC_BPR_25/25b/26): after setting the OTHER filter field this way, this
+        // field's own input can go genuinely not-visible (CSS-hidden, not merely covered by the
+        // other field's still-open panel) for well over a minute — never reproduced via the
+        // simpler setFilterDateToToday path. Not yet confirmed why (most likely candidate: the
+        // table's own refilter/refetch triggered by the first field's change puts a loading state
+        // over the whole filter bar that this specific date range is slow to clear). Rather than
+        // hang for the full default action timeout a second time, wait a bounded amount, log
+        // whatever loading indicator is present for next time, then retry once.
+        const becameVisible = await input.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false);
+        if (!becameVisible) {
+            const loaderVisible = await this.page.locator('pure-page-loader, .p-datatable-loading-overlay, .p-component-overlay').first().isVisible().catch(() => false);
+            console.log(`Filter date input still not visible after 15s (loader visible: ${loaderVisible}) — waiting for networkidle and retrying once...`);
+            await input.scrollIntoViewIfNeeded().catch(() => {});
+            await this.page.waitForLoadState('networkidle').catch(() => {});
+            await input.waitFor({ state: 'visible', timeout: 15000 });
+        }
         await input.click();
         await this.page.waitForTimeout(300);
         const panel = await this.getFilterPanel(input);

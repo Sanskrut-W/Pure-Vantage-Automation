@@ -50,6 +50,8 @@ import { StencilConfigPage } from '../pages/StencilConfigPage';
 import { RulesEnginePage } from '../pages/RulesEnginePage';
 import { BetPromotionRulesPage } from '../pages/BetPromotionRulesPage';
 import { RecurringRewardsPage } from '../pages/RecurringRewardsPage';
+import { PrizeDrawPage } from '../pages/PrizeDrawPage';
+import { LadderPromotionsPage } from '../pages/LadderPromotionsPage';
 import fs from 'fs';
 import path from 'path';
 
@@ -109,6 +111,8 @@ type MyFixtures = {
     rulesEnginePage: RulesEnginePage;
     betPromotionRulesPage: BetPromotionRulesPage;
     recurringRewardsPage: RecurringRewardsPage;
+    prizeDrawPage: PrizeDrawPage;
+    ladderPromotionsPage: LadderPromotionsPage;
 };
 
 // Extend basic test setup with page object initialization
@@ -435,6 +439,18 @@ export const test = base.extend<MyFixtures>({
     recurringRewardsPage: async ({ page, authenticatedSession }, use) => {
         const recurringRewardsPage = new RecurringRewardsPage(page);
         await use(recurringRewardsPage);
+    },
+
+    // Instantiate and provide PrizeDrawPage
+    prizeDrawPage: async ({ page, authenticatedSession }, use) => {
+        const prizeDrawPage = new PrizeDrawPage(page);
+        await use(prizeDrawPage);
+    },
+
+    // Instantiate and provide LadderPromotionsPage
+    ladderPromotionsPage: async ({ page, authenticatedSession }, use) => {
+        const ladderPromotionsPage = new LadderPromotionsPage(page);
+        await use(ladderPromotionsPage);
     },
 });
 

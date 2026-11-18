@@ -70,6 +70,18 @@ export class TutorialPage {
     async selectLandingRegion(regionName: string) {
         await this.regionDropdown.click();
         await this.page.waitForTimeout(500); // Overlay render wait
+
+        // Confirmed live: the full region list is virtualized — only options currently in the
+        // scroll viewport exist in the DOM, so an alphabetically-late region like "Betway Zambia"
+        // never renders (and the locator below times out) unless the panel's own filter box is
+        // used to narrow the list first, the same way a human would search instead of scrolling.
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        const filterInput = panel.locator('input[type="text"]').first();
+        if (await filterInput.isVisible().catch(() => false)) {
+            await filterInput.fill(regionName);
+            await this.page.waitForTimeout(300);
+        }
+
         const option = this.page.locator(`.p-dropdown-item[aria-label="${regionName}"], .p-dropdown-item:has-text("${regionName}")`).first();
         await option.click();
         await this.page.waitForTimeout(1000); // Table rebuild wait

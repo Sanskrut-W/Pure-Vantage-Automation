@@ -204,18 +204,35 @@ export class ManualCompsPage extends BasePage {
         return this.page.locator('table tbody tr, .p-datatable-tbody tr').filter({ hasText: accountId }).first();
     }
 
+    /**
+     * Confirmed live (TC-10): clicking Approve/Decline doesn't always open the confirmation
+     * dialog on the first try — a failing run's page snapshot showed the row's button sitting in
+     * a plain focused/active state afterward with no "Yes"/"No" dialog anywhere on the page, which
+     * then made clickYesOnConfirmDialog time out waiting for a dialog that was never shown.
+     * Verify the dialog actually opened and re-click once if it didn't.
+     */
+    private async clickRowActionAndVerifyDialog(button: Locator) {
+        await this.clickElement(button);
+        const yesBtn = this.page.locator(manualCompsLocators.buttonYes);
+        const dialogOpened = await yesBtn.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+        if (!dialogOpened) {
+            console.log('Confirm dialog did not open — retrying the click...');
+            await this.clickElement(button);
+        }
+    }
+
     async clickApproveOnRow(accountId: string) {
         console.log(`Clicking Approve on Manual Comp row (Account ID: "${accountId}")...`);
         const row = this.getRowByAccountId(accountId);
         await row.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(row.locator(manualCompsLocators.approveBtn));
+        await this.clickRowActionAndVerifyDialog(row.locator(manualCompsLocators.approveBtn));
     }
 
     async clickDeclineOnRow(accountId: string) {
         console.log(`Clicking Decline on Manual Comp row (Account ID: "${accountId}")...`);
         const row = this.getRowByAccountId(accountId);
         await row.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(row.locator(manualCompsLocators.declineBtn));
+        await this.clickRowActionAndVerifyDialog(row.locator(manualCompsLocators.declineBtn));
     }
 
     async clickYesOnConfirmDialog() {
@@ -223,7 +240,14 @@ export class ManualCompsPage extends BasePage {
         const yesBtn = this.page.locator(manualCompsLocators.buttonYes);
         await yesBtn.waitFor({ state: 'visible', timeout: 10000 });
         await this.clickElement(yesBtn);
-        await this.page.waitForTimeout(1000);
+
+        // Confirmed live (TC-10): after clicking Yes, the button goes into PrimeNG's own
+        // disabled/loading (spinner) state while the Approve/Decline call is in flight — a flat
+        // 1s wait isn't always enough for it to resolve, and checking for the toast too early
+        // just times out against a dialog that's still open and spinning. Wait for the whole
+        // confirm dialog to close instead (PrimeNG does this automatically once the call
+        // completes) before moving on to check for the success toast.
+        await yesBtn.waitFor({ state: 'hidden', timeout: 30000 }).catch(() => {});
     }
 
     async clickNoOnConfirmDialog() {

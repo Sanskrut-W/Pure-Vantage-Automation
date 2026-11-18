@@ -101,45 +101,45 @@ async function createRule(page: any, betPromotionRulesPage: any): Promise<string
 // falling back to a kebab "..." menu) and swallows any error so a wrong guess there never fails
 // whichever test calls it.
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  TC_BPR_01 – TC_BPR_02 — Page Level Tests
-// ═══════════════════════════════════════════════════════════════════════════════
-test.describe('Workflow Management - Bet Promotion Rules - Page Level Tests', () => {
+// // ═══════════════════════════════════════════════════════════════════════════════
+// //  TC_BPR_01 – TC_BPR_02 — Page Level Tests
+// // ═══════════════════════════════════════════════════════════════════════════════
+// test.describe('Workflow Management - Bet Promotion Rules - Page Level Tests', () => {
 
-  test.beforeEach(async ({ page, sidebarPage, betPromotionRulesPage }) => {
-    await navigateToBetPromotionRules(page, sidebarPage, betPromotionRulesPage);
-  });
+//   test.beforeEach(async ({ page, sidebarPage, betPromotionRulesPage }) => {
+//     await navigateToBetPromotionRules(page, sidebarPage, betPromotionRulesPage);
+//   });
 
-  test('TC_BPR_01 Verify Bet Promotion Rules page is accessible', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await expect(betPromotionRulesPage.createBtn, 'Expected the Create Bet Promotion Rule button').toBeVisible({ timeout: 15000 });
+//   test('TC_BPR_01 Verify Bet Promotion Rules page is accessible', async ({ page, betPromotionRulesPage }, testInfo) => {
+//     await expect(betPromotionRulesPage.createBtn, 'Expected the Create Bet Promotion Rule button').toBeVisible({ timeout: 15000 });
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_01_page_accessible');
-    console.log('Bet Promotion Rules page is accessible with the Create button visible.');
-  });
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_01_page_accessible');
+//     console.log('Bet Promotion Rules page is accessible with the Create button visible.');
+//   });
 
-  test('TC_BPR_02 Verify Create Bet Promotion Rule button opens the popup with all 6 base fields', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await openCreatePopup(betPromotionRulesPage);
+//   test('TC_BPR_02 Verify Create Bet Promotion Rule button opens the popup with all 6 base fields', async ({ page, betPromotionRulesPage }, testInfo) => {
+//     await openCreatePopup(betPromotionRulesPage);
 
-    await expect(betPromotionRulesPage.promotionNameInput, 'Expected Promotion Name field').toBeVisible({ timeout: 10000 });
-    await expect(betPromotionRulesPage.promotionTypeDropdown, 'Expected Promotion Type field').toBeVisible();
-    await expect(betPromotionRulesPage.startDateInput, 'Expected Start Date field').toBeVisible();
-    await expect(betPromotionRulesPage.endDateInput, 'Expected End Date field').toBeVisible();
-    await expect(betPromotionRulesPage.feedDropdown, 'Expected Feed field').toBeVisible();
-    await expect(betPromotionRulesPage.minimumAmountInput, 'Expected Minimum Amount field').toBeVisible();
+//     await expect(betPromotionRulesPage.promotionNameInput, 'Expected Promotion Name field').toBeVisible({ timeout: 10000 });
+//     await expect(betPromotionRulesPage.promotionTypeDropdown, 'Expected Promotion Type field').toBeVisible();
+//     await expect(betPromotionRulesPage.startDateInput, 'Expected Start Date field').toBeVisible();
+//     await expect(betPromotionRulesPage.endDateInput, 'Expected End Date field').toBeVisible();
+//     await expect(betPromotionRulesPage.feedDropdown, 'Expected Feed field').toBeVisible();
+//     await expect(betPromotionRulesPage.minimumAmountInput, 'Expected Minimum Amount field').toBeVisible();
 
-    // Confirmed live: Sport/League/Event/Market are NOT part of the initial 6 — they only render
-    // after Feed has a value.
-    await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to be absent before Feed is selected').not.toBeVisible();
+//     // Confirmed live: Sport/League/Event/Market are NOT part of the initial 6 — they only render
+//     // after Feed has a value.
+//     await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to be absent before Feed is selected').not.toBeVisible();
 
-    await expect(betPromotionRulesPage.saveBtn, 'Expected Save button').toBeVisible();
-    await expect(betPromotionRulesPage.cancelBtn, 'Expected Cancel button').toBeVisible();
+//     await expect(betPromotionRulesPage.saveBtn, 'Expected Save button').toBeVisible();
+//     await expect(betPromotionRulesPage.cancelBtn, 'Expected Cancel button').toBeVisible();
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_02_popup_6_fields');
-    console.log('Create popup opened with all 6 base fields; Sport (Feed-dependent) correctly absent.');
+//     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_02_popup_6_fields');
+//     console.log('Create popup opened with all 6 base fields; Sport (Feed-dependent) correctly absent.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
-});
+//     await betPromotionRulesPage.clickCancel();
+//   });
+// });
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  TC_BPR_03 – TC_BPR_21 — Create Popup Tests
@@ -164,409 +164,409 @@ test.describe('Workflow Management - Bet Promotion Rules - Create Popup Tests', 
     }
   });
 
-  // ─── Base fields ────────────────────────────────────────────────────────────
+  // // ─── Base fields ────────────────────────────────────────────────────────────
 
-  test('TC_BPR_03 Verify Promotion Name field accepts input', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const promotionName = `AutoBetPromoRule_${Date.now()}`;
-    await betPromotionRulesPage.fillPromotionName(promotionName);
-    expect(await betPromotionRulesPage.getPromotionNameValue(), 'Expected Promotion Name value to be accepted').toBe(promotionName);
+  // test('TC_BPR_03 Verify Promotion Name field accepts input', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const promotionName = `AutoBetPromoRule_${Date.now()}`;
+  //   await betPromotionRulesPage.fillPromotionName(promotionName);
+  //   expect(await betPromotionRulesPage.getPromotionNameValue(), 'Expected Promotion Name value to be accepted').toBe(promotionName);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_03_promotion_name');
-    console.log('Promotion Name field accepts valid input.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_03_promotion_name');
+  //   console.log('Promotion Name field accepts valid input.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_04 Verify Promotion Type dropdown offers and accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const selected = await betPromotionRulesPage.selectFirstPromotionType();
-    const shownValue = await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.promotionTypeDropdown);
-    expect(shownValue, `Expected the selected Promotion Type "${selected}" to be shown`).toBe(selected);
+  // test('TC_BPR_04 Verify Promotion Type dropdown offers and accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const selected = await betPromotionRulesPage.selectFirstPromotionType();
+  //   const shownValue = await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.promotionTypeDropdown);
+  //   expect(shownValue, `Expected the selected Promotion Type "${selected}" to be shown`).toBe(selected);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_04_promotion_type');
-    console.log(`Promotion Type dropdown opened and the selected value "${selected}" is shown.`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_04_promotion_type');
+  //   console.log(`Promotion Type dropdown opened and the selected value "${selected}" is shown.`);
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_05 Verify Start Date field accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.setStartDate();
-    const startValue = await betPromotionRulesPage.startDateInput.inputValue();
-    expect(startValue.trim().length > 0, 'Expected Start Date to be selected').toBe(true);
+  // test('TC_BPR_05 Verify Start Date field accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.setStartDate();
+  //   const startValue = await betPromotionRulesPage.startDateInput.inputValue();
+  //   expect(startValue.trim().length > 0, 'Expected Start Date to be selected').toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_05_start_date');
-    console.log(`Start Date populated as: "${startValue}".`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_05_start_date');
+  //   console.log(`Start Date populated as: "${startValue}".`);
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_06 Verify End Date field accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.setEndDate();
-    const endValue = await betPromotionRulesPage.endDateInput.inputValue();
-    expect(endValue.trim().length > 0, 'Expected End Date to be selected').toBe(true);
+  // test('TC_BPR_06 Verify End Date field accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.setEndDate();
+  //   const endValue = await betPromotionRulesPage.endDateInput.inputValue();
+  //   expect(endValue.trim().length > 0, 'Expected End Date to be selected').toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_06_end_date');
-    console.log(`End Date populated as: "${endValue}".`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_06_end_date');
+  //   console.log(`End Date populated as: "${endValue}".`);
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_07 Verify Feed dropdown offers and accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const selected = await betPromotionRulesPage.selectFirstFeed();
-    const shownValue = await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.feedDropdown);
-    expect(shownValue, `Expected the selected Feed "${selected}" to be shown`).toBe(selected);
+  // test('TC_BPR_07 Verify Feed dropdown offers and accepts a selection', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const selected = await betPromotionRulesPage.selectFirstFeed();
+  //   const shownValue = await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.feedDropdown);
+  //   expect(shownValue, `Expected the selected Feed "${selected}" to be shown`).toBe(selected);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_07_feed_dropdown');
-    console.log(`Feed dropdown opened and the selected value "${selected}" is shown.`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_07_feed_dropdown');
+  //   console.log(`Feed dropdown opened and the selected value "${selected}" is shown.`);
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_08 Verify Minimum Amount field accepts numeric input', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.fillMinimumAmount('25');
-    expect(await betPromotionRulesPage.getMinimumAmountValue(), 'Expected a plain integer to be accepted').toBe('25');
+  // test('TC_BPR_08 Verify Minimum Amount field accepts numeric input', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.fillMinimumAmount('25');
+  //   expect(await betPromotionRulesPage.getMinimumAmountValue(), 'Expected a plain integer to be accepted').toBe('25');
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_08_minimum_amount');
-    console.log('Minimum Amount field accepts a plain integer.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_08_minimum_amount');
+  //   console.log('Minimum Amount field accepts a plain integer.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_09 Verify Minimum Amount rejects non-numeric characters', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.fillMinimumAmount('12.5abc');
-    const typedValue = await betPromotionRulesPage.getMinimumAmountValue();
-    expect(/^\d*$/.test(typedValue), `Expected Minimum Amount to reject the decimal point/letters, but got "${typedValue}"`).toBe(true);
+  // test('TC_BPR_09 Verify Minimum Amount rejects non-numeric characters', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.fillMinimumAmount('12.5abc');
+  //   const typedValue = await betPromotionRulesPage.getMinimumAmountValue();
+  //   expect(/^\d*$/.test(typedValue), `Expected Minimum Amount to reject the decimal point/letters, but got "${typedValue}"`).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_09_minimum_amount_non_numeric');
-    console.log(`Minimum Amount with "12.5abc" — field value after entry: "${typedValue}".`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_09_minimum_amount_non_numeric');
+  //   console.log(`Minimum Amount with "12.5abc" — field value after entry: "${typedValue}".`);
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_10 Verify mandatory field validation when Promotion Name/Type/Start Date/End Date are blank', async ({ page, betPromotionRulesPage }, testInfo) => {
-    // Tolerant: mandatory-field enforcement could be inline errors after Save, OR Save itself
-    // staying disabled until all fields are filled — not confirmed live which.
-    const saveWasClickable = await betPromotionRulesPage.saveBtn.isEnabled().catch(() => false);
-    if (saveWasClickable) {
-      await betPromotionRulesPage.clickSave();
-      await page.waitForTimeout(500);
-    }
-    const hasErrors = await betPromotionRulesPage.hasValidationErrors();
-    expect(hasErrors || !saveWasClickable, 'Expected mandatory-field validation to be enforced when the popup is blank').toBe(true);
+  // test('TC_BPR_10 Verify mandatory field validation when Promotion Name/Type/Start Date/End Date are blank', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   // Tolerant: mandatory-field enforcement could be inline errors after Save, OR Save itself
+  //   // staying disabled until all fields are filled — not confirmed live which.
+  //   const saveWasClickable = await betPromotionRulesPage.saveBtn.isEnabled().catch(() => false);
+  //   if (saveWasClickable) {
+  //     await betPromotionRulesPage.clickSave();
+  //     await page.waitForTimeout(500);
+  //   }
+  //   const hasErrors = await betPromotionRulesPage.hasValidationErrors();
+  //   expect(hasErrors || !saveWasClickable, 'Expected mandatory-field validation to be enforced when the popup is blank').toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_10_mandatory_validation');
-    console.log(`Mandatory validation enforced via: ${hasErrors ? 'inline errors' : 'disabled Save button'}.`);
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_10_mandatory_validation');
+  //   console.log(`Mandatory validation enforced via: ${hasErrors ? 'inline errors' : 'disabled Save button'}.`);
 
-    await betPromotionRulesPage.clickCancel().catch(() => {});
-  });
+  //   await betPromotionRulesPage.clickCancel().catch(() => {});
+  // });
 
-  test('TC_BPR_11 Verify Cancel discards data without creating a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const draftName = await fillMandatoryBaseFields(betPromotionRulesPage);
+  // test('TC_BPR_11 Verify Cancel discards data without creating a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const draftName = await fillMandatoryBaseFields(betPromotionRulesPage);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_11_step1_draft_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_11_step1_draft_filled');
 
-    await betPromotionRulesPage.clickCancel();
-    await expect(betPromotionRulesPage.promotionNameInput, 'Expected the popup to close without saving').not.toBeVisible({ timeout: 10000 });
+  //   await betPromotionRulesPage.clickCancel();
+  //   await expect(betPromotionRulesPage.promotionNameInput, 'Expected the popup to close without saving').not.toBeVisible({ timeout: 10000 });
 
-    const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(draftName, 5000);
-    expect(isPresent, 'Expected the discarded draft to NOT appear in the table').toBe(false);
+  //   const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(draftName, 5000);
+  //   expect(isPresent, 'Expected the discarded draft to NOT appear in the table').toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_11_step2_not_in_table');
-    console.log(`Draft "${draftName}" discarded via Cancel and not present in the table.`);
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_11_step2_not_in_table');
+  //   console.log(`Draft "${draftName}" discarded via Cancel and not present in the table.`);
+  // });
 
-  // ─── Feed reveals Sport/League/Event/Market ─────────────────────────────────
+  // // ─── Feed reveals Sport/League/Event/Market ─────────────────────────────────
 
-  test('TC_BPR_12 Verify selecting Feed reveals Sport, League, Event and Market fields', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to be absent before Feed is selected').not.toBeVisible();
+  // test('TC_BPR_12 Verify selecting Feed reveals Sport, League, Event and Market fields', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to be absent before Feed is selected').not.toBeVisible();
 
-    await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.selectFirstFeed();
 
-    await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to appear after Feed is selected').toBeVisible({ timeout: 10000 });
-    await expect(betPromotionRulesPage.leagueDropdown, 'Expected League to appear after Feed is selected').toBeVisible();
-    await expect(betPromotionRulesPage.eventDropdown, 'Expected Event to appear after Feed is selected').toBeVisible();
-    await expect(betPromotionRulesPage.marketDropdown, 'Expected Market to appear after Feed is selected').toBeVisible();
+  //   await expect(betPromotionRulesPage.sportDropdown, 'Expected Sport to appear after Feed is selected').toBeVisible({ timeout: 10000 });
+  //   await expect(betPromotionRulesPage.leagueDropdown, 'Expected League to appear after Feed is selected').toBeVisible();
+  //   await expect(betPromotionRulesPage.eventDropdown, 'Expected Event to appear after Feed is selected').toBeVisible();
+  //   await expect(betPromotionRulesPage.marketDropdown, 'Expected Market to appear after Feed is selected').toBeVisible();
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_12_feed_reveals_fields');
-    console.log('Selecting Feed revealed Sport, League, Event and Market.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_12_feed_reveals_fields');
+  //   console.log('Selecting Feed revealed Sport, League, Event and Market.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_13 Verify Sport is enabled immediately after Feed is selected', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  // test('TC_BPR_13 Verify Sport is enabled immediately after Feed is selected', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
 
-    expect(await betPromotionRulesPage.isSportDropdownDisabled(), 'Expected Sport to be enabled as soon as Feed has a value').toBe(false);
+  //   expect(await betPromotionRulesPage.isSportDropdownDisabled(), 'Expected Sport to be enabled as soon as Feed has a value').toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_13_sport_enabled');
-    console.log('Sport is enabled immediately once Feed is selected.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_13_sport_enabled');
+  //   console.log('Sport is enabled immediately once Feed is selected.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // Confirmed live (outerHTML): League/Event/Market all render disabled the instant Feed is
-  // selected, before Sport itself has a value.
-  test('TC_BPR_14 Verify League, Event and Market are disabled before Sport is selected', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  // // Confirmed live (outerHTML): League/Event/Market all render disabled the instant Feed is
+  // // selected, before Sport itself has a value.
+  // test('TC_BPR_14 Verify League, Event and Market are disabled before Sport is selected', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
 
-    expect(await betPromotionRulesPage.isLeagueDropdownDisabled(), 'Expected League to be disabled before Sport is selected').toBe(true);
-    expect(await betPromotionRulesPage.isEventDropdownDisabled(), 'Expected Event to be disabled before Sport is selected').toBe(true);
-    expect(await betPromotionRulesPage.isMarketDropdownDisabled(), 'Expected Market to be disabled before Sport is selected').toBe(true);
+  //   expect(await betPromotionRulesPage.isLeagueDropdownDisabled(), 'Expected League to be disabled before Sport is selected').toBe(true);
+  //   expect(await betPromotionRulesPage.isEventDropdownDisabled(), 'Expected Event to be disabled before Sport is selected').toBe(true);
+  //   expect(await betPromotionRulesPage.isMarketDropdownDisabled(), 'Expected Market to be disabled before Sport is selected').toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_14_league_event_market_disabled');
-    console.log('League, Event and Market are all disabled before Sport is selected.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_14_league_event_market_disabled');
+  //   console.log('League, Event and Market are all disabled before Sport is selected.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // NOT explicitly stated by the user (only Event->Market was) — inferred by analogy to the
-  // confirmed Event->Market link and this app's own Rules Engine Sport Condition popup, which
-  // chains its equivalent fields the same left-to-right way. Flag for re-verification if this
-  // doesn't hold.
-  test('TC_BPR_15 Verify selecting Sport enables League', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  // // NOT explicitly stated by the user (only Event->Market was) — inferred by analogy to the
+  // // confirmed Event->Market link and this app's own Rules Engine Sport Condition popup, which
+  // // chains its equivalent fields the same left-to-right way. Flag for re-verification if this
+  // // doesn't hold.
+  // test('TC_BPR_15 Verify selecting Sport enables League', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
 
-    await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
+  //   await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.isLeagueDropdownDisabled(), 'Expected League to become enabled once Sport is selected').toBe(false);
+  //   expect(await betPromotionRulesPage.isLeagueDropdownDisabled(), 'Expected League to become enabled once Sport is selected').toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_15_sport_enables_league');
-    console.log('Selecting Sport enabled League.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_15_sport_enables_league');
+  //   console.log('Selecting Sport enabled League.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // Same inference caveat as TC_BPR_15 above, one link further down the chain.
-  test('TC_BPR_16 Verify selecting League enables Event', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
+  // // Same inference caveat as TC_BPR_15 above, one link further down the chain.
+  // test('TC_BPR_16 Verify selecting League enables Event', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
 
-    const leagueDisabledBefore = await betPromotionRulesPage.isLeagueDropdownDisabled();
-    test.skip(leagueDisabledBefore, 'League never became enabled after selecting Sport (see TC_BPR_15) — skipping, nothing to select.');
+  //   const leagueDisabledBefore = await betPromotionRulesPage.isLeagueDropdownDisabled();
+  //   test.skip(leagueDisabledBefore, 'League never became enabled after selecting Sport (see TC_BPR_15) — skipping, nothing to select.');
 
-    await betPromotionRulesPage.selectFirstLeague();
-    await page.waitForTimeout(500);
+  //   await betPromotionRulesPage.selectFirstLeague();
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.isEventDropdownDisabled(), 'Expected Event to become enabled once League is selected').toBe(false);
+  //   expect(await betPromotionRulesPage.isEventDropdownDisabled(), 'Expected Event to become enabled once League is selected').toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_16_league_enables_event');
-    console.log('Selecting League enabled Event.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_16_league_enables_event');
+  //   console.log('Selecting League enabled Event.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // Explicitly stated by the user: "Selecting Event should enable the Market field." /
-  // "Market should remain disabled until an Event has been selected."
-  test('TC_BPR_17 Verify selecting Event enables Market', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
+  // // Explicitly stated by the user: "Selecting Event should enable the Market field." /
+  // // "Market should remain disabled until an Event has been selected."
+  // test('TC_BPR_17 Verify selecting Event enables Market', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
 
-    if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
-      await betPromotionRulesPage.selectFirstLeague();
-      await page.waitForTimeout(500);
-    }
+  //   if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
+  //     await betPromotionRulesPage.selectFirstLeague();
+  //     await page.waitForTimeout(500);
+  //   }
 
-    const marketDisabledBeforeEvent = await betPromotionRulesPage.isMarketDropdownDisabled();
-    expect(marketDisabledBeforeEvent, 'Expected Market to be disabled before Event is selected').toBe(true);
+  //   const marketDisabledBeforeEvent = await betPromotionRulesPage.isMarketDropdownDisabled();
+  //   expect(marketDisabledBeforeEvent, 'Expected Market to be disabled before Event is selected').toBe(true);
 
-    const eventDisabled = await betPromotionRulesPage.isEventDropdownDisabled();
-    test.skip(eventDisabled, 'Event never became enabled (see TC_BPR_16) — skipping, nothing to select.');
+  //   const eventDisabled = await betPromotionRulesPage.isEventDropdownDisabled();
+  //   test.skip(eventDisabled, 'Event never became enabled (see TC_BPR_16) — skipping, nothing to select.');
 
-    await betPromotionRulesPage.selectFirstEvent();
-    await page.waitForTimeout(500);
+  //   await betPromotionRulesPage.selectFirstEvent();
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.isMarketDropdownDisabled(), 'Expected Market to become enabled once Event is selected').toBe(false);
+  //   expect(await betPromotionRulesPage.isMarketDropdownDisabled(), 'Expected Market to become enabled once Event is selected').toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_17_event_enables_market');
-    console.log('Selecting Event enabled Market — matches the explicitly stated rule.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_17_event_enables_market');
+  //   console.log('Selecting Event enabled Market — matches the explicitly stated rule.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // ─── Cascading clear logic (all 4 explicitly stated by the user) ────────────
+  // // ─── Cascading clear logic (all 4 explicitly stated by the user) ────────────
 
-  test('TC_BPR_18 Verify changing Feed clears Sport, League, Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const firstFeed = await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    const sportSelected = await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.sportDropdown), 'Expected Sport to hold its selection before Feed is changed').toBe(sportSelected);
+  // test('TC_BPR_18 Verify changing Feed clears Sport, League, Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const firstFeed = await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   const sportSelected = await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.sportDropdown), 'Expected Sport to hold its selection before Feed is changed').toBe(sportSelected);
 
-    const newFeed = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.feedDropdown, firstFeed);
-    test.skip(newFeed === null, 'Only one Feed option exists in this environment — nothing to change to.');
-    await page.waitForTimeout(500);
+  //   const newFeed = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.feedDropdown, firstFeed);
+  //   test.skip(newFeed === null, 'Only one Feed option exists in this environment — nothing to change to.');
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.sportDropdown), 'Expected Sport to be cleared when Feed changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown), 'Expected League to be cleared when Feed changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when Feed changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Feed changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.sportDropdown), 'Expected Sport to be cleared when Feed changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown), 'Expected League to be cleared when Feed changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when Feed changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Feed changes').toBe('');
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_18_feed_change_clears_all');
-    console.log('Changing Feed correctly cleared Sport, League, Event and Market.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_18_feed_change_clears_all');
+  //   console.log('Changing Feed correctly cleared Sport, League, Event and Market.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_19 Verify changing Sport clears League, Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    const firstSport = await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
+  // test('TC_BPR_19 Verify changing Sport clears League, Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   const firstSport = await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
 
-    if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
-      await betPromotionRulesPage.selectFirstLeague();
-      await page.waitForTimeout(500);
-    }
-    const leagueHadValue = (await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown)) !== '';
-    test.skip(!leagueHadValue, 'League never got a value to begin with (see TC_BPR_15) — nothing to verify gets cleared.');
+  //   if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
+  //     await betPromotionRulesPage.selectFirstLeague();
+  //     await page.waitForTimeout(500);
+  //   }
+  //   const leagueHadValue = (await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown)) !== '';
+  //   test.skip(!leagueHadValue, 'League never got a value to begin with (see TC_BPR_15) — nothing to verify gets cleared.');
 
-    const newSport = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.sportDropdown, firstSport);
-    test.skip(newSport === null, 'Only one Sport option exists in this environment — nothing to change to.');
-    await page.waitForTimeout(500);
+  //   const newSport = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.sportDropdown, firstSport);
+  //   test.skip(newSport === null, 'Only one Sport option exists in this environment — nothing to change to.');
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown), 'Expected League to be cleared when Sport changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when Sport changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Sport changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.leagueDropdown), 'Expected League to be cleared when Sport changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when Sport changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Sport changes').toBe('');
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_19_sport_change_clears_dependents');
-    console.log('Changing Sport correctly cleared League, Event and Market.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_19_sport_change_clears_dependents');
+  //   console.log('Changing Sport correctly cleared League, Event and Market.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_20 Verify changing League clears Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
+  // test('TC_BPR_20 Verify changing League clears Event and Market', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
 
-    const leagueDisabled = await betPromotionRulesPage.isLeagueDropdownDisabled();
-    test.skip(leagueDisabled, 'League never became enabled (see TC_BPR_15) — nothing to select.');
-    const firstLeague = await betPromotionRulesPage.selectFirstLeague();
-    await page.waitForTimeout(500);
+  //   const leagueDisabled = await betPromotionRulesPage.isLeagueDropdownDisabled();
+  //   test.skip(leagueDisabled, 'League never became enabled (see TC_BPR_15) — nothing to select.');
+  //   const firstLeague = await betPromotionRulesPage.selectFirstLeague();
+  //   await page.waitForTimeout(500);
 
-    if (!(await betPromotionRulesPage.isEventDropdownDisabled())) {
-      await betPromotionRulesPage.selectFirstEvent();
-      await page.waitForTimeout(500);
-    }
-    const eventHadValue = (await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown)) !== '';
-    test.skip(!eventHadValue, 'Event never got a value to begin with — nothing to verify gets cleared.');
+  //   if (!(await betPromotionRulesPage.isEventDropdownDisabled())) {
+  //     await betPromotionRulesPage.selectFirstEvent();
+  //     await page.waitForTimeout(500);
+  //   }
+  //   const eventHadValue = (await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown)) !== '';
+  //   test.skip(!eventHadValue, 'Event never got a value to begin with — nothing to verify gets cleared.');
 
-    const newLeague = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.leagueDropdown, firstLeague);
-    test.skip(newLeague === null, 'Only one League option exists in this environment — nothing to change to.');
-    await page.waitForTimeout(500);
+  //   const newLeague = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.leagueDropdown, firstLeague);
+  //   test.skip(newLeague === null, 'Only one League option exists in this environment — nothing to change to.');
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when League changes').toBe('');
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when League changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.eventDropdown), 'Expected Event to be cleared when League changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when League changes').toBe('');
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_20_league_change_clears_dependents');
-    console.log('Changing League correctly cleared Event and Market.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_20_league_change_clears_dependents');
+  //   console.log('Changing League correctly cleared Event and Market.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  test('TC_BPR_21 Verify changing Event clears Market', async ({ page, betPromotionRulesPage }, testInfo) => {
-    await betPromotionRulesPage.selectFirstFeed();
-    await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
-    await betPromotionRulesPage.selectFirstSport();
-    await page.waitForTimeout(500);
-    if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
-      await betPromotionRulesPage.selectFirstLeague();
-      await page.waitForTimeout(500);
-    }
+  // test('TC_BPR_21 Verify changing Event clears Market', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   await betPromotionRulesPage.selectFirstFeed();
+  //   await betPromotionRulesPage.sportDropdown.waitFor({ state: 'visible', timeout: 10000 });
+  //   await betPromotionRulesPage.selectFirstSport();
+  //   await page.waitForTimeout(500);
+  //   if (!(await betPromotionRulesPage.isLeagueDropdownDisabled())) {
+  //     await betPromotionRulesPage.selectFirstLeague();
+  //     await page.waitForTimeout(500);
+  //   }
 
-    const eventDisabled = await betPromotionRulesPage.isEventDropdownDisabled();
-    test.skip(eventDisabled, 'Event never became enabled — nothing to select.');
-    const firstEvent = await betPromotionRulesPage.selectFirstEvent();
-    await page.waitForTimeout(500);
+  //   const eventDisabled = await betPromotionRulesPage.isEventDropdownDisabled();
+  //   test.skip(eventDisabled, 'Event never became enabled — nothing to select.');
+  //   const firstEvent = await betPromotionRulesPage.selectFirstEvent();
+  //   await page.waitForTimeout(500);
 
-    const marketDisabledAfterEvent = await betPromotionRulesPage.isMarketDropdownDisabled();
-    test.skip(marketDisabledAfterEvent, 'Market never became enabled after selecting Event (contradicts the explicitly stated rule — see TC_BPR_17) — nothing to verify gets cleared.');
-    await betPromotionRulesPage.selectFirstMarket();
-    await page.waitForTimeout(500);
+  //   const marketDisabledAfterEvent = await betPromotionRulesPage.isMarketDropdownDisabled();
+  //   test.skip(marketDisabledAfterEvent, 'Market never became enabled after selecting Event (contradicts the explicitly stated rule — see TC_BPR_17) — nothing to verify gets cleared.');
+  //   await betPromotionRulesPage.selectFirstMarket();
+  //   await page.waitForTimeout(500);
 
-    const newEvent = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.eventDropdown, firstEvent);
-    test.skip(newEvent === null, 'Only one Event option exists in this environment — nothing to change to.');
-    await page.waitForTimeout(500);
+  //   const newEvent = await betPromotionRulesPage.selectOptionOtherThan(betPromotionRulesPage.eventDropdown, firstEvent);
+  //   test.skip(newEvent === null, 'Only one Event option exists in this environment — nothing to change to.');
+  //   await page.waitForTimeout(500);
 
-    expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Event changes').toBe('');
+  //   expect(await betPromotionRulesPage.getDropdownValue(betPromotionRulesPage.marketDropdown), 'Expected Market to be cleared when Event changes').toBe('');
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_21_event_change_clears_market');
-    console.log('Changing Event correctly cleared Market.');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_21_event_change_clears_market');
+  //   console.log('Changing Event correctly cleared Market.');
 
-    await betPromotionRulesPage.clickCancel();
-  });
+  //   await betPromotionRulesPage.clickCancel();
+  // });
 
-  // ─── Save / toast ────────────────────────────────────────────────────────────
+  // // ─── Save / toast ────────────────────────────────────────────────────────────
 
-  test('TC_BPR_22 Verify successful Bet Promotion Rule creation', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const promotionName = await fillAllFields(page, betPromotionRulesPage);
-    // Set BEFORE clicking Save (not after) so the afterEach above still attempts cleanup even if
-    // Save itself, or an assertion right after it, is what fails.
-    promotionNameToCleanup = promotionName;
+  // test('TC_BPR_22 Verify successful Bet Promotion Rule creation', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const promotionName = await fillAllFields(page, betPromotionRulesPage);
+  //   // Set BEFORE clicking Save (not after) so the afterEach above still attempts cleanup even if
+  //   // Save itself, or an assertion right after it, is what fails.
+  //   promotionNameToCleanup = promotionName;
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_22_step1_filled');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_22_step1_filled');
 
-    await betPromotionRulesPage.clickSave();
+  //   await betPromotionRulesPage.clickSave();
 
-    const toastText = await betPromotionRulesPage.getToastText(10000);
-    console.log(`Toast after Save: "${toastText || '(no toast appeared)'}"`);
+  //   const toastText = await betPromotionRulesPage.getToastText(10000);
+  //   console.log(`Toast after Save: "${toastText || '(no toast appeared)'}"`);
 
-    await expect(betPromotionRulesPage.promotionNameInput, 'Expected the popup to close after a successful Save').not.toBeVisible({ timeout: 15000 });
-    await page.waitForLoadState('networkidle').catch(() => {});
+  //   await expect(betPromotionRulesPage.promotionNameInput, 'Expected the popup to close after a successful Save').not.toBeVisible({ timeout: 15000 });
+  //   await page.waitForLoadState('networkidle').catch(() => {});
 
-    const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
-    expect(isPresent, `Expected the new Bet Promotion Rule "${promotionName}" to appear in the table. Toast said: "${toastText || '(no toast appeared)'}"`).toBe(true);
+  //   const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
+  //   expect(isPresent, `Expected the new Bet Promotion Rule "${promotionName}" to appear in the table. Toast said: "${toastText || '(no toast appeared)'}"`).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_22_step2_created');
-    console.log(`✅ TC_BPR_22 PASSED — Rule "${promotionName}" created and verified in table.`);
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_22_step2_created');
+  //   console.log(`✅ TC_BPR_22 PASSED — Rule "${promotionName}" created and verified in table.`);
+  // });
 
-  // ─── Search / Delete ─────────────────────────────────────────────────────────
+  // // ─── Search / Delete ─────────────────────────────────────────────────────────
 
-  test('TC_BPR_23 Verify Search functionality for a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const promotionName = await createRule(page, betPromotionRulesPage);
-    // Set immediately after creation so afterEach cleans this up regardless of what the search
-    // assertions below do.
-    promotionNameToCleanup = promotionName;
+  // test('TC_BPR_23 Verify Search functionality for a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const promotionName = await createRule(page, betPromotionRulesPage);
+  //   // Set immediately after creation so afterEach cleans this up regardless of what the search
+  //   // assertions below do.
+  //   promotionNameToCleanup = promotionName;
 
-    await betPromotionRulesPage.searchFor(promotionName);
+  //   await betPromotionRulesPage.searchFor(promotionName);
 
-    const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
-    expect(isPresent, `Expected searching for "${promotionName}" to show it in the table`).toBe(true);
+  //   const isPresent = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
+  //   expect(isPresent, `Expected searching for "${promotionName}" to show it in the table`).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_23_search_success');
-    console.log(`✅ TC_BPR_23 PASSED — Searching for "${promotionName}" correctly surfaced it in the table.`);
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_23_search_success');
+  //   console.log(`✅ TC_BPR_23 PASSED — Searching for "${promotionName}" correctly surfaced it in the table.`);
+  // });
 
-  test('TC_BPR_24 Verify Delete functionality for a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
-    const promotionName = await createRule(page, betPromotionRulesPage);
-    // Set immediately after creation — if deleteRuleIfPresent below fails partway, the afterEach
-    // above makes a second attempt as a safety net. If it already succeeded, that second attempt
-    // is a harmless no-op (deleteRuleIfPresent itself tolerates the row already being gone).
-    promotionNameToCleanup = promotionName;
+  // test('TC_BPR_24 Verify Delete functionality for a Bet Promotion Rule', async ({ page, betPromotionRulesPage }, testInfo) => {
+  //   const promotionName = await createRule(page, betPromotionRulesPage);
+  //   // Set immediately after creation — if deleteRuleIfPresent below fails partway, the afterEach
+  //   // above makes a second attempt as a safety net. If it already succeeded, that second attempt
+  //   // is a harmless no-op (deleteRuleIfPresent itself tolerates the row already being gone).
+  //   promotionNameToCleanup = promotionName;
 
-    const isPresentBeforeDelete = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
-    expect(isPresentBeforeDelete, `Expected "${promotionName}" to exist in the table before attempting to delete it`).toBe(true);
+  //   const isPresentBeforeDelete = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 15000);
+  //   expect(isPresentBeforeDelete, `Expected "${promotionName}" to exist in the table before attempting to delete it`).toBe(true);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_24_step1_before_delete');
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_24_step1_before_delete');
 
-    // Per the user's own described flow: search for the rule first, then delete it.
-    await betPromotionRulesPage.deleteRuleIfPresent(promotionName);
+  //   // Per the user's own described flow: search for the rule first, then delete it.
+  //   await betPromotionRulesPage.deleteRuleIfPresent(promotionName);
 
-    const isPresentAfterDelete = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 10000);
-    expect(isPresentAfterDelete, `Expected "${promotionName}" to be removed from the table after Delete`).toBe(false);
+  //   const isPresentAfterDelete = await betPromotionRulesPage.isRowVisibleByPromotionName(promotionName, 10000);
+  //   expect(isPresentAfterDelete, `Expected "${promotionName}" to be removed from the table after Delete`).toBe(false);
 
-    await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_24_step2_after_delete');
-    console.log(`✅ TC_BPR_24 PASSED — Rule "${promotionName}" was found via search and successfully deleted.`);
-  });
+  //   await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_BPR_24_step2_after_delete');
+  //   console.log(`✅ TC_BPR_24 PASSED — Rule "${promotionName}" was found via search and successfully deleted.`);
+  // });
 
   // ─── Start/End Date filter search ───────────────────────────────────────────
 

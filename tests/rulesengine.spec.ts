@@ -219,16 +219,19 @@ test.describe('Rules Engine - Qualification Step Tests', () => {
         console.log('Next stays disabled until Qualification\'s mandatory fields are filled.');
     });
 
-    test('TC_RE_010 Verify Required Amount only accepts integers', async ({ page, rulesEnginePage }, testInfo) => {
+    test('TC_RE_010 Verify Required Amount accepts decimals but rejects letters', async ({ page, rulesEnginePage }, testInfo) => {
+        // Confirmed live: this field now accepts the decimal point (app behavior change) — only
+        // letters are stripped/rejected.
         await rulesEnginePage.fillRequiredAmount('12.5abc');
         const typedValue = await rulesEnginePage.getRequiredAmountValue();
-        expect(/^\d*$/.test(typedValue), `Expected Required Amount to reject the decimal point/letters, but got "${typedValue}"`).toBe(true);
+        expect(/^\d*\.?\d*$/.test(typedValue), `Expected Required Amount to reject letters but accept the decimal point, but got "${typedValue}"`).toBe(true);
+        expect(typedValue, 'Expected letters to be stripped from the typed value').toBe('12.5');
 
         await rulesEnginePage.fillRequiredAmount('7');
         expect(await rulesEnginePage.getRequiredAmountValue(), 'Expected a plain integer to be accepted').toBe('7');
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_010_required_amount_integer_only');
-        console.log('Required Amount rejects decimals/letters and accepts a plain integer.');
+        console.log('Required Amount accepts decimals, rejects letters, and accepts a plain integer.');
     });
 
     test('TC_RE_011 Verify Start Date and End Date fields', async ({ page, rulesEnginePage }, testInfo) => {
@@ -856,15 +859,18 @@ test.describe('Rules Engine - Rules Step - Deposit Conditions Tests', () => {
         await rulesEnginePage.clickCancel().catch(() => {});
     });
 
-    test('TC_RE_041 Verify Minimum Deposit Amount only accepts integers', async ({ page, rulesEnginePage }, testInfo) => {
+    test('TC_RE_041 Verify Minimum Deposit Amount accepts decimals but rejects letters', async ({ page, rulesEnginePage }, testInfo) => {
+        // Confirmed live: this field now accepts the decimal point (app behavior change) — only
+        // letters are stripped/rejected.
         await rulesEnginePage.clickAddDeposit();
 
         await rulesEnginePage.fillMinimumDepositAmount('9.5xyz');
-        const typedValue = await rulesEnginePage.depositMinimumDepositAmountInput.inputValue();
-        expect(/^\d*$/.test(typedValue.trim()), `Expected Minimum Deposit Amount to reject the decimal point/letters, but got "${typedValue}"`).toBe(true);
+        const typedValue = (await rulesEnginePage.depositMinimumDepositAmountInput.inputValue()).trim();
+        expect(/^\d*\.?\d*$/.test(typedValue), `Expected Minimum Deposit Amount to reject letters but accept the decimal point, but got "${typedValue}"`).toBe(true);
+        expect(typedValue, 'Expected letters to be stripped from the typed value').toBe('9.5');
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_RE_041_minimum_deposit_amount_integer_only');
-        console.log('Minimum Deposit Amount rejects decimals/letters.');
+        console.log('Minimum Deposit Amount accepts decimals and rejects letters.');
 
         await rulesEnginePage.clickCancel().catch(() => {});
     });

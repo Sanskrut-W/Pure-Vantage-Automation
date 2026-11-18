@@ -64,6 +64,8 @@ export class SidebarPage extends BasePage {
     readonly workflowManagementNode: Locator;
     readonly betPromotionRulesNode: Locator;
     readonly recurringRewardsNode: Locator;
+    readonly prizeDrawNode: Locator;
+    readonly ladderPromotionsNode: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -137,6 +139,8 @@ export class SidebarPage extends BasePage {
         this.workflowManagementNode       = menu(sidebarLocators.menuWorkflowManagement);
         this.betPromotionRulesNode        = menu(sidebarLocators.menuBetPromotionRules);
         this.recurringRewardsNode         = menu(sidebarLocators.menuRecurringRewards);
+        this.prizeDrawNode                = menu(sidebarLocators.menuPrizeDraw);
+        this.ladderPromotionsNode         = menu(sidebarLocators.menuLadderPromotions);
     }
 
     /**
@@ -305,10 +309,21 @@ export class SidebarPage extends BasePage {
     }
 
     async navigateToLeaderboard() {
-        console.log('Navigating via Sidebar: Marketing -> Leaderboard');
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Leaderboard');
+        // Confirmed live: Leaderboard lives under the Promotions submenu, not directly under
+        // Marketing — skipping the Promotions expand step (as this previously did) leaves
+        // Leaderboard's node still covered by the still-expanded Marketing-level items,
+        // producing the same "subtree intercepts pointer events" failure documented on
+        // Generic Wheel/Promotion Config/etc. below, which this now matches.
         await this.clickElement(this.marketingNode);
-        await this.clickElement(this.leaderboardNode);
-        await this.clickElement(this.leaderboardNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+        await this.leaderboardNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.leaderboardNode, { force: true });
+        await this.page.waitForTimeout(500);
+        await this.clickElement(this.leaderboardNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -348,6 +363,28 @@ export class SidebarPage extends BasePage {
         await this.clickElement(this.betPromotionRulesNode, { force: true });
         await this.page.waitForTimeout(300);
         await this.clickElement(this.betPromotionRulesNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToPrizeDraw() {
+        console.log('Navigating via Sidebar: Workflow Management -> Prize Draw');
+        await this.workflowManagementNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.workflowManagementNode, { force: true });
+
+        // Confirmed live (TC_PD_01): a fixed 500ms wait isn't always enough for this accordion to
+        // finish expanding (seen on the very first navigation of a run) — re-click Workflow
+        // Management if Prize Draw still isn't visible yet, rather than blindly force-clicking a
+        // node that may still be collapsed/off-screen, which can land on an unrelated element.
+        let expanded = await this.prizeDrawNode.isVisible({ timeout: 2000 }).catch(() => false);
+        if (!expanded) {
+            await this.clickElement(this.workflowManagementNode, { force: true });
+            expanded = await this.prizeDrawNode.isVisible({ timeout: 3000 }).catch(() => false);
+        }
+
+        await this.prizeDrawNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.prizeDrawNode, { force: true });
+        await this.page.waitForTimeout(300);
+        await this.clickElement(this.prizeDrawNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -477,6 +514,18 @@ export class SidebarPage extends BasePage {
         await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
         await this.timedPromotionsNode.scrollIntoViewIfNeeded();
         await this.clickElement(this.timedPromotionsNode, { force: true });
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async navigateToLadderPromotions() {
+        console.log('Navigating via Sidebar: Marketing -> Promotions -> Ladder Promotions');
+        await this.clickElement(this.marketingNode);
+        await this.page.waitForTimeout(500); // Wait for Marketing menu to fully expand
+        await this.promotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.promotionsNode);
+        await this.page.waitForTimeout(500); // Wait for Promotions menu to fully expand
+        await this.ladderPromotionsNode.scrollIntoViewIfNeeded();
+        await this.clickElement(this.ladderPromotionsNode, { force: true });
         await this.page.waitForLoadState('domcontentloaded');
     }
 

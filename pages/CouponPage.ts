@@ -141,7 +141,10 @@ export class CouponPage extends BasePage {
     async clickCreate() {
         console.log('Clicking Create button...');
         await this.clickElement(this.createBtn);
-        await this.popupDialog.waitFor({ state: 'visible', timeout: 10000 });
+        // Confirmed live: Create now navigates to a full routed "Coupon Editor" page
+        // (breadcrumb Marketing > Coupon Management > Coupon Editor, its own URL) instead
+        // of opening a div[role="dialog"] popup — wait for the editor's Name field instead.
+        await this.couponNameInput.waitFor({ state: 'visible', timeout: 10000 });
     }
 
     async clickDeleteForRow(rowIndex: number) {

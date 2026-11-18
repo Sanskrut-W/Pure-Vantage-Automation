@@ -1370,10 +1370,15 @@ test.describe('Generic Predictor - Period Events Tests', () => {
 
         const deleteToast = page.locator('.p-toast-message-text').first();
         await expect(deleteToast, 'Expected a toast confirming the Period delete result').toBeVisible({ timeout: 15000 });
-        console.log('Delete Period toast message:', await deleteToast.textContent());
+        // Confirmed live: PrimeNG toasts auto-dismiss after a few seconds — re-querying this same
+        // locator a second time (after the screenshot capture below) can hit a toast that's already
+        // gone, which hangs for the full default action timeout instead of failing fast. Capture the
+        // text once and reuse it.
+        const deleteToastText = await deleteToast.textContent();
+        console.log('Delete Period toast message:', deleteToastText);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-42_delete_period_toast');
-        console.log(`✅ TC-42 PASSED — Deleting Period "${periodName}" showed a confirmation popup and a toast: "${await deleteToast.textContent()}".`);
+        console.log(`✅ TC-42 PASSED — Deleting Period "${periodName}" showed a confirmation popup and a toast: "${deleteToastText}".`);
     });
 
     test('TC-43 Verify activating a Predictor succeeds when it has a Period with 2 participants', async ({ page, sidebarPage, genericPredictorPage }, testInfo) => {

@@ -389,7 +389,33 @@ export class GenericPredictorPage extends BasePage {
     async selectNthOption(dropdownLocator: Locator, index: number): Promise<string> {
         const panel = await this.openDropdown(dropdownLocator);
         const option = panel.locator(genericPredictorLocators.dropdownItem).nth(index);
-        await option.waitFor({ state: 'visible', timeout: 10000 });
+        let found = await option.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+
+        if (!found) {
+            // Confirmed live (TC-43/44): a long option list in this app can be virtualized — only
+            // the items in the current scroll viewport exist in the DOM (same class of issue
+            // BasePage.selectDropdown already works around for other dropdowns via its filter box).
+            // There's no fixed option text to filter by here (the whole point of selectNthOption is
+            // picking an arbitrary DISTINCT option, not a named one), but PrimeNG dropdowns support
+            // ArrowDown keyboard navigation to move to and scroll the next option into view — the
+            // same technique BasePage.selectDropdownWithParentLocator already relies on elsewhere in
+            // this suite — so try that before concluding the option genuinely doesn't exist.
+            for (let i = 0; i < index && !found; i++) {
+                await this.page.keyboard.press('ArrowDown');
+                await this.page.waitForTimeout(150);
+                found = await option.waitFor({ state: 'visible', timeout: 1000 }).then(() => true).catch(() => false);
+            }
+        }
+
+        if (!found) {
+            // Falling back to a lower index here would silently hand the caller a DUPLICATE of an
+            // option already used elsewhere (e.g. the same Team for two Participants) — confirmed
+            // live that duplicates get rejected by this app, which then fails much later with a
+            // confusing "no toast appeared" error instead of a clear one here. Fail fast instead.
+            const count = await panel.locator(genericPredictorLocators.dropdownItem).count();
+            throw new Error(`selectNthOption: requested index ${index} never became visible even after ArrowDown navigation — only ${count} option(s) are available in this dropdown. This looks like a genuine data shortage (not enough distinct options), not a selector bug.`);
+        }
+
         const text = (await option.textContent())?.trim() ?? '';
         await option.click();
         await this.page.waitForTimeout(200);
@@ -1418,7 +1444,22 @@ export class GenericPredictorPage extends BasePage {
 
         const panel = await this.openDropdown(this.participantTeamDropdown);
         const option = panel.locator(genericPredictorLocators.dropdownItem).nth(index);
-        await option.waitFor({ state: 'visible', timeout: 10000 });
+        let found = await option.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+
+        // Same virtualized-list issue selectNthOption works around (see its own note) — try
+        // ArrowDown keyboard navigation to scroll further options into view before giving up.
+        for (let i = 0; i < index && !found; i++) {
+            await this.page.keyboard.press('ArrowDown');
+            await this.page.waitForTimeout(150);
+            found = await option.waitFor({ state: 'visible', timeout: 1000 }).then(() => true).catch(() => false);
+        }
+
+        if (!found) {
+            const count = await panel.locator(genericPredictorLocators.dropdownItem).count();
+            await this.page.keyboard.press('Escape').catch(() => {});
+            throw new Error(`peekTeamOptionText: requested index ${index} never became visible even after ArrowDown navigation — only ${count} option(s) are available. This looks like a genuine data shortage, not a selector bug.`);
+        }
+
         const text = (await option.textContent())?.trim() ?? '';
 
         // Confirmed live: re-clicking the trigger to close just the panel is unreliable here —
