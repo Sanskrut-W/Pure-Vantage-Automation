@@ -4,7 +4,7 @@ import { envConfig } from './config/envConfig';
 
 export default defineConfig({
     testDir: './tests',
-    timeout: 1200000,
+    timeout: 180000,
     expect: {
         timeout: 20000, // Globally grant up to 20s for any expect() assertion
     },
@@ -27,8 +27,8 @@ export default defineConfig({
         // Ignore HTTPS errors for non-secure connection testing
         ignoreHTTPSErrors: true,
 
-        // Fail tests if a single action (click, fill, etc.) takes longer than 2 minutes
-        actionTimeout: 120000,
+        // Fail tests if a single action (click, fill, etc.) takes longer than 30 seconds
+        actionTimeout: 30000,
 
         // Artifacts
         trace: 'retain-on-failure',

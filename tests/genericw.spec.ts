@@ -131,13 +131,17 @@ test.describe('Marketing - Generic Wheel', () => {
     // spec files).
     await page.reload();
     await page.waitForLoadState('networkidle');
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+    // Confirmed live: the hamburger sidebar was rebuilt as a shadcn/ui-style component —
+    // items are `<button data-slot="sidebar-menu-button"|"sidebar-menu-sub-button">` wrapping
+    // `<span data-slot="sidebar-menu-label"><span class="truncate">LABEL</span></span>`, not
+    // the old PrimeNG `span.menuitem-text`. Same fix as pages/SidebarPage.ts.
+    const marketingNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Marketing")').first();
     await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
     await marketingNode.click();
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+    const promotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Promotions")').first();
     await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
     await promotionsNode.click();
-    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
+    const genericWheelLink = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Generic Wheel")').first();
     await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
     await genericWheelLink.click();
     await page.waitForURL('**/generic-wheel', { timeout: 15000 });

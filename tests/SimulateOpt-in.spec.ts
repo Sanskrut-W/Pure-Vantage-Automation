@@ -83,12 +83,13 @@ async function navigateToSimulateOptIn(page: Page): Promise<void> {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    const workflowNode = page.locator('span.menuitem-text:text-is("Workflow Management")').first();
+    // Confirmed live: sidebar rebuilt as shadcn/ui-style component — same fix as SidebarPage.ts.
+    const workflowNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Workflow Management")').first();
     const workflowReady = await workflowNode.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
     if (!workflowReady) continue;
     if (!(await clickTolerant(page, workflowNode))) continue;
 
-    const simulateOptInLink = page.locator('span.menuitem-text:text-is("Simulate Opt In")').first();
+    const simulateOptInLink = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Simulate Opt In")').first();
     const linkReady = await simulateOptInLink.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
     if (!linkReady) continue;
     if (!(await clickTolerant(page, simulateOptInLink))) continue;

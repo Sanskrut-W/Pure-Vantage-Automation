@@ -65,13 +65,12 @@ export class CampaignPage extends BasePage {
      */
     async selectRegion(regionName: string) {
         console.log(`Selecting Region: ${regionName}`);
-        await this.clickSelectRegion();
-        // getByRole('option', ...) on its own also matches a hidden native <option> inside
-        // a shadow #component-container — scoping to the visible listbox avoids that
-        // strict-mode violation.
-        const optionLocator = this.page.getByRole('listbox').getByRole('option', { name: regionName, exact: true });
-        await optionLocator.scrollIntoViewIfNeeded();
-        await this.clickElement(optionLocator);
+        // Confirmed live via outerHTML: this is a PrimeVue `.p-dropdown` (items carry class
+        // `p-dropdown-item` inside `.p-dropdown-items-wrapper`) — the same widget BasePage's
+        // selectDropdown() already handles elsewhere in this app. The previous
+        // getByRole('listbox')/getByRole('option') chain hung for 120s because the panel
+        // the dropdown actually opens into is never queried/opened by that code path.
+        await this.selectDropdown(this.selectRegionBtn, regionName);
         await this.page.waitForTimeout(500);
     }
 

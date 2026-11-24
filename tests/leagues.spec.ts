@@ -25,16 +25,17 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
 
-      const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+      // Confirmed live: sidebar rebuilt as shadcn/ui-style component — same fix as SidebarPage.ts.
+      const marketingNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Marketing")').first();
       if (!(await marketingNode.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false))) continue;
       await marketingNode.click();
 
-      const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+      const promotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Promotions")').first();
       if (!(await promotionsNode.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
       await promotionsNode.click();
 
       // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-      const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
+      const genericPredictorLink = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Generic Predictor")').first();
       if (!(await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
       await genericPredictorLink.click();
       if (!(await page.waitForURL('**/generic-predictor', { timeout: 15000 }).then(() => true).catch(() => false))) continue;
@@ -406,16 +407,17 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
 
-      const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+      // Confirmed live: sidebar rebuilt as shadcn/ui-style component — same fix as SidebarPage.ts.
+      const marketingNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Marketing")').first();
       if (!(await marketingNode.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false))) continue;
       await marketingNode.click();
 
-      const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+      const promotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Promotions")').first();
       if (!(await promotionsNode.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
       await promotionsNode.click();
 
       // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-      const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
+      const genericPredictorLink = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Generic Predictor")').first();
       if (!(await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
       await genericPredictorLink.click();
       if (!(await page.waitForURL('**/generic-predictor', { timeout: 15000 }).then(() => true).catch(() => false))) continue;

@@ -536,24 +536,27 @@ test.describe('Marketing - Timed Promotions Opt-in Triggers', () => {
     // click — without it, a later click can fire while the DOM is still mid-transition. Reproducing
     // that exact proven sequence here instead (settle delays + scrollIntoViewIfNeeded + dispatchEvent
     // + domcontentloaded, not networkidle/reload).
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+    // Confirmed live: the hamburger sidebar was rebuilt as a shadcn/ui-style component — items
+    // are `<button data-slot="sidebar-menu-button"|"sidebar-menu-sub-button">` wrapping
+    // `<span data-slot="sidebar-menu-label"><span class="truncate">LABEL</span></span>`, not the
+    // old PrimeNG `span.menuitem-text`, and leaves are plain <button> elements now — there's no
+    // <a> wrapper anymore, so the old dispatchEvent-on-<a> workaround no longer applies
+    // structurally. Same fix as pages/SidebarPage.ts; clicking the label directly still works
+    // since the click bubbles up to the enclosing button.
+    const marketingNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Marketing")').first();
     await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
     await marketingNode.click({ timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(600);
 
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+    const promotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Promotions")').first();
     await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
     await promotionsNode.click({ timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(600);
 
-    // "Timed Promotions" renders as a plain clickable span (same menuitem-text convention as
-    // Marketing/Promotions above) inside an <a id="menu"> with NO href attribute — navigation is
-    // driven entirely by a click handler on the <a>, not a real link.
-    const timedPromotionsNode = page.locator('span.menuitem-text:text-is("Timed Promotions")').first();
+    const timedPromotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Timed Promotions")').first();
     await timedPromotionsNode.waitFor({ state: 'visible', timeout: 10000 });
     await timedPromotionsNode.scrollIntoViewIfNeeded();
-    const timedPromotionsLink = page.locator('a', { has: timedPromotionsNode });
-    await timedPromotionsLink.dispatchEvent('click');
+    await timedPromotionsNode.click();
     await page.waitForURL('**/timed-promotions', { timeout: 15000 });
     await page.waitForLoadState('domcontentloaded');
     // domcontentloaded fires before the Angular app has actually fetched/rendered the table — give
@@ -763,29 +766,30 @@ test.describe('Marketing - Timed Promotions Hourly Configuration', () => {
     // time can fire a later click while the previous accordion's expand animation is still mid-
     // transition. Reproducing the exact proven sequence from SidebarPage.navigateToTutorialOrdering/
     // navigateToTutorialConfig (600ms settle delay after each accordion-level click).
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
+    // Confirmed live: the hamburger sidebar was rebuilt as a shadcn/ui-style component — same
+    // fix as pages/SidebarPage.ts. Leaves are plain <button> elements now (no <a> wrapper
+    // anymore), so the old dispatchEvent-on-<a> workaround no longer applies structurally;
+    // clicking the label directly still works since the click bubbles up to the button.
+    const marketingNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Marketing")').first();
     await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
     await marketingNode.click({ timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(600);
 
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
+    const promotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Promotions")').first();
     if (await promotionsNode.isVisible({ timeout: 3000 }).catch(() => false)) {
       await promotionsNode.click({ timeout: 8000 }).catch(() => {});
       await page.waitForTimeout(600);
     }
 
-    // "Timed Promotions" sits inside an <a id="menu"> with NO href attribute — navigation is driven
-    // entirely by a click handler on the <a>, not a real link.
-    const timedPromotionsNode = page.locator('span.menuitem-text:text-is("Timed Promotions")').first();
+    const timedPromotionsNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Timed Promotions")').first();
     await timedPromotionsNode.waitFor({ state: 'visible', timeout: 10000 });
     await timedPromotionsNode.scrollIntoViewIfNeeded();
-    const timedPromotionsLink = page.locator('a', { has: timedPromotionsNode });
     // Confirmed live: with 8 Playwright workers running fully in parallel (playwright.config.ts),
-    // this single dispatchEvent click occasionally never registers a route change at all (seen live:
+    // a single click occasionally never registers a route change at all (seen live:
     // page.waitForURL timing out while still on /main/home) — retry it a few times instead of
-    // assuming one dispatch is enough.
+    // assuming one click is enough.
     for (let attempt = 0; attempt < 3; attempt++) {
-      await timedPromotionsLink.dispatchEvent('click');
+      await timedPromotionsNode.click().catch(() => {});
       try {
         await page.waitForURL('**/timed-promotions', { timeout: 8000 });
         break;

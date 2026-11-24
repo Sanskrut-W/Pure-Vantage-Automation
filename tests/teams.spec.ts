@@ -14,18 +14,19 @@ test.describe('Teams - Create Team', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
+    // Confirmed live: sidebar rebuilt as shadcn/ui-style component — same fix as SidebarPage.ts.
     // Expand ASCII menu node
-    const asciiNode = page.locator('span.menuitem-text:text-is("ASCII")').first();
+    const asciiNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("ASCII")').first();
     await asciiNode.waitFor({ state: 'visible', timeout: 15000 });
     await asciiNode.click();
 
     // Expand Admin sub-menu
-    const adminNode = page.locator('span.menuitem-text:text-is("Admin")').first();
+    const adminNode = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Admin")').first();
     await adminNode.waitFor({ state: 'visible', timeout: 10000 });
     await adminNode.click();
 
     // Click the Teams link to trigger SPA navigation
-    const teamsLink = page.locator('span.menuitem-text:text-is("Teams")').first();
+    const teamsLink = page.locator('[data-slot="sidebar-menu-label"] span.truncate:text-is("Teams")').first();
     await teamsLink.waitFor({ state: 'visible', timeout: 10000 });
     await teamsLink.click();
     await page.waitForLoadState('networkidle');

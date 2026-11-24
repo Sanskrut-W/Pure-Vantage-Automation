@@ -66,4 +66,13 @@ export const sidebarLocators = {
     // child of it (single level, no further nesting).
     menuWorkflowManagement: 'Workflow Management',
     menuBetPromotionRules: 'Bet Promotion Rules',
+    // Confirmed live (page snapshot captured for an unrelated test): same single-level
+    // Workflow Management child as Bet Promotion Rules, same span.menuitem-text convention.
+    menuPrizeDraw: 'Prize Draw',
+    // Confirmed live (user-supplied outerHTML): single-level Marketing child, same
+    // span.menuitem-text convention as every other sidebar node.
+    menuRecurringRewards: 'Recurring Rewards',
+    // Confirmed live (user-supplied outerHTML): lives under Marketing -> Promotions, same
+    // span.menuitem-text convention as every other sidebar node (e.g. Timed Promotions).
+    menuLadderPromotions: 'Ladder Promotions',
 };

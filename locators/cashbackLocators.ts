@@ -5,7 +5,14 @@ export const cashbackLocators = {
     buttonEdit: 'Edit',
     buttonApprove: 'Approve',
     buttonDelete: 'Delete',
-    cashbackTable: '#component-container',
+    // Confirmed live via outerHTML: the app's table wrapper carries both `pure__table` and
+    // `p-datatable` classes. `.pure__table` alone is ambiguous — a separate plain wrapper div
+    // with just that class also exists on this page (strict-mode violation, 2 matches) — so
+    // scope to the PrimeVue datatable root specifically. `#component-container` no longer
+    // exists in the DOM since the redesign, which is why every test touching this table was
+    // failing (direct visibility check or hanging 120s on a chained .locator('tbody tr') off
+    // a 0-match parent).
+    cashbackTable: '.pure__table.p-datatable',
     tableBody: 'tbody tr',
 
     // Table column header titles

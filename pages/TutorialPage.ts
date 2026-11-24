@@ -37,7 +37,9 @@ export class TutorialPage {
         // Landing Selectors
         this.regionDropdown = page.locator(TutorialLocators.landingRegionDropdown);
         this.createTutorialBtn = page.locator(TutorialLocators.createTutorialBtn);
-        this.searchInput = page.locator(TutorialLocators.searchBar).nth(1);
+        // Confirmed live via outerHTML: only one `input[placeholder="Search"]` exists on this
+        // page now — `.nth(1)` assumed a second match (pre-redesign layout) that no longer exists.
+        this.searchInput = page.locator(TutorialLocators.searchBar).first();
         this.dataTable = page.locator(TutorialLocators.tutorialTable);
         this.nextBtn = page.locator(TutorialLocators.nextPageBtn);
         this.prevBtn = page.locator(TutorialLocators.prevPageBtn);
@@ -70,7 +72,24 @@ export class TutorialPage {
     async selectLandingRegion(regionName: string) {
         await this.regionDropdown.click();
         await this.page.waitForTimeout(500); // Overlay render wait
-        const option = this.page.locator(`.p-dropdown-item[aria-label="${regionName}"], .p-dropdown-item:has-text("${regionName}")`).first();
+
+        // Confirmed live: the full region list is virtualized — only options currently in the
+        // scroll viewport exist in the DOM, so an alphabetically-late region like "Betway Zambia"
+        // never renders (and the locator below times out) unless the panel's own filter box is
+        // used to narrow the list first, the same way a human would search instead of scrolling.
+        const panel = this.page.locator('.p-dropdown-panel').last();
+        const filterInput = panel.locator('input[type="text"]').first();
+        if (await filterInput.isVisible().catch(() => false)) {
+            await filterInput.fill(regionName);
+            await this.page.waitForTimeout(300);
+        }
+
+        // Scoped to `panel` (not `this.page`) — an unscoped page-wide query can match a stale
+        // `.p-dropdown-item` left over from another `.p-dropdown-panel` instance in the DOM
+        // (PrimeVue teleports panels out of their trigger), which is never interactable and
+        // hangs the click for the full 120s timeout even though the real, open option is
+        // right there. Confirmed live: the open panel's items carry this exact class/aria-label.
+        const option = panel.locator(`.p-dropdown-item[aria-label="${regionName}"], .p-dropdown-item:has-text("${regionName}")`).first();
         await option.click();
         await this.page.waitForTimeout(1000); // Table rebuild wait
     }

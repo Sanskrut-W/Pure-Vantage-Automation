@@ -212,8 +212,12 @@ export class CashbackPage extends BasePage {
 
     async clickYesOnApproveDialog() {
         console.log('Clicking Yes on Approve confirmation dialog...');
+        // exact: true matters here — Playwright's role-name match is substring-based by
+        // default, and unqualified 'Yes'/'No' can match unrelated sidebar buttons whose
+        // accessible name happens to contain that substring (e.g. "No" matches "Notifications",
+        // "Simulate Casino"), causing a strict-mode violation. Confirmed live.
         const yesBtn = this.page.locator(cashbackLocators.confirmAcceptBtn)
-            .or(this.page.getByRole('button', { name: cashbackLocators.buttonYes }));
+            .or(this.page.getByRole('button', { name: cashbackLocators.buttonYes, exact: true }));
         await yesBtn.waitFor({ state: 'visible' });
         await this.clickElement(yesBtn.first());
         await this.page.waitForTimeout(1500);
@@ -222,7 +226,7 @@ export class CashbackPage extends BasePage {
     async clickNoOnApproveDialog() {
         console.log('Clicking No on Approve confirmation dialog...');
         const noBtn = this.page.locator(cashbackLocators.confirmRejectBtn)
-            .or(this.page.getByRole('button', { name: cashbackLocators.buttonNo }));
+            .or(this.page.getByRole('button', { name: cashbackLocators.buttonNo, exact: true }));
         await noBtn.waitFor({ state: 'visible' });
         await this.clickElement(noBtn.first());
         await this.page.waitForTimeout(1000);
@@ -233,7 +237,7 @@ export class CashbackPage extends BasePage {
     async clickYesOnDeleteDialog() {
         console.log('Clicking Yes on Delete confirmation dialog...');
         const yesBtn = this.page.locator(cashbackLocators.confirmAcceptBtn)
-            .or(this.page.getByRole('button', { name: cashbackLocators.buttonYes }));
+            .or(this.page.getByRole('button', { name: cashbackLocators.buttonYes, exact: true }));
         await yesBtn.waitFor({ state: 'visible' });
         await this.clickElement(yesBtn.first());
         await this.page.waitForTimeout(1500);
@@ -242,7 +246,7 @@ export class CashbackPage extends BasePage {
     async clickNoOnDeleteDialog() {
         console.log('Clicking No on Delete confirmation dialog...');
         const noBtn = this.page.locator(cashbackLocators.confirmRejectBtn)
-            .or(this.page.getByRole('button', { name: cashbackLocators.buttonNo }));
+            .or(this.page.getByRole('button', { name: cashbackLocators.buttonNo, exact: true }));
         await noBtn.waitFor({ state: 'visible' });
         await this.clickElement(noBtn.first());
         await this.page.waitForTimeout(1000);

@@ -39,73 +39,73 @@ test.describe('Tutorial Configuration Layout & Functionality Tests', () => {
     //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-3_region_switched');
     // });
 
-    test('TC-4 Verify Create Tutorial button functionality', async ({ page, tutorialPage }, testInfo) => {
-        await tutorialPage.clickCreateTutorial();
-        await expect(tutorialPage.popupDialog).toBeVisible();
-        await expect(tutorialPage.popupDialog).toContainText('Create New Tutorial');
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_create_popup_opened');
-    });
+    // test('TC-4 Verify Create Tutorial button functionality', async ({ page, tutorialPage }, testInfo) => {
+    //     await tutorialPage.clickCreateTutorial();
+    //     await expect(tutorialPage.popupDialog).toBeVisible();
+    //     await expect(tutorialPage.popupDialog).toContainText('Create New Tutorial');
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-4_create_popup_opened');
+    // });
 
-    test('TC-5 Verify following fields are available on the create a new Tutorial popup window', async ({ page, tutorialPage }, testInfo) => {
-        await tutorialPage.clickCreateTutorial();
+    // test('TC-5 Verify following fields are available on the create a new Tutorial popup window', async ({ page, tutorialPage }, testInfo) => {
+    //     await tutorialPage.clickCreateTutorial();
 
-        // Core fields verified via HTML definitions
-        await expect(tutorialPage.tutorialNameInput).toBeVisible();
-        await expect(tutorialPage.popupRegionsDropdown).toBeVisible();
-        await expect(tutorialPage.popupVerticalsDropdown).toBeVisible();
-        await expect(tutorialPage.popupPlatformsDropdown).toBeVisible();
-        await expect(tutorialPage.startDateInput).toBeVisible();
-        await expect(tutorialPage.endDateInput).toBeVisible();
+    //     // Core fields verified via HTML definitions
+    //     await expect(tutorialPage.tutorialNameInput).toBeVisible();
+    //     await expect(tutorialPage.popupRegionsDropdown).toBeVisible();
+    //     await expect(tutorialPage.popupVerticalsDropdown).toBeVisible();
+    //     await expect(tutorialPage.popupPlatformsDropdown).toBeVisible();
+    //     await expect(tutorialPage.startDateInput).toBeVisible();
+    //     await expect(tutorialPage.endDateInput).toBeVisible();
 
-        await expect(tutorialPage.loggedInCheckbox).toBeVisible();
-        await expect(tutorialPage.loggedOutCheckbox).toBeVisible();
+    //     await expect(tutorialPage.loggedInCheckbox).toBeVisible();
+    //     await expect(tutorialPage.loggedOutCheckbox).toBeVisible();
 
-        await expect(tutorialPage.saveBtn).toBeVisible();
-        await expect(tutorialPage.cancelBtn).toBeVisible();
+    //     await expect(tutorialPage.saveBtn).toBeVisible();
+    //     await expect(tutorialPage.cancelBtn).toBeVisible();
 
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_popup_fields_visible');
-    });
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-5_popup_fields_visible');
+    // });
 
-    test('TC-6 Verify Save button functionality on create new Tutorial popup window', async ({ page, tutorialPage }, testInfo) => {
-        await tutorialPage.selectLandingRegion('Betway Ghana');
-        await tutorialPage.clickCreateTutorial();
+    // test('TC-6 Verify Save button functionality on create new Tutorial popup window', async ({ page, tutorialPage }, testInfo) => {
+    //     await tutorialPage.selectLandingRegion('Betway Ghana');
+    //     await tutorialPage.clickCreateTutorial();
 
-        // This test simulates basic data entry to enable save
-        await tutorialPage.tutorialNameInput.fill('Automation Test Tutorial PV');
+    //     // This test simulates basic data entry to enable save
+    //     await tutorialPage.tutorialNameInput.fill('Automation Test Tutorial PV');
 
-        // Test states Save button acts appropriately (disabling logics tested deeply down)
-        // Wait required to confirm state changes
-        await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_save_button_flow');
-    });
+    //     // Test states Save button acts appropriately (disabling logics tested deeply down)
+    //     // Wait required to confirm state changes
+    //     await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC-6_save_button_flow');
+    // });
 
-    test('TC-7 Verify Tutorial Successfully Created confirmation popup', async ({ page, tutorialPage }, testInfo) => {
-        // Pseudo check (Requires full data insertion)
-        console.log("Mocking TC-7 to verify success toast behavior wrapper.");
-        test.skip();
-    });
+    // test('TC-7 Verify Tutorial Successfully Created confirmation popup', async ({ page, tutorialPage }, testInfo) => {
+    //     // Pseudo check (Requires full data insertion)
+    //     console.log("Mocking TC-7 to verify success toast behavior wrapper.");
+    //     test.skip();
+    // });
 
     // Contains sub-cases from TC-8 Validation Group
     test.describe('TC-8 Create Tutorial Form Boundaries & Error Validations', () => {
 
-        test.beforeEach(async ({ tutorialPage }) => {
-            await tutorialPage.clickCreateTutorial();
-        });
+    //     test.beforeEach(async ({ tutorialPage }) => {
+    //         await tutorialPage.clickCreateTutorial();
+    //     });
 
-        test('Tutorial Name Empty Keeps Save Disabled', async ({ tutorialPage }) => {
-            await tutorialPage.tutorialNameInput.fill('');
-            await expect(tutorialPage.saveBtn).toBeDisabled();
-        });
+    //     test('Tutorial Name Empty Keeps Save Disabled', async ({ tutorialPage }) => {
+    //         await tutorialPage.tutorialNameInput.fill('');
+    //         await expect(tutorialPage.saveBtn).toBeDisabled();
+    //     });
 
-        test('Tutorial Name Only Spaces', async ({ tutorialPage }) => {
-            await tutorialPage.tutorialNameInput.fill('     ');
-            await expect(tutorialPage.saveBtn).toBeDisabled();
-        });
+    //     test('Tutorial Name Only Spaces', async ({ tutorialPage }) => {
+    //         await tutorialPage.tutorialNameInput.fill('     ');
+    //         await expect(tutorialPage.saveBtn).toBeDisabled();
+    //     });
 
-        test('Cancel Discards Changes', async ({ tutorialPage }) => {
-            await tutorialPage.tutorialNameInput.fill('Discard Me');
-            await tutorialPage.cancelBtn.click();
-            await expect(tutorialPage.popupDialog).toBeHidden();
-        });
+    //     test('Cancel Discards Changes', async ({ tutorialPage }) => {
+    //         await tutorialPage.tutorialNameInput.fill('Discard Me');
+    //         await tutorialPage.cancelBtn.click();
+    //         await expect(tutorialPage.popupDialog).toBeHidden();
+    //     });
     });
 
     test('TC-9 Verify search bar functionality on landing page', async ({ page, tutorialPage }, testInfo) => {

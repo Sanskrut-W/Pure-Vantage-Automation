@@ -13,6 +13,22 @@ export class BasePage {
      */
     async waitForPageLoad() {
         await this.page.waitForLoadState('domcontentloaded');
+        await this.waitForAccessCheck();
+    }
+
+    /**
+     * Waits out the "Checking your access…" interstitial the app shows right after a full
+     * page load/reload, before the real page content renders — confirmed live on Banner
+     * Config after a refresh, where it left the region dropdown/create button unrendered
+     * well past a 5s timeout. Only waits for it to clear if it actually appeared (an SPA
+     * client-side navigation may never show it at all), so this never adds dead time.
+     */
+    async waitForAccessCheck() {
+        const gate = this.page.getByText('Checking your access', { exact: false });
+        const appeared = await gate.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false);
+        if (appeared) {
+            await gate.waitFor({ state: 'hidden', timeout: 20000 }).catch(() => {});
+        }
     }
 
     /**
@@ -106,8 +122,12 @@ export class BasePage {
         console.log('🔙 Browser Back: navigating to previous history entry');
         const urlBefore = this.page.url();
         await this.page.goBack({ waitUntil: 'domcontentloaded' });
-        // Wait for SPA to fully render the previous page so it's visually observable
-        await this.page.waitForLoadState('networkidle');
+        await this.waitForAccessCheck();
+        // Wait for SPA to fully render the previous page so it's visually observable.
+        // Bounded + caught: the live site has continuous background network traffic
+        // that can keep networkidle from ever firing naturally, which otherwise stalls
+        // this call all the way out to the global test timeout.
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
         await this.page.waitForTimeout(500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
@@ -121,8 +141,10 @@ export class BasePage {
         console.log('🔜 Browser Forward: navigating to next history entry');
         const urlBefore = this.page.url();
         await this.page.goForward({ waitUntil: 'domcontentloaded' });
-        // Wait for SPA to fully render the forward page so it's visually observable
-        await this.page.waitForLoadState('networkidle');
+        await this.waitForAccessCheck();
+        // Wait for SPA to fully render the forward page so it's visually observable.
+        // Bounded + caught — see browserBack() for why networkidle can't be trusted to resolve on its own.
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
         await this.page.waitForTimeout(500);
         console.log(`   URL changed: ${urlBefore} → ${this.page.url()}`);
     }
@@ -135,8 +157,10 @@ export class BasePage {
     async browserRefresh() {
         console.log('🔄 Browser Refresh: reloading page');
         await this.page.reload({ waitUntil: 'domcontentloaded' });
-        // Wait for SPA to fully render the reloaded page so it's visually observable
-        await this.page.waitForLoadState('networkidle');
+        await this.waitForAccessCheck();
+        // Wait for SPA to fully render the reloaded page so it's visually observable.
+        // Bounded + caught — see browserBack() for why networkidle can't be trusted to resolve on its own.
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
         await this.page.waitForTimeout(500);
     }
 

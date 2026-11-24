@@ -86,7 +86,10 @@ export class BannerPage extends BasePage {
     async selectRegion(regionName: string) {
         console.log(`Selecting region: ${regionName}`);
         await this.selectDropdown(this.regionDropdown, regionName);
-        await this.page.waitForLoadState('networkidle');
+        // Bounded + caught — the live site's continuous background network traffic can
+        // keep networkidle from ever firing naturally, which otherwise stalls this call
+        // all the way out to the global test timeout.
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     }
 
     async searchRegion(regionName: string) {
