@@ -1,0 +1,148 @@
+{
+  "video": "recordings/simulate-registration-2-20261026094734.mp4",
+  "durationSeconds": 21.93,
+  "sampledFps": 2,
+  "frameCount": 35,
+  "frames": [
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0001.jpg",
+      "time": 0
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0002.jpg",
+      "time": 0.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0003.jpg",
+      "time": 1
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0004.jpg",
+      "time": 1.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0005.jpg",
+      "time": 2
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0006.jpg",
+      "time": 2.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0007.jpg",
+      "time": 3
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0008.jpg",
+      "time": 3.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0009.jpg",
+      "time": 4
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0010.jpg",
+      "time": 4.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0011.jpg",
+      "time": 5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0012.jpg",
+      "time": 5.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0013.jpg",
+      "time": 6
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0014.jpg",
+      "time": 6.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0015.jpg",
+      "time": 7
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0016.jpg",
+      "time": 8
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0017.jpg",
+      "time": 9
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0018.jpg",
+      "time": 9.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0019.jpg",
+      "time": 10
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0020.jpg",
+      "time": 10.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0021.jpg",
+      "time": 11
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0022.jpg",
+      "time": 11.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0023.jpg",
+      "time": 12
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0024.jpg",
+      "time": 13
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0025.jpg",
+      "time": 13.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0026.jpg",
+      "time": 14
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0027.jpg",
+      "time": 14.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0028.jpg",
+      "time": 15
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0029.jpg",
+      "time": 15.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0030.jpg",
+      "time": 16
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0031.jpg",
+      "time": 16.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0032.jpg",
+      "time": 18
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0033.jpg",
+      "time": 19.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0034.jpg",
+      "time": 20.5
+    },
+    {
+      "file": "recordings/work/simulate-registration-2-20261026094734/frames/frame_0035.jpg",
+      "time": 21
+    }
+  ]
+}

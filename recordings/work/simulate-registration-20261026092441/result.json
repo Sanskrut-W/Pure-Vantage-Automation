@@ -1,0 +1,14 @@
+{
+  "title": "TC-1 Verify a Single registration simulation succeeds with all mandatory fields filled",
+  "specFile": "tests/SimulateRegisteration.spec.ts",
+  "testIds": ["TC-1"],
+  "files": ["tests/SimulateRegisteration.spec.ts"],
+  "runCommand": "npx playwright test tests/SimulateRegisteration.spec.ts -g \"TC-1 \" --headed",
+  "uncertainties": [
+    "The recorded email 'hgbfv@g,ail.com' (comma) was accepted by the app as valid; the test uses a well-formed email. Possible validation gap.",
+    "External GUID generator replaced by crypto.randomUUID().",
+    "Inline error selector small.p-error reused from SimulateOpt-in (confirmed there, not probed on this page).",
+    "Simulate submits a real registration event on dev for a random player GUID; this may trigger downstream workflows."
+  ],
+  "status": "generated"
+}

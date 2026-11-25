@@ -1,0 +1,208 @@
+{
+  "video": "recordings/rr-20261026100104.mp4",
+  "durationSeconds": 103.17,
+  "sampledFps": 0.5,
+  "frameCount": 50,
+  "frames": [
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0001.jpg",
+      "time": 0
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0002.jpg",
+      "time": 2
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0003.jpg",
+      "time": 4
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0004.jpg",
+      "time": 6
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0005.jpg",
+      "time": 8
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0006.jpg",
+      "time": 10
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0007.jpg",
+      "time": 12
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0008.jpg",
+      "time": 14
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0009.jpg",
+      "time": 16
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0010.jpg",
+      "time": 18
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0011.jpg",
+      "time": 20
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0012.jpg",
+      "time": 22
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0013.jpg",
+      "time": 24
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0014.jpg",
+      "time": 26
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0015.jpg",
+      "time": 28
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0016.jpg",
+      "time": 30
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0017.jpg",
+      "time": 32
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0018.jpg",
+      "time": 34
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0019.jpg",
+      "time": 36
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0020.jpg",
+      "time": 38
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0021.jpg",
+      "time": 40
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0022.jpg",
+      "time": 42
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0023.jpg",
+      "time": 44
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0024.jpg",
+      "time": 46
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0025.jpg",
+      "time": 48
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0026.jpg",
+      "time": 50
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0027.jpg",
+      "time": 52
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0028.jpg",
+      "time": 54
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0029.jpg",
+      "time": 56
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0030.jpg",
+      "time": 58
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0031.jpg",
+      "time": 60
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0032.jpg",
+      "time": 62
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0033.jpg",
+      "time": 64
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0034.jpg",
+      "time": 66
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0035.jpg",
+      "time": 68
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0036.jpg",
+      "time": 70
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0037.jpg",
+      "time": 72
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0038.jpg",
+      "time": 76
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0039.jpg",
+      "time": 78
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0040.jpg",
+      "time": 80
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0041.jpg",
+      "time": 82
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0042.jpg",
+      "time": 84
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0043.jpg",
+      "time": 86
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0044.jpg",
+      "time": 88
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0045.jpg",
+      "time": 90
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0046.jpg",
+      "time": 92
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0047.jpg",
+      "time": 94
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0048.jpg",
+      "time": 96
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0049.jpg",
+      "time": 100
+    },
+    {
+      "file": "recordings/work/rr-20261026100104/frames/frame_0050.jpg",
+      "time": 102
+    }
+  ]
+}

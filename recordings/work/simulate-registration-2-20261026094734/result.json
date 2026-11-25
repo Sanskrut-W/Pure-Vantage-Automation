@@ -1,0 +1,13 @@
+{
+  "title": "TC-2 Verify a Bulk registration simulation succeeds and the form resets to its defaults",
+  "specFile": "tests/SimulateRegisteration.spec.ts",
+  "testIds": ["TC-2"],
+  "files": ["tests/SimulateRegisteration.spec.ts"],
+  "runCommand": "npx playwright test tests/SimulateRegisteration.spec.ts -g \"TC-2\" --headed",
+  "uncertainties": [
+    "Referral/Sign Up codes typed in the recording ('sdfgn', 'nhfd') were throwaway text; reused as fixed constants.",
+    "Toast text read from a small, partly blurred frame: 'Bulk registrations simulated successfully'.",
+    "Each run really submits 100 simulated registrations to the shared environment, as in the recording."
+  ],
+  "status": "generated"
+}

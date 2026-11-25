@@ -1,0 +1,15 @@
+{
+  "title": "Edit Bulk Comp — enable Send SMS with an SMS template and Save",
+  "specFile": "tests/compbulk.spec.ts",
+  "testIds": ["TC-48"],
+  "files": ["tests/compbulk.spec.ts", "pages/CompsBulkPage.ts", "locators/compsBulkLocators.ts"],
+  "runCommand": "npx playwright test tests/compbulk.spec.ts -g \"TC-48\" --headed",
+  "uncertainties": [
+    "Recording is a bug repro: Save on Edit with Send SMS + template showed 'Error saving bulk comp' (POST /compsapi/api/v1/Bulk/Edit -> 400). TC-48 asserts the expected success, so it fails while the bug exists.",
+    "Recording edited a shared row ('Mane', status Starting); the test creates and edits its own AutoBulkComp_ row (CSV route). If the 400 only happens for 'Starting' rows, the fresh row may not reproduce it.",
+    "Success toast text never shown in the recording — asserted by success severity plus absence of 'Error saving bulk comp'.",
+    "toastErrorSavingText locator is UNCONFIRMED (read from the recording).",
+    "SMS template: first option picked, as in the recording."
+  ],
+  "status": "generated"
+}

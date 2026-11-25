@@ -1,0 +1,14 @@
+{
+  "title": "TC_RR_24 Verify a Sport Requirement can be created for a new Recurring Reward",
+  "specFile": "tests/recurringrewards.spec.ts",
+  "testIds": ["TC_RR_24"],
+  "files": ["tests/recurringrewards.spec.ts", "pages/RecurringRewardsPage.ts", "locators/recurringRewardsLocators.ts"],
+  "runCommand": "npx playwright test tests/recurringrewards.spec.ts -g \"TC_RR_24\" --headed",
+  "uncertainties": [
+    "The Sport Requirement row's Single Leg Only switch is checked via PrimeNG's p-inputswitch-checked class. UNCONFIRMED (from recording), because the table was empty when probed.",
+    "Event is the first option, because mock events are labelled with today's date.",
+    "The recording's name, region, end date and wager amount are replaced by the existing fillMandatoryDailyFields() values.",
+    "Deleting the reward is assumed to remove its Sport Requirement too, as in the recording."
+  ],
+  "status": "generated"
+}
