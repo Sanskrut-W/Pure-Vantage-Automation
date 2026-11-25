@@ -448,13 +448,56 @@ export class LeaderboardPage extends BasePage {
         await this.searchLeaderboards(name);
         const row = this.getRowByName(name);
         await row.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(row.locator(leaderboardLocators.rowMenuTrigger));
-        await this.page.waitForTimeout(300);
+        await this.openPopupMenu(row.locator(leaderboardLocators.rowMenuTrigger));
+    }
+
+    /** Opens a Leaderboard row's "..." menu and clicks one of its items, retrying the PAIR.
+     * Confirmed live: the search box fires one request per keystroke and those responses can keep
+     * landing several seconds after typing stops — each one re-renders the table, which silently
+     * closes an already-open row menu. Retrying only the menu-open (or only the item click) isn't
+     * enough; the whole open → click sequence has to be repeated. */
+    private async clickLeaderboardRowMenuItem(name: string, itemText: string) {
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            await this.clickRowMenuForLeaderboard(name);
+            const item = this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last().getByText(itemText, { exact: true });
+            const clicked = await item.click({ timeout: 5000 }).then(() => true).catch(() => false);
+            if (clicked) {
+                await this.page.waitForTimeout(500);
+                return;
+            }
+            console.log(`"${itemText}" not clickable in the row menu (attempt ${attempt}/3) — menu likely closed by a table re-render, retrying...`);
+            await this.page.keyboard.press('Escape').catch(() => {});
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+            await this.page.waitForTimeout(1000);
+        }
+        throw new Error(`Could not click "${itemText}" in the "..." menu of Leaderboard "${name}" after 3 attempts`);
+    }
+
+    /**
+     * Clicks a "..." trigger and VERIFIES the popup menu actually opened, re-clicking if not.
+     * Confirmed live (TC_LB_032 failure screenshot): the row and its kebab were rendered and the
+     * click succeeded, yet no menu appeared — the search filter re-renders the table, and a click
+     * that lands mid-re-render is silently lost. Without this check the caller then waited the
+     * full 120s action timeout for a menu item that was never going to show.
+     */
+    private async openPopupMenu(trigger: Locator) {
+        const menu = this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last();
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            await this.clickElement(trigger);
+            const opened = await menu.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+            if (opened) {
+                await this.page.waitForTimeout(300); // let the open animation settle
+                return;
+            }
+            console.log(`Row "..." menu did not open (attempt ${attempt}/3) — re-clicking...`);
+            await this.page.waitForTimeout(1000);
+        }
+        await menu.waitFor({ state: 'visible', timeout: 5000 }); // surface a clear error
     }
 
     async clickManageConfigurationsFromRowMenu() {
         console.log('Clicking Manage Configurations from the row menu...');
-        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(leaderboardLocators.menuItemManageConfigurations, { exact: true });
+        const menuItem = this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last().getByText(leaderboardLocators.menuItemManageConfigurations, { exact: true });
         await this.clickElement(menuItem);
         await this.page.waitForTimeout(500);
     }
@@ -462,8 +505,29 @@ export class LeaderboardPage extends BasePage {
     /** Opens Manage Configurations for a Leaderboard by name, via its row's "..." menu. */
     async openManageConfigurations(name: string) {
         console.log(`Opening Manage Configurations for Leaderboard "${name}"...`);
-        await this.clickRowMenuForLeaderboard(name);
-        await this.clickManageConfigurationsFromRowMenu();
+        // Confirmed live: the Manage Configurations page renders its buttons BEFORE its data
+        // (the Configurations list + the Rule Types / Game Types the Create Configuration form is
+        // built from) has arrived — up to ~6s later under load. If the Create Configuration popup
+        // is opened and filled in that window, the form re-initialises underneath the test when
+        // the data lands: every field still LOOKS filled, but Save stays disabled. Listeners are
+        // registered before the click so a fast response can't be missed.
+        const dataCalls = [
+            /\/Leaderboard\/\d+\/Configurations/,
+            /\/Leaderboard\/RuleTypes/,
+            /\/GameCategory\/UniqueGameTypes/,
+        ].map(re => this.page.waitForResponse(r => re.test(r.url()), { timeout: 60000 }).catch(() => null));
+
+        await this.clickLeaderboardRowMenuItem(name, leaderboardLocators.menuItemManageConfigurations);
+        await Promise.all(dataCalls);
+
+        // Either the cards container (≥1 Configuration) or the empty-state text (none) renders
+        // once the list has been applied.
+        await this.configurationsContainer
+            .or(this.page.getByText('No configurations found'))
+            .first()
+            .waitFor({ state: 'visible', timeout: 30000 })
+            .catch(() => console.log('Configurations list/empty state not visible after 30s — continuing.'));
+        await this.page.waitForTimeout(500);
     }
 
     /** Deletes a Leaderboard by name and waits for it to actually disappear. Swallows errors so
@@ -491,7 +555,7 @@ export class LeaderboardPage extends BasePage {
 
     async clickManageStreaksFromRowMenu() {
         console.log('Clicking Manage Streaks from the row menu...');
-        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(leaderboardLocators.menuItemManageStreaks, { exact: true });
+        const menuItem = this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last().getByText(leaderboardLocators.menuItemManageStreaks, { exact: true });
         await this.clickElement(menuItem);
         await this.page.waitForTimeout(500);
     }
@@ -499,8 +563,7 @@ export class LeaderboardPage extends BasePage {
     /** Opens Manage Streaks for a Leaderboard by name, via its row's "..." menu. */
     async openManageStreaks(name: string) {
         console.log(`Opening Manage Streaks for Leaderboard "${name}"...`);
-        await this.clickRowMenuForLeaderboard(name);
-        await this.clickManageStreaksFromRowMenu();
+        await this.clickLeaderboardRowMenuItem(name, leaderboardLocators.menuItemManageStreaks);
     }
 
     async clickCreateStreak() {
@@ -595,7 +658,7 @@ export class LeaderboardPage extends BasePage {
 
     async clickPeriodsFromRowMenu() {
         console.log('Clicking Periods from the row menu...');
-        const menuItem = this.page.locator('.p-menu, .p-tieredmenu').last().getByText(leaderboardLocators.menuItemPeriods, { exact: true });
+        const menuItem = this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last().getByText(leaderboardLocators.menuItemPeriods, { exact: true });
         await this.clickElement(menuItem);
         await this.page.waitForTimeout(500);
     }
@@ -603,8 +666,7 @@ export class LeaderboardPage extends BasePage {
     /** Opens Periods for a Leaderboard by name, via its row's "..." menu. */
     async openPeriods(name: string) {
         console.log(`Opening Periods for Leaderboard "${name}"...`);
-        await this.clickRowMenuForLeaderboard(name);
-        await this.clickPeriodsFromRowMenu();
+        await this.clickLeaderboardRowMenuItem(name, leaderboardLocators.menuItemPeriods);
     }
 
     async clickCreatePeriod() {
@@ -975,12 +1037,11 @@ export class LeaderboardPage extends BasePage {
         console.log(`Opening the "..." menu for Configuration "${name}"...`);
         const card = this.getConfigCardByName(name);
         await card.waitFor({ state: 'visible', timeout: 15000 });
-        await this.clickElement(card.locator(leaderboardLocators.configRowMenuTrigger));
-        await this.page.waitForTimeout(300);
+        await this.openPopupMenu(card.locator(leaderboardLocators.configRowMenuTrigger));
     }
 
     getConfigRowMenu(): Locator {
-        return this.page.locator('.p-menu, .p-tieredmenu').last();
+        return this.page.locator('.p-menu:visible, .p-tieredmenu:visible').last();
     }
 
     async clickEditFromConfigRowMenu() {
