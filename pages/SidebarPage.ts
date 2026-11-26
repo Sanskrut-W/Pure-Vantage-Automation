@@ -366,6 +366,21 @@ export class SidebarPage extends BasePage {
         await this.navigateViaMenu([sidebarLocators.menuMarketing, sidebarLocators.menuNotificationManagement, sidebarLocators.menuNotificationSchedule]);
     }
 
+    async navigateToSimulateBet() {
+        console.log('Navigating via Sidebar: Workflow Management -> Simulate Bet');
+        await this.navigateViaMenu([sidebarLocators.menuWorkflowManagement, sidebarLocators.menuSimulateBet]);
+    }
+
+    async navigateToSimulateOptIn() {
+        console.log('Navigating via Sidebar: Workflow Management -> Simulate Opt In');
+        await this.navigateViaMenu([sidebarLocators.menuWorkflowManagement, sidebarLocators.menuSimulateOptIn]);
+    }
+
+    async navigateToTeams() {
+        console.log('Navigating via Sidebar: ASCII -> Admin -> Teams');
+        await this.navigateViaMenu([sidebarLocators.menuAscii, sidebarLocators.menuAsciiAdmin, sidebarLocators.menuTeams]);
+    }
+
     async navigateToFormBuilder() {
         console.log('Navigating via Sidebar: Platform -> Form Builder Configuration -> Form Builder');
         await this.navigateViaMenu([sidebarLocators.menuPlatform, sidebarLocators.menuFormBuilderConfiguration, sidebarLocators.menuFormBuilder]);

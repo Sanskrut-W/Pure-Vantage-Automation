@@ -1,6 +1,7 @@
 // npx playwright test tests/teams.spec.ts --headed
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 test.describe('Teams - Create Team', () => {
 
@@ -14,20 +15,9 @@ test.describe('Teams - Create Team', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    // Expand ASCII menu node
-    const asciiNode = page.locator('span.menuitem-text:text-is("ASCII")').first();
-    await asciiNode.waitFor({ state: 'visible', timeout: 15000 });
-    await asciiNode.click();
-
-    // Expand Admin sub-menu
-    const adminNode = page.locator('span.menuitem-text:text-is("Admin")').first();
-    await adminNode.waitFor({ state: 'visible', timeout: 10000 });
-    await adminNode.click();
-
-    // Click the Teams link to trigger SPA navigation
-    const teamsLink = page.locator('span.menuitem-text:text-is("Teams")').first();
-    await teamsLink.waitFor({ state: 'visible', timeout: 10000 });
-    await teamsLink.click();
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToTeams();
     await page.waitForLoadState('networkidle');
 
     // Ensure the Teams page content is fully loaded.

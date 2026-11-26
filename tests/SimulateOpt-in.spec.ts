@@ -1,6 +1,8 @@
 // npx playwright test tests/SimulateOpt-in.spec.ts --headed
-import { test, expect, Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers — same proven patterns as tests/simulatebet.spec.ts (sibling "Simulate X" feature
@@ -83,15 +85,9 @@ async function navigateToSimulateOptIn(page: Page): Promise<void> {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    const workflowNode = page.locator('span.menuitem-text:text-is("Workflow Management")').first();
-    const workflowReady = await workflowNode.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!workflowReady) continue;
-    if (!(await clickTolerant(page, workflowNode))) continue;
-
-    const simulateOptInLink = page.locator('span.menuitem-text:text-is("Simulate Opt In")').first();
-    const linkReady = await simulateOptInLink.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!linkReady) continue;
-    if (!(await clickTolerant(page, simulateOptInLink))) continue;
+    const sidebarPage = new SidebarPage(page);
+    if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+    if (!(await sidebarPage.navigateToSimulateOptIn().then(() => true).catch(() => false))) continue;
     await page.waitForLoadState('networkidle');
 
     const markerReady = await pageMarker.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false);

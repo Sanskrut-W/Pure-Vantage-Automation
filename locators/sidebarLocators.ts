@@ -65,6 +65,14 @@ export const sidebarLocators = {
     // accordion (a sibling of Marketing/Platform/System Admin), Bet Promotion Rules a direct
     // child of it (single level, no further nesting).
     menuWorkflowManagement: 'Workflow Management',
+    // Confirmed live (page snapshot, new sidebar): direct Workflow Management children.
+    menuSimulateBet: 'Simulate Bet',
+    menuSimulateOptIn: 'Simulate Opt In',
+    // Confirmed live (page snapshot, new sidebar): ASCII is its own top-level group; Teams sits
+    // under its "Admin" sub-group (exact-text match, so it never hits "Admin Accounts").
+    menuAscii: 'ASCII',
+    menuAsciiAdmin: 'Admin',
+    menuTeams: 'Teams',
     menuBetPromotionRules: 'Bet Promotion Rules',
     // Confirmed live (page snapshot captured for an unrelated test): same single-level
     // Workflow Management child as Bet Promotion Rules, same span.menuitem-text convention.

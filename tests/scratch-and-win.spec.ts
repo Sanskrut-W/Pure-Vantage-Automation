@@ -1,6 +1,8 @@
 // npx playwright test tests/scratch-and-win.spec.ts --headed
-import { test, expect, Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // Matches a clickable (not other-month, not disabled) day cell in this app's PrimeNG calendar.
 // This app renders the newer passthrough markup (data-pc-name/data-pc-section attributes visible
@@ -30,18 +32,9 @@ async function navigateToScratchAndWin(page: Page): Promise<void> {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 20000 });
-    await marketingNode.click();
-
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    if (await promotionsNode.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await promotionsNode.click();
-    }
-
-    const scratchWinLink = page.locator('span.menuitem-text:text-is("Scratch and Win")').first();
-    await scratchWinLink.waitFor({ state: 'visible', timeout: 15000 });
-    await scratchWinLink.click();
+    const sidebarPage = new SidebarPage(page);
+    if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+    if (!(await sidebarPage.navigateToScratchAndWin().then(() => true).catch(() => false))) continue;
     await page.waitForLoadState('networkidle');
 
     const arrived = await container.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);

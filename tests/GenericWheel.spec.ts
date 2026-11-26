@@ -1,7 +1,9 @@
 // npx playwright test tests/GenericWheel.spec.ts --headed
 
-import { test, expect, Page, Locator } from '@playwright/test';
+import type { Page, Locator } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // The original test.describe wrapper (and its beforeEach) that navigated to the Generic Wheel
 // promotions list page got commented out while TC_83/TC_87 (and any other currently-active tests
@@ -17,17 +19,9 @@ test.beforeEach(async ({ page }) => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
-    await marketingNode.click();
-
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await promotionsNode.click();
-
-    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
-    await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
-    await genericWheelLink.click();
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToGenericWheel();
     await page.waitForURL('**/generic-wheel', { timeout: 15000 });
     // Full reload forces Angular/Stencil to initialize the component from scratch
     await page.reload();
@@ -51,17 +45,9 @@ test.describe('Marketing - Generic Wheel', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
-    await marketingNode.click();
-
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await promotionsNode.click();
-
-    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
-    await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
-    await genericWheelLink.click();
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToGenericWheel();
     await page.waitForURL('**/generic-wheel', { timeout: 15000 });
     // Full reload forces Angular/Stencil to initialize the component from scratch
     await page.reload();

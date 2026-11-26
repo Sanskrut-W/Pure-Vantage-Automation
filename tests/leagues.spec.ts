@@ -1,5 +1,7 @@
-import { test, expect, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // Confirmed live (user clarification): clicking Delete on a League deletes it IMMEDIATELY with no
 // Yes/No confirmation at all. Whether League Teams' own Delete behaves the same way was never
@@ -37,18 +39,9 @@ test.describe('Marketing - Generic Predictor Leagues', () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
 
-      const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-      if (!(await marketingNode.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false))) continue;
-      await marketingNode.click();
-
-      const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-      if (!(await promotionsNode.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
-      await promotionsNode.click();
-
-      // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-      const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
-      if (!(await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
-      await genericPredictorLink.click();
+      const sidebarPage = new SidebarPage(page);
+      if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+      if (!(await sidebarPage.navigateToGenericPredictor().then(() => true).catch(() => false))) continue;
       if (!(await page.waitForURL('**/generic-predictor', { timeout: 15000 }).then(() => true).catch(() => false))) continue;
       await page.waitForLoadState('networkidle');
 
@@ -511,18 +504,9 @@ test.describe('Marketing - Generic Predictor League Teams', () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
 
-      const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-      if (!(await marketingNode.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false))) continue;
-      await marketingNode.click();
-
-      const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-      if (!(await promotionsNode.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
-      await promotionsNode.click();
-
-      // Generic Predictor link lands on the Promotions list page; leagues are behind "View Leagues"
-      const genericPredictorLink = page.locator('span.menuitem-text:text-is("Generic Predictor")').first();
-      if (!(await genericPredictorLink.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false))) continue;
-      await genericPredictorLink.click();
+      const sidebarPage = new SidebarPage(page);
+      if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+      if (!(await sidebarPage.navigateToGenericPredictor().then(() => true).catch(() => false))) continue;
       if (!(await page.waitForURL('**/generic-predictor', { timeout: 15000 }).then(() => true).catch(() => false))) continue;
       await page.waitForLoadState('networkidle');
 

@@ -459,6 +459,10 @@ export class RulesEnginePage extends BasePage {
      * one actually enables the Campaign dropdown, instead of assuming the first option works. */
     async selectRegionWithCampaign(): Promise<{ region: string; campaign: string }> {
         const firstPanel = await this.openDropdown(this.regionDropdown);
+        // count() is a one-shot read — confirmed live: right after the panel opens its options may
+        // not be rendered yet, giving 0 and skipping straight to the "none enabled" error without
+        // trying a single Region. Wait for the first option before counting.
+        await firstPanel.locator(rulesEngineLocators.dropdownItem).first().waitFor({ state: 'visible', timeout: 15000 });
         const regionCount = await firstPanel.locator(rulesEngineLocators.dropdownItem).count();
 
         for (let i = 0; i < regionCount; i++) {

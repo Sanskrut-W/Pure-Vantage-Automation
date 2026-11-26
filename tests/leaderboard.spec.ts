@@ -1293,8 +1293,12 @@ test.describe('Leaderboard - Periods Tests', () => {
         expect(await leaderboardPage.getPeriodNameValue(), 'Expected Name value to be accepted').toBe(name);
 
         await leaderboardPage.fillPeriodName('');
-        const hasErrors = await leaderboardPage.hasValidationErrors();
-        expect(hasErrors, 'Expected a validation error when Name is left blank').toBe(true);
+        // The validation message renders a beat after the field is cleared — a one-shot count
+        // check raced it (passed one run, failed the next), so poll for it instead.
+        await expect.poll(() => leaderboardPage.hasValidationErrors(), {
+            message: 'Expected a validation error when Name is left blank',
+            timeout: 5000,
+        }).toBe(true);
 
         await CommonUtils.captureScreenshot(page, testInfo, 'reports/screenshots', 'TC_LB_063_name_field');
         console.log('Name accepts valid input and shows a validation error when left blank.');

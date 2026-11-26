@@ -1,5 +1,7 @@
-﻿import { test, expect, Page } from '@playwright/test';
+﻿import type { Page } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // ─── Setup helpers ────────────────────────────────────────────────────────────
 
@@ -525,35 +527,9 @@ test.describe('Marketing - Timed Promotions Opt-in Triggers', () => {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    // Confirmed live: the earlier click-method experiments (dispatchEvent, then click({force:true}))
-    // both got waitForURL to pass yet the page content never actually mounted — identical failure
-    // regardless of click method, and manually clicking through works fine. That ruled out trust/
-    // actionability of the click itself. The real gap: this flow clicked Marketing then immediately
-    // Promotions then immediately Timed Promotions with no settle time, unlike this app's own proven
-    // working pattern for the structurally identical Marketing -> [accordion] -> [leaf] navigation
-    // (SidebarPage.navigateToTutorialOrdering/navigateToTutorialConfig), which inserts a 600ms wait
-    // after each accordion-level click to let its expand animation actually finish before the next
-    // click — without it, a later click can fire while the DOM is still mid-transition. Reproducing
-    // that exact proven sequence here instead (settle delays + scrollIntoViewIfNeeded + dispatchEvent
-    // + domcontentloaded, not networkidle/reload).
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
-    await marketingNode.click({ timeout: 8000 }).catch(() => {});
-    await page.waitForTimeout(600);
-
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await promotionsNode.click({ timeout: 8000 }).catch(() => {});
-    await page.waitForTimeout(600);
-
-    // "Timed Promotions" renders as a plain clickable span (same menuitem-text convention as
-    // Marketing/Promotions above) inside an <a id="menu"> with NO href attribute — navigation is
-    // driven entirely by a click handler on the <a>, not a real link.
-    const timedPromotionsNode = page.locator('span.menuitem-text:text-is("Timed Promotions")').first();
-    await timedPromotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await timedPromotionsNode.scrollIntoViewIfNeeded();
-    const timedPromotionsLink = page.locator('a', { has: timedPromotionsNode });
-    await timedPromotionsLink.dispatchEvent('click');
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToTimedPromotions();
     await page.waitForURL('**/timed-promotions', { timeout: 15000 });
     await page.waitForLoadState('domcontentloaded');
     // domcontentloaded fires before the Angular app has actually fetched/rendered the table — give
@@ -757,42 +733,10 @@ test.describe('Marketing - Timed Promotions Hourly Configuration', () => {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    // Confirmed live (already diagnosed and fixed for the sibling "Opt-in Triggers" describe block's
-    // own beforeEach — this block has its own separate copy of the same navigation code, which never
-    // got updated): clicking Marketing -> Promotions -> Timed Promotions back-to-back with no settle
-    // time can fire a later click while the previous accordion's expand animation is still mid-
-    // transition. Reproducing the exact proven sequence from SidebarPage.navigateToTutorialOrdering/
-    // navigateToTutorialConfig (600ms settle delay after each accordion-level click).
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
-    await marketingNode.click({ timeout: 8000 }).catch(() => {});
-    await page.waitForTimeout(600);
-
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    if (await promotionsNode.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await promotionsNode.click({ timeout: 8000 }).catch(() => {});
-      await page.waitForTimeout(600);
-    }
-
-    // "Timed Promotions" sits inside an <a id="menu"> with NO href attribute — navigation is driven
-    // entirely by a click handler on the <a>, not a real link.
-    const timedPromotionsNode = page.locator('span.menuitem-text:text-is("Timed Promotions")').first();
-    await timedPromotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await timedPromotionsNode.scrollIntoViewIfNeeded();
-    const timedPromotionsLink = page.locator('a', { has: timedPromotionsNode });
-    // Confirmed live: with 8 Playwright workers running fully in parallel (playwright.config.ts),
-    // this single dispatchEvent click occasionally never registers a route change at all (seen live:
-    // page.waitForURL timing out while still on /main/home) — retry it a few times instead of
-    // assuming one dispatch is enough.
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await timedPromotionsLink.dispatchEvent('click');
-      try {
-        await page.waitForURL('**/timed-promotions', { timeout: 8000 });
-        break;
-      } catch {
-        if (attempt === 2) throw new Error('Clicking "Timed Promotions" never navigated to /timed-promotions after 3 attempts.');
-      }
-    }
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToTimedPromotions();
+    await page.waitForURL('**/timed-promotions', { timeout: 15000 });
     await page.waitForLoadState('domcontentloaded');
     // domcontentloaded fires before Angular has actually fetched/rendered the table — give it a few
     // real seconds before checking for content.

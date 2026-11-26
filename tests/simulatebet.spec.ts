@@ -1,6 +1,8 @@
 // npx playwright test tests/simulatebet.spec.ts --headed
-import { test, expect, Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -48,15 +50,9 @@ async function navigateToSimulateBetSettlements(page: Page): Promise<void> {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    const workflowNode = page.locator('span.menuitem-text:text-is("Workflow Management")').first();
-    const workflowReady = await workflowNode.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!workflowReady) continue;
-    if (!(await clickTolerant(page, workflowNode))) continue;
-
-    const simulateBetLink = page.locator('span.menuitem-text:text-is("Simulate Bet")').first();
-    const simulateBetLinkReady = await simulateBetLink.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!simulateBetLinkReady) continue;
-    if (!(await clickTolerant(page, simulateBetLink))) continue;
+    const sidebarPage = new SidebarPage(page);
+    if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+    if (!(await sidebarPage.navigateToSimulateBet().then(() => true).catch(() => false))) continue;
     await page.waitForLoadState('networkidle');
 
     // The sibling tab is confirmed as "Bets Placed" (see navigateToSimulateBetBetsPlaced below).
@@ -290,15 +286,9 @@ async function navigateToSimulateBetBetsPlaced(page: Page): Promise<void> {
     await page.goto('/main/home');
     await page.waitForLoadState('networkidle');
 
-    const workflowNode = page.locator('span.menuitem-text:text-is("Workflow Management")').first();
-    const workflowReady = await workflowNode.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!workflowReady) continue;
-    if (!(await clickTolerant(page, workflowNode))) continue;
-
-    const simulateBetLink = page.locator('span.menuitem-text:text-is("Simulate Bet")').first();
-    const simulateBetLinkReady = await simulateBetLink.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
-    if (!simulateBetLinkReady) continue;
-    if (!(await clickTolerant(page, simulateBetLink))) continue;
+    const sidebarPage = new SidebarPage(page);
+    if (!(await sidebarPage.waitForAppReady().then(() => true).catch(() => false))) continue;
+    if (!(await sidebarPage.navigateToSimulateBet().then(() => true).catch(() => false))) continue;
     await page.waitForLoadState('networkidle');
 
     const betsPlacedTab = page.locator('.p-menuitem-text:text-is("Bets Placed")').first();

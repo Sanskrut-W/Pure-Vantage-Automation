@@ -1,5 +1,7 @@
-import { test, expect, Page, Locator, TestInfo } from '@playwright/test';
+import type { Page, Locator, TestInfo } from '@playwright/test';
+import { test, expect } from '../fixtures/baseFixture';
 import { CommonUtils } from '../utils/commonUtils';
+import { SidebarPage } from '../pages/SidebarPage';
 
 const DAY_SEL  = 'td[data-pc-section="day"]:not([data-p-other-month]) span[data-pc-section="daylabel"][data-p-disabled="false"]';
 const OPT_SEL  = '[data-pc-section="option"]:not(option), .p-dropdown-item, li[role="option"]';
@@ -131,15 +133,9 @@ test.describe('Marketing - Generic Wheel', () => {
     // spec files).
     await page.reload();
     await page.waitForLoadState('networkidle');
-    const marketingNode = page.locator('span.menuitem-text:text-is("Marketing")').first();
-    await marketingNode.waitFor({ state: 'visible', timeout: 15000 });
-    await marketingNode.click();
-    const promotionsNode = page.locator('span.menuitem-text:text-is("Promotions")').first();
-    await promotionsNode.waitFor({ state: 'visible', timeout: 10000 });
-    await promotionsNode.click();
-    const genericWheelLink = page.locator('span.menuitem-text:text-is("Generic Wheel")').first();
-    await genericWheelLink.waitFor({ state: 'visible', timeout: 10000 });
-    await genericWheelLink.click();
+    const sidebarPage = new SidebarPage(page);
+    await sidebarPage.waitForAppReady();
+    await sidebarPage.navigateToGenericWheel();
     await page.waitForURL('**/generic-wheel', { timeout: 15000 });
     await page.reload();
     await page.waitForLoadState('networkidle');
